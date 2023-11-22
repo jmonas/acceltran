@@ -1,4 +1,4 @@
-module PatchifyImage
+module patchifier
 (
     clk,
     reset, 
