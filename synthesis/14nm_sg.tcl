@@ -38,7 +38,7 @@ file mkdir $rpt_path
 # Read RTL files
 #******************************************************************************
 
-analyze -library 14nm_sg -format sv {add_2.sv patchifier.sv FIFO.sv ReLU.sv SiLU.sv softmax.sv layer_mean.sv ln_forward.sv max_pooling.sv pooling.sv sqrt_mul.sv update_output.sv L1.sv add.sv bn_forward.sv bn_backward.sv mean.sv post_sparsity.sv stochastic_rounding.sv L2.sv adder_tree.sv loss.sv mean_pooling.sv scalar.sv LFSR.sv mac_lane.sv min_pooling.sv shifter.sv transposer.sv dataflow.sv mask.sv mul.sv sparsity.sv update_mask.sv top.sv} 
+analyze -library 14nm_sg -format sv {add_2.sv patchifier.sv FIFO.sv ReLU.sv SiLU.sv softmax.sv layer_mean.sv ln_forward.sv sqrt_mul.sv update_output.sv L1.sv add.sv bn_forward.sv bn_backward.sv mean.sv post_sparsity.sv stochastic_rounding.sv L2.sv adder_tree.sv loss.sv mean_pooling.sv scalar.sv LFSR.sv mac_lane.sv min_pooling.sv shifter.sv transposer.sv dataflow.sv mask.sv mul.sv sparsity.sv update_mask.sv top.sv} 
 
 elaborate $top_module -library 14nm_sg
 
