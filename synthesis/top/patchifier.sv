@@ -91,10 +91,10 @@ int patch_row_index, patch_col_index, patch_index;
 int position_row_index, position_col_index, position_index;
 always_comb begin
 	if (state == 2'b01) begin
-		for (i = 0; i < IMAGE_WIDTH; i++) begin
+		for (i = 0; i < IMG_WIDTH; i++) begin
             patch_row_index = i/PATCH_SIZE * PATCHES_IN_ROW;
             position_row_index = i%PATCH_SIZE * PATCH_SIZE;
-			for (j = 0; j < IMAGE_HEIGHT; j++) begin
+			for (j = 0; j < IMG_HEIGHT; j++) begin
                 patch_col_index = j/PATCH_SIZE;
                 position_col_index = j%PATCH_SIZE;
 
