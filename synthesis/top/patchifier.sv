@@ -14,9 +14,9 @@ parameter CHANNEL_SIZE = 8;
 parameter NUM_CHANNELS = 3; // i.e. RGB
 parameter PIXEL_WIDTH = CHANNEL_SIZE * NUM_CHANNELS; 
 
-parameter IMG_WIDTH = 64;
-parameter IMG_HEIGHT = 64;
-parameter PATCH_SIZE = 16;
+parameter IMG_WIDTH = 4;
+parameter IMG_HEIGHT = 4;
+parameter PATCH_SIZE = 2;
 parameter PATCHES_IN_ROW = IMG_WIDTH/PATCH_SIZE;
 
 parameter TOTAL_NUM_PATCHES = (IMG_WIDTH/PATCH_SIZE) * (IMG_HEIGHT/PATCH_SIZE);
@@ -89,20 +89,20 @@ PATCHIFICATION EXAMPLE:
 int i, j;
 int patch_row_index, patch_col_index, patch_index;
 int position_row_index, position_col_index, position_index;
-always_comb begin
+always_ff @(posedge clk) begin
 	if (state == 2'b01) begin
 		for (i = 0; i < IMG_WIDTH; i++) begin
-            patch_row_index = i/PATCH_SIZE * PATCHES_IN_ROW;
-            position_row_index = i%PATCH_SIZE * PATCH_SIZE;
+            patch_row_index <= i/PATCH_SIZE * PATCHES_IN_ROW;
+            position_row_index <= i%PATCH_SIZE * PATCH_SIZE;
 			for (j = 0; j < IMG_HEIGHT; j++) begin
-                patch_col_index = j/PATCH_SIZE;
-                position_col_index = j%PATCH_SIZE;
+                patch_col_index <= j/PATCH_SIZE;
+                position_col_index <= j%PATCH_SIZE;
 
-                patch_index = patch_row_index + patch_col_index;
-                position_index = position_row_index + position_col_index;
+                patch_index <= patch_row_index + patch_col_index;
+                position_index <= position_row_index + position_col_index;
 
                 // assign image pixel value to 1D vector position in corresponding patch
-				reg_all_patches[patch_index][position_index] = image_cache[i][j];
+				reg_all_patches[patch_index][position_index] <= image_cache[i][j];
 			end
 		end	
 	end
