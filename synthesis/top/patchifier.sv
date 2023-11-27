@@ -86,27 +86,27 @@ PATCHIFICATION EXAMPLE:
     position_index = * = 255
 */
 
-int i, j;
-int patch_row_index, patch_col_index, patch_index;
-int position_row_index, position_col_index, position_index;
-always_ff @(posedge clk) begin
-	if (state == 2'b01) begin
-		for (i = 0; i < IMG_WIDTH; i++) begin
-            patch_row_index <= i/PATCH_SIZE * PATCHES_IN_ROW;
-            position_row_index <= i%PATCH_SIZE * PATCH_SIZE;
-			for (j = 0; j < IMG_HEIGHT; j++) begin
-                patch_col_index <= j/PATCH_SIZE;
-                position_col_index <= j%PATCH_SIZE;
+// int i, j;
+// int patch_row_index, patch_col_index, patch_index;
+// int position_row_index, position_col_index, position_index;
+// always_ff @(posedge clk) begin
+// 	if (state == 2'b01) begin
+// 		for (i = 0; i < IMG_WIDTH; i++) begin
+//             patch_row_index <= i/PATCH_SIZE * PATCHES_IN_ROW;
+//             position_row_index <= i%PATCH_SIZE * PATCH_SIZE;
+// 			for (j = 0; j < IMG_HEIGHT; j++) begin
+//                 patch_col_index <= j/PATCH_SIZE;
+//                 position_col_index <= j%PATCH_SIZE;
 
-                patch_index <= patch_row_index + patch_col_index;
-                position_index <= position_row_index + position_col_index;
+//                 patch_index <= patch_row_index + patch_col_index;
+//                 position_index <= position_row_index + position_col_index;
 
-                // assign image pixel value to 1D vector position in corresponding patch
-				reg_all_patches[patch_index][position_index] <= image_cache[i][j];
-			end
-		end	
-	end
-end
+//                 // assign image pixel value to 1D vector position in corresponding patch
+// 				reg_all_patches[patch_index][position_index] <= image_cache[i][j];
+// 			end
+// 		end	
+// 	end
+// end
 
 
 int l,m;
