@@ -40,8 +40,7 @@ output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_
 
 logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
 logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
-logic start_processing = 0; // Flag to start processing
-logic processing_done = 0; // Flag to indicate processing is done
+logic processing_done; // Flag to indicate processing is done
 
 localparam IDLE = 2'b00, PROCESSING = 2'b01, DONE = 2'b10;
 
@@ -54,7 +53,10 @@ always_ff @(posedge clk) begin
 	end
 	else begin
 		case (state)
-			IDLE: if (en || start_processing) state <= PROCESSING;
+			IDLE: if (en) begin 
+                state <= PROCESSING;
+                processing_done<=0;
+            end
 			PROCESSING: if (processing_done) state <= DONE;
 			DONE: if (output_taken) state <= IDLE;
 		endcase
