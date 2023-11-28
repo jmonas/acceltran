@@ -35,11 +35,16 @@ input [PIXEL_WIDTH-1:0] image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
 output logic [2:0] state;
 
 // output 1D vector for each patch
-output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
+output logic [PIXEL_WIDTH-1:0] all_patches [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
+
+
+// output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
 
 
 logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
-logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
+logic [PIXEL_WIDTH-1:0] reg_all_patches [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
+
+// logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
 logic pre_processing_done; // Flag to indicate processing is done
 logic processing_done; // Flag to indicate processing is done
 logic post_processing_done; // Flag to indicate processing is done
@@ -81,26 +86,61 @@ always_ff @(posedge clk) begin
     end
 end
 
-
-int post_position_index, post_patch_index;
+int a, b;
 always_ff @(posedge clk) begin
     if (reset) begin
-        post_position_index <= 0;
-        post_patch_index <= 0;
-        post_processing_done <= 0;
-    end else if (POSTPROCESSING && !post_processing_done) begin
-        all_patches[x][y] <= reg_all_patches[x][y];
-        // Increment counters
-        if (post_position_index == PATCH_VECTOR_SIZE - 1) begin
-            post_position_index <= 0;
-            post_patch_index <= (post_patch_index == TOTAL_NUM_PATCHES - 1) ? 0 : post_patch_index + 1;
-            post_processing_done <= (post_patch_index == TOTAL_NUM_PATCHES - 1);
-        end else begin
-            post_position_index <= post_position_index + 1;
-        end
-
+        a <= 0;
+        b <= 0;
+        processing_done <= 0;
+    end else if (PREPROCESSING && !pre_processing_done) begin
+        reg_all_patches[a][b] <= reg_image_cache[a][b]+1;
+        // Increment x and y
+        a <= (a == IMG_WIDTH - 1) ? 0 : a + 1;
+        b <= (a == IMG_WIDTH - 1) ? ((b == IMG_HEIGHT - 1) ? 0 : b + 1) : b;
+        // Check if done
+        processing_done <= (a == IMG_WIDTH - 1) && (b == IMG_HEIGHT - 1);
     end
 end
+
+
+int m, n;
+always_ff @(posedge clk) begin
+    if (reset) begin
+        m <= 0;
+        n <= 0;
+        post_processing_done <= 0;
+    end else if (PREPROCESSING && !pre_processing_done) begin
+        all_patches[m][n] <= reg_all_patches[m][n];
+        // Increment x and y
+        m <= (m == IMG_WIDTH - 1) ? 0 : m + 1;
+        n <= (m == IMG_WIDTH - 1) ? ((n == IMG_HEIGHT - 1) ? 0 : n + 1) : n;
+        // Check if done
+        post_processing_done <= (m == IMG_WIDTH - 1) && (n == IMG_HEIGHT - 1);
+    end
+end
+
+
+
+
+// int post_position_index, post_patch_index;
+// always_ff @(posedge clk) begin
+//     if (reset) begin
+//         post_position_index <= 0;
+//         post_patch_index <= 0;
+//         post_processing_done <= 0;
+//     end else if (POSTPROCESSING && !post_processing_done) begin
+//         all_patches[x][y] <= reg_all_patches[x][y];
+//         // Increment counters
+//         if (post_position_index == PATCH_VECTOR_SIZE - 1) begin
+//             post_position_index <= 0;
+//             post_patch_index <= (post_patch_index == TOTAL_NUM_PATCHES - 1) ? 0 : post_patch_index + 1;
+//             post_processing_done <= (post_patch_index == TOTAL_NUM_PATCHES - 1);
+//         end else begin
+//             post_position_index <= post_position_index + 1;
+//         end
+
+//     end
+// end
 
 
 
