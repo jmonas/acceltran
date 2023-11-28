@@ -41,8 +41,8 @@ output logic [PIXEL_WIDTH-1:0] all_patches [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
 // output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
 
 
-logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
-logic [PIXEL_WIDTH-1:0] reg_all_patches [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
+// logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
+// logic [PIXEL_WIDTH-1:0] reg_all_patches [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
 
 // logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
 logic pre_processing_done; // Flag to indicate processing is done
@@ -61,30 +61,30 @@ always_ff @(posedge clk) begin
 	end
 	else begin
 		case (state)
-			IDLE: if (en) state <= PREPROCESSING;
-            PREPROCESSING: if (pre_processing_done) state <= PROCESSING;       
-			PROCESSING: if (processing_done) state <= POSTPROCESSING;
-            POSTPROCESSING: if(post_processing_done) state <= DONE;
+			IDLE: if (en) state <= PROCESSING;
+            // PREPROCESSING: if (pre_processing_done) state <= PROCESSING;       
+			PROCESSING: if (processing_done) state <= DONE;
+            // POSTPROCESSING: if(post_processing_done) state <= DONE;
 			DONE: if (output_taken) state <= IDLE;
 		endcase
 	end
 end
 
-int x, y;
-always_ff @(posedge clk) begin
-    if (reset) begin
-        x <= 0;
-        y <= 0;
-        pre_processing_done <= 0;
-    end else if (PREPROCESSING && !pre_processing_done) begin
-        reg_image_cache[x][y] <= image_cache[x][y];
-        // Increment x and y
-        x <= (x == IMG_WIDTH - 1) ? 0 : x + 1;
-        y <= (x == IMG_WIDTH - 1) ? ((y == IMG_HEIGHT - 1) ? 0 : y + 1) : y;
-        // Check if done
-        pre_processing_done <= (x == IMG_WIDTH - 1) && (y == IMG_HEIGHT - 1);
-    end
-end
+// int x, y;
+// always_ff @(posedge clk) begin
+//     if (reset) begin
+//         x <= 0;
+//         y <= 0;
+//         pre_processing_done <= 0;
+//     end else if (PREPROCESSING && !pre_processing_done) begin
+//         reg_image_cache[x][y] <= image_cache[x][y];
+//         // Increment x and y
+//         x <= (x == IMG_WIDTH - 1) ? 0 : x + 1;
+//         y <= (x == IMG_WIDTH - 1) ? ((y == IMG_HEIGHT - 1) ? 0 : y + 1) : y;
+//         // Check if done
+//         pre_processing_done <= (x == IMG_WIDTH - 1) && (y == IMG_HEIGHT - 1);
+//     end
+// end
 
 int a, b;
 always_ff @(posedge clk) begin
@@ -93,7 +93,7 @@ always_ff @(posedge clk) begin
         b <= 0;
         processing_done <= 0;
     end else if (PROCESSING && !processing_done) begin
-        reg_all_patches[a][b] <= reg_image_cache[a][b]+1;
+        all_patches[a][b] <= image_cache[a][b]+1;
         // Increment x and y
         a <= (a == IMG_WIDTH - 1) ? 0 : a + 1;
         b <= (a == IMG_WIDTH - 1) ? ((b == IMG_HEIGHT - 1) ? 0 : b + 1) : b;
@@ -103,21 +103,21 @@ always_ff @(posedge clk) begin
 end
 
 
-int m, n;
-always_ff @(posedge clk) begin
-    if (reset) begin
-        m <= 0;
-        n <= 0;
-        post_processing_done <= 0;
-    end else if (POSTPROCESSING && !post_processing_done) begin
-        all_patches[m][n] <= reg_all_patches[m][n];
-        // Increment x and y
-        m <= (m == IMG_WIDTH - 1) ? 0 : m + 1;
-        n <= (m == IMG_WIDTH - 1) ? ((n == IMG_HEIGHT - 1) ? 0 : n + 1) : n;
-        // Check if done
-        post_processing_done <= (m == IMG_WIDTH - 1) && (n == IMG_HEIGHT - 1);
-    end
-end
+// int m, n;
+// always_ff @(posedge clk) begin
+//     if (reset) begin
+//         m <= 0;
+//         n <= 0;
+//         post_processing_done <= 0;
+//     end else if (POSTPROCESSING && !post_processing_done) begin
+//         all_patches[m][n] <= reg_all_patches[m][n];
+//         // Increment x and y
+//         m <= (m == IMG_WIDTH - 1) ? 0 : m + 1;
+//         n <= (m == IMG_WIDTH - 1) ? ((n == IMG_HEIGHT - 1) ? 0 : n + 1) : n;
+//         // Check if done
+//         post_processing_done <= (m == IMG_WIDTH - 1) && (n == IMG_HEIGHT - 1);
+//     end
+// end
 
 
 
