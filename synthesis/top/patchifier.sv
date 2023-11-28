@@ -6,7 +6,7 @@ module patchifier
     output_taken,
     state,
     image_cache, 
-    all_patches,
+    all_patches
 );
 
 
@@ -55,7 +55,6 @@ always_ff @(posedge clk) begin
 		case (state)
 			IDLE: if (en) begin 
                 state <= PROCESSING;
-                processing_done<=0;
             end
 			PROCESSING: if (processing_done) state <= DONE;
 			DONE: if (output_taken) state <= IDLE;
@@ -130,7 +129,7 @@ always_ff @(posedge clk) begin
             j <= 0;
             i <= i + 1;
             if (i == IMG_WIDTH - 1)
-                processing_done <= DONE;
+                processing_done <= 1;
         end
     end else if (state != PROCESSING) begin
         processing_done <= 0; // Reset the flag when not processing
