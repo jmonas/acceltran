@@ -151,30 +151,30 @@ PATCHIFICATION EXAMPLE:
     position_index = * = 255
 */
 
-int i, j;
-int patch_index, position_index;
-always_ff @(posedge clk) begin
-    if (reset) begin
-        i <= 0;
-        j <= 0;
-        processing_done <= 0;
-    end else if (state == PROCESSING && !processing_done) begin
-        patch_index <= (i >> PATCH_SIZE_LOG2) * PATCHES_IN_ROW + (j >> PATCH_SIZE_LOG2);
-        position_index <= (i & (PATCH_SIZE - 1)) * PATCH_SIZE + (j & (PATCH_SIZE - 1));
+// int i, j;
+// int patch_index, position_index;
+// always_ff @(posedge clk) begin
+//     if (reset) begin
+//         i <= 0;
+//         j <= 0;
+//         processing_done <= 0;
+//     end else if (state == PROCESSING && !processing_done) begin
+//         patch_index <= (i >> PATCH_SIZE_LOG2) * PATCHES_IN_ROW + (j >> PATCH_SIZE_LOG2);
+//         position_index <= (i & (PATCH_SIZE - 1)) * PATCH_SIZE + (j & (PATCH_SIZE - 1));
 
-        reg_all_patches[patch_index][position_index] <= reg_image_cache[i][j];
-        // Increment j, and if it rolls over, increment i
-        j <= j + 1;
-        if (j == IMG_HEIGHT - 1) begin
-            j <= 0;
-            i <= i + 1;
-            if (i == IMG_WIDTH - 1)
-                processing_done <= 1;
-        end
-    end else if (state != PROCESSING) begin
-        processing_done <= 0; // Reset the flag when not processing
-    end
-end
+//         reg_all_patches[patch_index][position_index] <= reg_image_cache[i][j];
+//         // Increment j, and if it rolls over, increment i
+//         j <= j + 1;
+//         if (j == IMG_HEIGHT - 1) begin
+//             j <= 0;
+//             i <= i + 1;
+//             if (i == IMG_WIDTH - 1)
+//                 processing_done <= 1;
+//         end
+//     end else if (state != PROCESSING) begin
+//         processing_done <= 0; // Reset the flag when not processing
+//     end
+// end
 
 
 
