@@ -30,21 +30,16 @@ input clk, reset;
 input en;
 input output_taken;
 
-input [PIXEL_WIDTH-1:0] image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
+input [PIXEL_WIDTH-1:0] image_cache [IMG_HEIGHT-1:0][IMG_WIDTH-1:0];
 
 output logic [2:0] state;
 
 // output 1D vector for each patch
-output logic [PIXEL_WIDTH-1:0] all_patches [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
+output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
 
 
-// output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
-
-
-// logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
-// logic [PIXEL_WIDTH-1:0] reg_all_patches [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
-
-// logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
+logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_HEIGHT-1:0][IMG_WIDTH-1:0];
+logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
 logic pre_processing_done; // Flag to indicate processing is done
 logic processing_done; // Flag to indicate processing is done
 logic post_processing_done; // Flag to indicate processing is done
@@ -61,86 +56,30 @@ always_ff @(posedge clk) begin
 	end
 	else begin
 		case (state)
-			IDLE: if (en) state <= PROCESSING;
-            // PREPROCESSING: if (pre_processing_done) state <= PROCESSING;       
-			PROCESSING: if (processing_done) state <= DONE;
-            // POSTPROCESSING: if(post_processing_done) state <= DONE;
+			IDLE: if (en) state <= PREPROCESSING;
+            PREPROCESSING: if (pre_processing_done) state <= PROCESSING;       
+			PROCESSING: if (processing_done) state <= POSTPROCESSING;
+            POSTPROCESSING: if(post_processing_done) state <= DONE;
 			DONE: if (output_taken) state <= IDLE;
 		endcase
 	end
 end
 
-// int x, y;
-// always_ff @(posedge clk) begin
-//     if (reset) begin
-//         x <= 0;
-//         y <= 0;
-//         pre_processing_done <= 0;
-//     end else if (PREPROCESSING && !pre_processing_done) begin
-//         reg_image_cache[x][y] <= image_cache[x][y];
-//         // Increment x and y
-//         x <= (x == IMG_WIDTH - 1) ? 0 : x + 1;
-//         y <= (x == IMG_WIDTH - 1) ? ((y == IMG_HEIGHT - 1) ? 0 : y + 1) : y;
-//         // Check if done
-//         pre_processing_done <= (x == IMG_WIDTH - 1) && (y == IMG_HEIGHT - 1);
-//     end
-// end
-
-int a, b;
+int rows, cols;
 always_ff @(posedge clk) begin
     if (reset) begin
-        a <= 0;
-        b <= 0;
-        processing_done <= 0;
-    end else if (PROCESSING && !processing_done) begin
-        all_patches[a][b] <= image_cache[a][b];
-        // Increment x and y
-        a <= (a == IMG_WIDTH - 1) ? 0 : a + 1;
-        b <= (a == IMG_WIDTH - 1) ? ((b == IMG_HEIGHT - 1) ? 0 : b + 1) : b;
+        rows <= 0;
+        cols <= 0;
+        pre_processing_done <= 0;
+    end else if (PREPROCESSING && !pre_processing_done) begin
+        reg_image_cache[rows][cols] <= image_cache[rows][cols];
+        // Increment cols and rows
+        cols <= (cols == IMG_WIDTH - 1) ? 0 : cols + 1;
+        rows <= (cols == IMG_WIDTH - 1) ? rows + 1 : rows;
         // Check if done
-        processing_done <= (a == IMG_WIDTH - 1) && (b == IMG_HEIGHT - 1);
+        pre_processing_done <= (cols == IMG_WIDTH - 1) && (rows == IMG_HEIGHT - 1);
     end
 end
-
-
-// int m, n;
-// always_ff @(posedge clk) begin
-//     if (reset) begin
-//         m <= 0;
-//         n <= 0;
-//         post_processing_done <= 0;
-//     end else if (POSTPROCESSING && !post_processing_done) begin
-//         all_patches[m][n] <= reg_all_patches[m][n];
-//         // Increment x and y
-//         m <= (m == IMG_WIDTH - 1) ? 0 : m + 1;
-//         n <= (m == IMG_WIDTH - 1) ? ((n == IMG_HEIGHT - 1) ? 0 : n + 1) : n;
-//         // Check if done
-//         post_processing_done <= (m == IMG_WIDTH - 1) && (n == IMG_HEIGHT - 1);
-//     end
-// end
-
-
-
-
-// int post_position_index, post_patch_index;
-// always_ff @(posedge clk) begin
-//     if (reset) begin
-//         post_position_index <= 0;
-//         post_patch_index <= 0;
-//         post_processing_done <= 0;
-//     end else if (POSTPROCESSING && !post_processing_done) begin
-//         all_patches[x][y] <= reg_all_patches[x][y];
-//         // Increment counters
-//         if (post_position_index == PATCH_VECTOR_SIZE - 1) begin
-//             post_position_index <= 0;
-//             post_patch_index <= (post_patch_index == TOTAL_NUM_PATCHES - 1) ? 0 : post_patch_index + 1;
-//             post_processing_done <= (post_patch_index == TOTAL_NUM_PATCHES - 1);
-//         end else begin
-//             post_position_index <= post_position_index + 1;
-//         end
-
-//     end
-// end
 
 
 
@@ -156,12 +95,7 @@ end
 // 	else if (state == IDLE && en) begin
 // 		reg_image_cache <= image_cache;
 // 	end
-// end
-// always_ff @(posedge clk) begin
-// 	 if (state == IDLE && en) begin
-// 		reg_image_cache <= image_cache;
-// 	end
-// end
+
 
 /*
 PATCHIFICATION EXAMPLE:
@@ -191,32 +125,53 @@ PATCHIFICATION EXAMPLE:
     position_index = * = 255
 */
 
-// int i, j;
-// int patch_index, position_index;
-// always_ff @(posedge clk) begin
-//     if (reset) begin
-//         i <= 0;
-//         j <= 0;
-//         processing_done <= 0;
-//     end else if (state == PROCESSING && !processing_done) begin
-//         patch_index <= (i >> PATCH_SIZE_LOG2) * PATCHES_IN_ROW + (j >> PATCH_SIZE_LOG2);
-//         position_index <= (i & (PATCH_SIZE - 1)) * PATCH_SIZE + (j & (PATCH_SIZE - 1));
+int i, j;
+int patch_index, position_index;
+always_ff @(posedge clk) begin
+    if (reset) begin
+        i <= 0;
+        j <= 0;
+        processing_done <= 0;
+    end else if (state == PROCESSING && !processing_done) begin
+        patch_index <= (i >> PATCH_SIZE_LOG2) * PATCHES_IN_ROW + (j >> PATCH_SIZE_LOG2);
+        position_index <= (i & (PATCH_SIZE - 1)) * PATCH_SIZE + (j & (PATCH_SIZE - 1));
 
-//         reg_all_patches[patch_index][position_index] <= reg_image_cache[i][j];
-//         // Increment j, and if it rolls over, increment i
-//         j <= j + 1;
-//         if (j == IMG_HEIGHT - 1) begin
-//             j <= 0;
-//             i <= i + 1;
-//             if (i == IMG_WIDTH - 1)
-//                 processing_done <= 1;
-//         end
-//     end else if (state != PROCESSING) begin
-//         processing_done <= 0; // Reset the flag when not processing
-//     end
-// end
+        reg_all_patches[patch_index][position_index] <= reg_image_cache[i][j];
+        // Increment j, and if it rolls over, increment i
+        j <= j + 1;
+        if (j == IMG_WIDTH - 1) begin
+            j <= 0;
+            i <= i + 1;
+            if (i == IMG_HEIGHT - 1)
+                processing_done <= 1;
+        end
+    end else if (state != PROCESSING) begin
+        processing_done <= 0; // Reset the flag when not processing
+    end
+end
 
 
+
+
+int post_position_index, post_patch_index;
+always_ff @(posedge clk) begin
+    if (reset) begin
+        post_position_index <= 0;
+        post_patch_index <= 0;
+        post_processing_done <= 0;
+    end else if (POSTPROCESSING && !post_processing_done) begin
+        all_patches[post_patch_index][post_position_index] <= reg_all_patches[post_patch_index][post_position_index];
+        // Increment counters
+        if (post_position_index == PATCH_VECTOR_SIZE - 1) begin
+            post_position_index <= 0;
+            post_patch_index <= post_patch_index + 1;
+            post_processing_done <= (post_patch_index == TOTAL_NUM_PATCHES - 1);
+        end else begin
+            post_position_index <= post_position_index + 1;
+        end
+
+    end
+end
 
 // int l,m;
 // always_ff @(posedge clk) begin
@@ -232,11 +187,6 @@ PATCHIFICATION EXAMPLE:
 // 	end
 // end
 
-// always_ff @(posedge clk) begin
-// 	if (state == DONE) begin
-// 		all_patches <= reg_all_patches;
-// 	end
-// end
 
 
 endmodule
