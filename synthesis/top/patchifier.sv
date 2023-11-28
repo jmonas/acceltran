@@ -122,7 +122,7 @@ always_ff @(posedge clk) begin
         patch_index <= (i >> PATCH_SIZE_LOG2) * PATCHES_IN_ROW + (j >> PATCH_SIZE_LOG2);
         position_index <= (i & (PATCH_SIZE - 1)) * PATCH_SIZE + (j & (PATCH_SIZE - 1));
 
-        image_cache[patch_index][position_index] <= image_cache[i][j];
+        all_patches[patch_index][position_index] <= image_cache[i][j];
         // Increment j, and if it rolls over, increment i
         j <= j + 1;
         if (j == IMG_HEIGHT - 1) begin
