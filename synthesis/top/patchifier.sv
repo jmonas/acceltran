@@ -5,47 +5,36 @@ module patchifier
     en, 
     output_taken,
     state,
-    image_cache, 
-    all_patches
+    patch_cache, 
+    vectorized_patch
 );
 
 
 parameter CHANNEL_SIZE = 8;  
 parameter NUM_CHANNELS = 3; // i.e. RGB
 parameter PIXEL_WIDTH = CHANNEL_SIZE * NUM_CHANNELS; 
-
-parameter IMG_WIDTH = 64;
-parameter IMG_HEIGHT = 64;
-
-
-parameter PATCH_SIZE = 16;
-parameter PATCH_SIZE_LOG2 = 4; 
-
-parameter PATCHES_IN_ROW = IMG_WIDTH/PATCH_SIZE;
-
-parameter TOTAL_NUM_PATCHES = (IMG_WIDTH/PATCH_SIZE) * (IMG_HEIGHT/PATCH_SIZE);
+parameter SIZE = 16;
+parameter PATCH_SIZE = $clog2(SIZE);
 parameter PATCH_VECTOR_SIZE = PATCH_SIZE*PATCH_SIZE; 
 
 input clk, reset;
 input en;
 input output_taken;
 
-input [PIXEL_WIDTH-1:0] image_cache [IMG_HEIGHT-1:0][IMG_WIDTH-1:0];
+input [PIXEL_WIDTH-1:0] patch_cache [PATCH_SIZE-1:0][PATCH_SIZE-1:0];
 
-output logic [2:0] state;
+output logic [1:0] state;
 
 // output 1D vector for each patch
-output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
+output logic [PIXEL_WIDTH-1:0] vectorized_patch [PATCH_VECTOR_SIZE-1:0];
 
 
-logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_HEIGHT-1:0][IMG_WIDTH-1:0];
-logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
-logic pre_processing_done; // Flag to indicate processing is done
+logic [PIXEL_WIDTH-1:0] reg_patch_cache [PATCH_SIZE-1:0][PATCH_SIZE-1:0];
+logic [PIXEL_WIDTH-1:0] reg_vectorized_patch [PATCH_VECTOR_SIZE-1:0];
 logic processing_done; // Flag to indicate processing is done
-logic post_processing_done; // Flag to indicate processing is done
 
 // localparam IDLE = 2'b00, PROCESSING = 2'b01, DONE = 2'b10;
-localparam IDLE = 3'b000, PREPROCESSING = 3'b001, PROCESSING = 3'b010, POSTPROCESSING = 3'b011 , DONE = 3'b100;
+localparam IDLE = 3'b000,  PROCESSING = 3'b010, DONE = 3'b100;
 
 
 
@@ -56,45 +45,28 @@ always_ff @(posedge clk) begin
 	end
 	else begin
 		case (state)
-			IDLE: if (en) state <= PREPROCESSING;
-            PREPROCESSING: if (pre_processing_done) state <= PROCESSING;       
-			PROCESSING: if (processing_done) state <= POSTPROCESSING;
-            POSTPROCESSING: if(post_processing_done) state <= DONE;
+			IDLE: if (en) state <= PROCESSING;
+			PROCESSING: if (processing_done) state <= DONE;
 			DONE: if (output_taken) state <= IDLE;
 		endcase
 	end
 end
 
-int rows, cols;
+
+
+int p, q;
 always_ff @(posedge clk) begin
-    if (reset) begin
-        rows <= 0;
-        cols <= 0;
-        pre_processing_done <= 0;
-    end else if (PREPROCESSING && !pre_processing_done) begin
-        reg_image_cache[rows][cols] <= image_cache[rows][cols];
-        // Increment cols and rows
-        cols <= (cols == IMG_WIDTH - 1) ? 0 : cols + 1;
-        rows <= (cols == IMG_WIDTH - 1) ? rows + 1 : rows;
-        // Check if done
-        pre_processing_done <= (cols == IMG_WIDTH - 1) && (rows == IMG_HEIGHT - 1);
+	if (reset || (state == DONE && output_taken)) begin
+		for (p = 0; p < PATCH_SIZE; p++) begin
+			for (q = 0; q < PATCH_SIZE; q++) begin
+				reg_patch_cache[p][q] <= 0;
+			end
+		end	
+	end
+	else if (state == IDLE && en) begin
+		reg_patch_cache <= patch_cache;
     end
 end
-
-
-
-// int p,q;
-// always_ff @(posedge clk) begin
-// 	if (reset || (state == DONE && output_taken)) begin
-// 		for (p = 0; p < TOTAL_NUM_PATCHES; p++) begin
-// 			for (q = 0; q < PATCH_VECTOR_SIZE; q++) begin
-// 				reg_image_cache[p][q] <= 0;
-// 			end
-// 		end	
-// 	end
-// 	else if (state == IDLE && en) begin
-// 		reg_image_cache <= image_cache;
-// 	end
 
 
 /*
@@ -103,11 +75,9 @@ PATCHIFICATION EXAMPLE:
     [ ] = 16x16 patch
 
     [A][B][C][D]
-    [E][F][*][H] < patch_row_index
+    [E][F][*][H] 
     [I][J][K][L]
     [M][N][O][P]
-           ^
-    patch_col_index
 
 
     patch_index = * = G
@@ -115,11 +85,9 @@ PATCHIFICATION EXAMPLE:
     For a given patch:
 
     [ 1, 2, 3, ...15, 16  ]
-    [ 17, 18,  ...31, 32  ] < position_row_index
+    [ 17, 18,  ...31, 32  ]
     [ ....................]
     [ 241, 242, ...*, 256 ]
-                  ^
-            position_col_index
     
 
     position_index = * = 255
@@ -133,16 +101,14 @@ always_ff @(posedge clk) begin
         j <= 0;
         processing_done <= 0;
     end else if (state == PROCESSING && !processing_done) begin
-        patch_index <= (i >> PATCH_SIZE_LOG2) * PATCHES_IN_ROW + (j >> PATCH_SIZE_LOG2);
-        position_index <= (i & (PATCH_SIZE - 1)) * PATCH_SIZE + (j & (PATCH_SIZE - 1));
-
-        reg_all_patches[patch_index][position_index] <= reg_image_cache[i][j];
+        position_index <= i * PATCH_SIZE + j;
+        reg_vectorized_patch[position_index] <= reg_patch_cache[i][j];
         // Increment j, and if it rolls over, increment i
         j <= j + 1;
-        if (j == IMG_WIDTH - 1) begin
+        if (j == PATCH_SIZE - 1) begin
             j <= 0;
             i <= i + 1;
-            if (i == IMG_HEIGHT - 1)
+            if (i == PATCH_SIZE - 1)
                 processing_done <= 1;
         end
     end else if (state != PROCESSING) begin
@@ -151,42 +117,17 @@ always_ff @(posedge clk) begin
 end
 
 
-
-
-int post_position_index, post_patch_index;
+int m;
 always_ff @(posedge clk) begin
-    if (reset) begin
-        post_position_index <= 0;
-        post_patch_index <= 0;
-        post_processing_done <= 0;
-    end else if (POSTPROCESSING && !post_processing_done) begin
-        all_patches[post_patch_index][post_position_index] <= reg_all_patches[post_patch_index][post_position_index];
-        // Increment counters
-        if (post_position_index == PATCH_VECTOR_SIZE - 1) begin
-            post_position_index <= 0;
-            post_patch_index <= post_patch_index + 1;
-            post_processing_done <= (post_patch_index == TOTAL_NUM_PATCHES - 1);
-        end else begin
-            post_position_index <= post_position_index + 1;
-        end
-
-    end
+	if (reset || (state == DONE && output_taken)) begin
+		for (m = 0; m < PATCH_VECTOR_SIZE; m++) begin
+				vectorized_patch[m] <= {PIXEL_WIDTH{1'b0}};
+		end
+	end
+	else if (state == DONE) begin
+		vectorized_patch <= reg_vectorized_patch;
+	end
 end
-
-// int l,m;
-// always_ff @(posedge clk) begin
-// 	if (reset || (state == DONE && output_taken)) begin
-// 		for (l = 0; l < TOTAL_NUM_PATCHES; l++) begin
-// 			for (m = 0; m < PATCH_VECTOR_SIZE; m++) begin
-// 				all_patches[l][m] <= 0;
-// 			end
-// 		end	
-// 	end
-// 	else if (state == DONE) begin
-// 		all_patches <= reg_all_patches;
-// 	end
-// end
-
 
 
 endmodule
