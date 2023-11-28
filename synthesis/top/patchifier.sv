@@ -14,12 +14,12 @@ parameter CHANNEL_SIZE = 8;
 parameter NUM_CHANNELS = 3; // i.e. RGB
 parameter PIXEL_WIDTH = CHANNEL_SIZE * NUM_CHANNELS; 
 
-parameter IMG_WIDTH = 16;
-parameter IMG_HEIGHT = 16;
+parameter IMG_WIDTH = 4;
+parameter IMG_HEIGHT = 4;
 
 
-parameter PATCH_SIZE = 4;
-parameter PATCH_SIZE_LOG2 = 2; 
+parameter PATCH_SIZE = 2;
+parameter PATCH_SIZE_LOG2 = 1; 
 
 parameter PATCHES_IN_ROW = IMG_WIDTH/PATCH_SIZE;
 
