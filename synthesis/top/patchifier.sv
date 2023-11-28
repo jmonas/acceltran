@@ -93,7 +93,7 @@ always_ff @(posedge clk) begin
         b <= 0;
         processing_done <= 0;
     end else if (PROCESSING && !processing_done) begin
-        all_patches[a][b] <= image_cache[a][b]+1;
+        all_patches[a][b] <= image_cache[a][b];
         // Increment x and y
         a <= (a == IMG_WIDTH - 1) ? 0 : a + 1;
         b <= (a == IMG_WIDTH - 1) ? ((b == IMG_HEIGHT - 1) ? 0 : b + 1) : b;
