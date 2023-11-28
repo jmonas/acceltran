@@ -14,12 +14,12 @@ parameter CHANNEL_SIZE = 8;
 parameter NUM_CHANNELS = 3; // i.e. RGB
 parameter PIXEL_WIDTH = CHANNEL_SIZE * NUM_CHANNELS; 
 
-parameter IMG_WIDTH = 64;
-parameter IMG_HEIGHT = 64;
+parameter IMG_WIDTH = 16;
+parameter IMG_HEIGHT = 16;
 
 
-parameter PATCH_SIZE = 16;
-parameter PATCH_SIZE_LOG2 = 4; 
+parameter PATCH_SIZE = 4;
+parameter PATCH_SIZE_LOG2 = 2; 
 
 parameter PATCHES_IN_ROW = IMG_WIDTH/PATCH_SIZE;
 
@@ -32,17 +32,20 @@ input output_taken;
 
 input [PIXEL_WIDTH-1:0] image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
 
-output logic [1:0] state;
+output logic [2:0] state;
 
 // output 1D vector for each patch
 output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
 
 
-// logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
-// logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
+logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
+logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
+logic pre_processing_done; // Flag to indicate processing is done
 logic processing_done; // Flag to indicate processing is done
+logic post_processing_done; // Flag to indicate processing is done
 
-localparam IDLE = 2'b00, PROCESSING = 2'b01, DONE = 2'b10;
+// localparam IDLE = 2'b00, PROCESSING = 2'b01, DONE = 2'b10;
+localparam IDLE = 2'b000, PREPROCESSING = 2'b001, PROCESSING = 2'b010, POSTPROCESSING = 2'b011 , DONE = 2'b100;
 
 
 
@@ -53,13 +56,50 @@ always_ff @(posedge clk) begin
 	end
 	else begin
 		case (state)
-			IDLE: if (en) begin 
-                state <= PROCESSING;
-            end
-			PROCESSING: if (processing_done) state <= DONE;
+			IDLE: if (en) state <= PREPROCESSING;
+            PREPROCESSING: if (pre_processing_done) state <= PROCESSING;       
+			PROCESSING: if (processing_done) state <= POSTPROCESSING;
+            POSTPROCESSING: if(post_processing_done) state <= DONE;
 			DONE: if (output_taken) state <= IDLE;
 		endcase
 	end
+end
+
+int x, y;
+always_ff @(posedge clk) begin
+    if (reset) begin
+        x <= 0;
+        y <= 0;
+        pre_processing_done <= 0;
+    end else if (PREPROCESSING && !pre_processing_done) begin
+        reg_image_cache[x][y] <= image_cache[x][y];
+        // Increment x and y
+        x <= (x == IMG_WIDTH - 1) ? 0 : x + 1;
+        y <= (x == IMG_WIDTH - 1) ? ((y == IMG_HEIGHT - 1) ? 0 : y + 1) : y;
+        // Check if done
+        pre_processing_done <= (x == IMG_WIDTH - 1) && (y == IMG_HEIGHT - 1);
+    end
+end
+
+
+int post_position_index, post_patch_index;
+always_ff @(posedge clk) begin
+    if (reset) begin
+        post_position_index <= 0;
+        post_patch_index <= 0;
+        post_processing_done <= 0;
+    end else if (POSTPROCESSING && !post_processing_done) begin
+        all_patches[x][y] <= reg_all_patches[x][y];
+        // Increment counters
+        if (post_position_index == PATCH_VECTOR_SIZE - 1) begin
+            post_position_index <= 0;
+            post_patch_index <= (post_patch_index == TOTAL_NUM_PATCHES - 1) ? 0 : post_patch_index + 1;
+            post_processing_done <= (post_patch_index == TOTAL_NUM_PATCHES - 1);
+        end else begin
+            post_position_index <= post_position_index + 1;
+        end
+
+    end
 end
 
 
@@ -122,7 +162,7 @@ always_ff @(posedge clk) begin
         patch_index <= (i >> PATCH_SIZE_LOG2) * PATCHES_IN_ROW + (j >> PATCH_SIZE_LOG2);
         position_index <= (i & (PATCH_SIZE - 1)) * PATCH_SIZE + (j & (PATCH_SIZE - 1));
 
-        all_patches[patch_index][position_index] <= image_cache[i][j];
+        reg_all_patches[patch_index][position_index] <= reg_image_cache[i][j];
         // Increment j, and if it rolls over, increment i
         j <= j + 1;
         if (j == IMG_HEIGHT - 1) begin
