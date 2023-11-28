@@ -77,11 +77,11 @@ end
 // 		reg_image_cache <= image_cache;
 // 	end
 // end
-always_ff @(posedge clk) begin
-	 if (state == IDLE && en) begin
-		reg_image_cache <= image_cache;
-	end
-end
+// always_ff @(posedge clk) begin
+// 	 if (state == IDLE && en) begin
+// 		reg_image_cache <= image_cache;
+// 	end
+// end
 
 /*
 PATCHIFICATION EXAMPLE:
@@ -152,11 +152,11 @@ end
 // 	end
 // end
 
-always_ff @(posedge clk) begin
-	if (state == DONE) begin
-		all_patches <= reg_all_patches;
-	end
-end
+// always_ff @(posedge clk) begin
+// 	if (state == DONE) begin
+// 		all_patches <= reg_all_patches;
+// 	end
+// end
 
 
 endmodule
