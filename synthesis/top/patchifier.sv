@@ -63,16 +63,21 @@ end
 
 
 
-int p,q;
+// int p,q;
+// always_ff @(posedge clk) begin
+// 	if (reset || (state == DONE && output_taken)) begin
+// 		for (p = 0; p < TOTAL_NUM_PATCHES; p++) begin
+// 			for (q = 0; q < PATCH_VECTOR_SIZE; q++) begin
+// 				reg_image_cache[p][q] <= 0;
+// 			end
+// 		end	
+// 	end
+// 	else if (state == IDLE && en) begin
+// 		reg_image_cache <= image_cache;
+// 	end
+// end
 always_ff @(posedge clk) begin
-	if (reset || (state == DONE && output_taken)) begin
-		for (p = 0; p < TOTAL_NUM_PATCHES; p++) begin
-			for (q = 0; q < PATCH_VECTOR_SIZE; q++) begin
-				reg_image_cache[p][q] <= 0;
-			end
-		end	
-	end
-	else if (state == IDLE && en) begin
+	 if (state == IDLE && en) begin
 		reg_image_cache <= image_cache;
 	end
 end
@@ -132,16 +137,22 @@ end
 
 
 
-int l,m;
+// int l,m;
+// always_ff @(posedge clk) begin
+// 	if (reset || (state == DONE && output_taken)) begin
+// 		for (l = 0; l < TOTAL_NUM_PATCHES; l++) begin
+// 			for (m = 0; m < PATCH_VECTOR_SIZE; m++) begin
+// 				all_patches[l][m] <= 0;
+// 			end
+// 		end	
+// 	end
+// 	else if (state == DONE) begin
+// 		all_patches <= reg_all_patches;
+// 	end
+// end
+
 always_ff @(posedge clk) begin
-	if (reset || (state == DONE && output_taken)) begin
-		for (l = 0; l < TOTAL_NUM_PATCHES; l++) begin
-			for (m = 0; m < PATCH_VECTOR_SIZE; m++) begin
-				all_patches[l][m] <= 0;
-			end
-		end	
-	end
-	else if (state == DONE) begin
+	if (state == DONE) begin
 		all_patches <= reg_all_patches;
 	end
 end
