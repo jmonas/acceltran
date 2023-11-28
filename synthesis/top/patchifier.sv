@@ -19,7 +19,7 @@ parameter IMG_HEIGHT = 64;
 
 
 parameter PATCH_SIZE = 16;
-parameter PATCH_SIZE_LOG2 = $clog2(PATCH_SIZE); 
+parameter PATCH_SIZE_LOG2 = 4; 
 
 parameter PATCHES_IN_ROW = IMG_WIDTH/PATCH_SIZE;
 
@@ -40,12 +40,12 @@ output logic [PIXEL_WIDTH-1:0] all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_
 
 logic [PIXEL_WIDTH-1:0] reg_image_cache [IMG_WIDTH-1:0][IMG_HEIGHT-1:0];
 logic [PIXEL_WIDTH-1:0] reg_all_patches [TOTAL_NUM_PATCHES-1:0][PATCH_VECTOR_SIZE-1:0];
-
+logic start_processing = 0; // Flag to start processing
+logic processing_done = 0; // Flag to indicate processing is done
 
 localparam IDLE = 2'b00, PROCESSING = 2'b01, DONE = 2'b10;
 
-reg start_processing = 0; // Flag to start processing
-reg processing_done = 0; // Flag to indicate processing is done
+
 
 // State Management Block
 always_ff @(posedge clk) begin
