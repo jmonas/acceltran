@@ -92,7 +92,7 @@ always_ff @(posedge clk) begin
         a <= 0;
         b <= 0;
         processing_done <= 0;
-    end else if (PREPROCESSING && !pre_processing_done) begin
+    end else if (PROCESSING && !processing_done) begin
         reg_all_patches[a][b] <= reg_image_cache[a][b]+1;
         // Increment x and y
         a <= (a == IMG_WIDTH - 1) ? 0 : a + 1;
@@ -109,7 +109,7 @@ always_ff @(posedge clk) begin
         m <= 0;
         n <= 0;
         post_processing_done <= 0;
-    end else if (PREPROCESSING && !pre_processing_done) begin
+    end else if (POSTPROCESSING && !post_processing_done) begin
         all_patches[m][n] <= reg_all_patches[m][n];
         // Increment x and y
         m <= (m == IMG_WIDTH - 1) ? 0 : m + 1;
