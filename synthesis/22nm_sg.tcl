@@ -31,7 +31,7 @@ set rpt_path [concat $rpt_path/$top_module]
 # Read RTL files
 #******************************************************************************
 
-analyze -library work_sg -format sv {FIFO.sv ReLU.sv filter.sv im2col_cpu_add_32dEe.v im2col_cpu_sdiv_3fYi.v max_pooling.sv pooling.sv sqrt_mul.sv update_output.sv L1.sv add.sv forward.sv im2col_cpu_add_32g8j.v im2col_cpu_sub_32eOg.v mean.sv post_sparsity.sv stochastic_rounding.sv L2.sv adder_tree.sv im2col_cpu.v im2col_cpu_data_col.v loss.sv mean_pooling.sv scalar.sv LFSR.sv backward.sv im2col_cpu_add_31hbi.v mac_lane.sv min_pooling.sv shifter.sv transposer.sv PE.sv dataflow.sv im2col_cpu_add_32bkb.v im2col_cpu_mul_32cud.v mask.sv mul.sv sparsity.sv update_mask.sv top.sv} 
+analyze -library work_sg -format sv sv {patchifier.sv FIFO.sv ReLU.sv SiLU.sv softmax.sv layer_mean.sv ln_forward.sv sqrt_mul.sv update_output.sv L1.sv add.sv post_sparsity.sv stochastic_rounding.sv L2.sv adder_tree.sv loss.sv scalar.sv LFSR.sv mac_lane.sv min_pooling.sv shifter.sv transposer.sv dataflow.sv mask.sv mul.sv sparsity.sv update_mask.sv} 
 #-define FPGA_SYN
 #elaborate $top_module -architecture RTL -library work_asg_338K 
 elaborate $top_module -library work_sg
