@@ -45,7 +45,7 @@ logic processing_done; // Flag to indicate processing is done
 logic post_processing_done; // Flag to indicate processing is done
 
 // localparam IDLE = 2'b00, PROCESSING = 2'b01, DONE = 2'b10;
-localparam IDLE = 2'b000, PREPROCESSING = 2'b001, PROCESSING = 2'b010, POSTPROCESSING = 2'b011 , DONE = 2'b100;
+localparam IDLE = 3'b000, PREPROCESSING = 3'b001, PROCESSING = 3'b010, POSTPROCESSING = 3'b011 , DONE = 3'b100;
 
 
 
