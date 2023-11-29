@@ -33,7 +33,7 @@ logic [PIXEL_WIDTH-1:0] reg_vectorized_patch [PATCH_VECTOR_SIZE-1:0];
 logic processing_done; // Flag to indicate processing is done
 
 // localparam IDLE = 2'b00, PROCESSING = 2'b01, DONE = 2'b10;
-localparam IDLE = 2'b00,  PROCESSING = 2'b10, DONE = 2'b11;
+localparam IDLE = 2'b00,  PROCESSING = 2'b01, DONE = 2'b10;
 
 
 
