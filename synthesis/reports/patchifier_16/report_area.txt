@@ -1,0 +1,32 @@
+ 
+****************************************
+Report : area
+Design : patchifier_16
+Version: I-2013.12-SP4
+Date   : Wed Nov 29 04:52:27 2023
+****************************************
+
+Information: Updating design information... (UID-85)
+Warning: Design 'patchifier_16' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+Library(s) Used:
+
+    14nm_sg_345K_maxfan4_wire (File: /u/jmonas/acceltran/synthesis/library/14nm_sg_345K.db)
+
+Number of ports:                        12294
+Number of nets:                        118200
+Number of cells:                       112052
+Number of combinational cells:          93521
+Number of sequential cells:             18531
+Number of macros/black boxes:               0
+Number of buf/inv:                      23205
+Number of references:                       6
+
+Combinational area:               9822.990551
+Buf/Inv area:                     1719.212034
+Noncombinational area:           11898.680661
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (Wire load has zero net area)
+
+Total cell area:                 21721.671212
+Total area:                 undefined
+1

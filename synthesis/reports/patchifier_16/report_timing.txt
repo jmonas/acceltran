@@ -1,0 +1,120 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : patchifier_16
+Version: I-2013.12-SP4
+Date   : Wed Nov 29 04:52:35 2023
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: TYPICAL   Library: 14nm_sg_345K_maxfan4_wire
+Wire Load Model Mode: top
+
+  Startpoint: i_reg[1] (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: reg_vectorized_patch_reg[156][10]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  patchifier_16      1K                    14nm_sg_345K_maxfan4_wire
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  i_reg[1]/CP (dff_sg)                                    0.00 #     0.00 r
+  i_reg[1]/Q (dff_sg)                                    34.00      34.00 f
+  U174222/X (inv_x1_sg)                                  22.27      56.27 r
+  U174221/X (inv_x1_sg)                                  24.57      80.85 f
+  U174002/X (nor_x1_sg)                                  18.99      99.84 r
+  U174841/X (nand_x1_sg)                                 39.99     139.83 f
+  U158898/X (inv_x1_sg)                                  27.97     167.80 r
+  U171266/X (inv_x1_sg)                                  33.31     201.11 f
+  U171117/X (inv_x1_sg)                                  26.12     227.23 r
+  U173516/X (inv_x1_sg)                                  33.09     260.33 f
+  U153091/X (inv_x1_sg)                                  26.08     286.41 r
+  U161083/X (inv_x1_sg)                                  24.69     311.10 f
+  U161085/X (inv_x1_sg)                                  24.25     335.35 r
+  U173633/X (inv_x1_sg)                                  32.90     368.25 f
+  U172772/X (inv_x1_sg)                                  26.06     394.31 r
+  U171263/X (inv_x1_sg)                                  33.09     427.40 f
+  U170988/X (inv_x1_sg)                                  26.08     453.48 r
+  U152861/X (inv_x1_sg)                                   9.09     462.56 f
+  U152862/X (inv_x1_sg)                                  12.12     474.68 r
+  U171941/X (inv_x1_sg)                                  34.22     508.90 f
+  U122348/X (nor_x1_sg)                                  16.46     525.36 r
+  U122346/X (nor_x1_sg)                                  12.07     537.43 f
+  U94833/X (nand_x2_sg)                                  12.76     550.19 r
+  U122341/X (nor_x1_sg)                                  11.39     561.58 f
+  U94832/X (nand_x2_sg)                                   6.70     568.28 r
+  U94831/X (nand_x2_sg)                                  10.26     578.54 f
+  U122340/X (nor_x1_sg)                                  12.20     590.74 r
+  U122339/X (nor_x1_sg)                                   7.33     598.07 f
+  U94817/X (nand_x2_sg)                                   8.99     607.07 r
+  U94790/X (nand_x2_sg)                                   6.59     613.66 f
+  U174106/X (nand_x2_sg)                                  6.12     619.78 r
+  U152558/X (nand_x2_sg)                                 21.67     641.46 f
+  U153153/X (inv_x1_sg)                                  23.86     665.31 r
+  U170614/X (inv_x1_sg)                                  16.56     681.87 f
+  U165386/X (inv_x1_sg)                                  22.60     704.48 r
+  U155437/X (inv_x1_sg)                                   8.80     713.28 f
+  U155438/X (inv_x1_sg)                                  21.23     734.51 r
+  U152799/X (inv_x1_sg)                                  16.36     750.87 f
+  U165379/X (inv_x1_sg)                                  22.56     773.43 r
+  U155441/X (inv_x1_sg)                                   8.80     782.23 f
+  U155442/X (inv_x1_sg)                                  21.23     803.46 r
+  U164744/X (inv_x1_sg)                                  13.71     817.18 f
+  U182376/X (nand_x1_sg)                                 10.16     827.34 r
+  U140871/X (nand_x1_sg)                                  6.68     834.02 f
+  reg_vectorized_patch_reg[156][10]/D (dff_sg)            0.00     834.02 f
+  data arrival time                                                834.02
+
+  clock clk (rise edge)                                1429.00    1429.00
+  clock network delay (ideal)                             0.00    1429.00
+  clock uncertainty                                     -50.00    1379.00
+  reg_vectorized_patch_reg[156][10]/CP (dff_sg)           0.00    1379.00 r
+  library setup time                                     -3.05    1375.95
+  data required time                                              1375.95
+  --------------------------------------------------------------------------
+  data required time                                              1375.95
+  data arrival time                                               -834.02
+  --------------------------------------------------------------------------
+  slack (MET)                                                      541.93
+
+
+  Startpoint: state_reg[0]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: state[0] (output port)
+  Path Group: default
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  patchifier_16      1K                    14nm_sg_345K_maxfan4_wire
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  state_reg[0]/CP (dff_sg)                 0.00 #     0.00 r
+  state_reg[0]/Q (dff_sg)                 27.23      27.23 f
+  U171759/X (inv_x1_sg)                   21.11      48.35 r
+  U155744/X (inv_x1_sg)                   25.33      73.67 f
+  state[0] (out)                           0.00      73.68 f
+  data arrival time                                  73.68
+
+  max_delay                             1429.00    1429.00
+  output external delay                    0.00    1429.00
+  data required time                               1429.00
+  -----------------------------------------------------------
+  data required time                               1429.00
+  data arrival time                                 -73.68
+  -----------------------------------------------------------
+  slack (MET)                                      1355.32
+
+
+1

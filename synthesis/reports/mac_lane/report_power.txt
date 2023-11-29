@@ -1,19 +1,20 @@
 Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
 Warning: Design has unannotated primary inputs. (PWR-414)
 Warning: Design has unannotated sequential cell outputs. (PWR-415)
+Warning: Design has unannotated black box outputs. (PWR-428)
  
 ****************************************
 Report : power
         -analysis_effort low
 Design : mac_lane
 Version: I-2013.12-SP4
-Date   : Sat Jan  8 01:58:44 2022
+Date   : Wed Nov 22 14:49:17 2023
 ****************************************
 
 
 Library(s) Used:
 
-    14nm_sg_345K_maxfan4_wire (File: /u/chli/tools/Fisher/accelerator/Synthesis/library/14nm_sg_345K.db)
+    14nm_sg_345K_maxfan4_wire (File: /u/jmonas/acceltran/synthesis/library/14nm_sg_345K.db)
 
 
 Operating Conditions: TYPICAL   Library: 14nm_sg_345K_maxfan4_wire
@@ -33,12 +34,12 @@ Power-specific unit information :
     Leakage Power Units = 1nW
 
 
-  Cell Internal Power  =   3.2829 mW   (63%)
-  Net Switching Power  =   1.9126 mW   (37%)
+  Cell Internal Power  =   2.6885 mW   (59%)
+  Net Switching Power  =   1.8994 mW   (41%)
                          ---------
-Total Dynamic Power    =   5.1955 mW  (100%)
+Total Dynamic Power    =   4.5879 mW  (100%)
 
-Cell Leakage Power     = 318.9685 uW
+Cell Leakage Power     = 282.8817 uW
 
 
                  Internal         Switching           Leakage            Total
@@ -47,10 +48,10 @@ Power Group      Power            Power               Power              Power  
 io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
-clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
-register           0.1826        4.6234e-02        2.1165e+04            0.2500  (   4.53%)
-sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
-combinational      3.1004            1.8664        2.9780e+05            5.2645  (  95.47%)
+clock_network  8.4077e-02            0.3376        6.0195e+03            0.4277  (   8.78%)
+register       8.3768e-02        1.1789e-02        2.0912e+04            0.1165  (   2.39%)
+sequential         0.0000        2.0154e-04            0.0000        2.0154e-04  (   0.00%)
+combinational      2.5206            1.5499        2.5595e+05            4.3264  (  88.82%)
 --------------------------------------------------------------------------------------------------
-Total              3.2829 mW         1.9126 mW     3.1897e+05 nW         5.5145 mW
+Total              2.6885 mW         1.8994 mW     2.8288e+05 nW         4.8708 mW
 1

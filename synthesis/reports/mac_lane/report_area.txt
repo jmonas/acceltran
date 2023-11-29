@@ -1,32 +1,36 @@
+Warning: Design 'mac_lane' has '2' unresolved references. For more detailed information, use the "link" command. (UID-341)
  
 ****************************************
 Report : area
 Design : mac_lane
 Version: I-2013.12-SP4
-Date   : Sat Jan  8 01:58:40 2022
+Date   : Wed Nov 22 14:49:13 2023
 ****************************************
 
 Information: Updating design information... (UID-85)
-Warning: Design 'mac_lane' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+Warning: Design 'mac_lane' contains 2 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
 Library(s) Used:
 
-    14nm_sg_345K_maxfan4_wire (File: /u/chli/tools/Fisher/accelerator/Synthesis/library/14nm_sg_345K.db)
+    14nm_sg_345K_maxfan4_wire (File: /u/jmonas/acceltran/synthesis/library/14nm_sg_345K.db)
 
 Number of ports:                          663
-Number of nets:                         83890
-Number of cells:                        83247
-Number of combinational cells:          81867
-Number of sequential cells:              1380
+Number of nets:                         74360
+Number of cells:                        73498
+Number of combinational cells:          72093
+Number of sequential cells:              1405
 Number of macros/black boxes:               0
-Number of buf/inv:                      23406
-Number of references:                      11
+Number of buf/inv:                      21458
+Number of references:                      16
 
-Combinational area:               8532.575135
-Buf/Inv area:                     1783.866164
-Noncombinational area:             886.092457
+Combinational area:               7520.030885
+Buf/Inv area:                     1676.051659
+Noncombinational area:             875.818921
 Macro/Black Box area:                0.000000
 Net Interconnect area:      undefined  (Wire load has zero net area)
 
-Total cell area:                  9418.667591
+Total cell area:                  8395.849806
 Total area:                 undefined
+
+Information: This design contains unmapped logic. (RPT-7)
+Information: This design contains black box (unknown) components. (RPT-8)
 1

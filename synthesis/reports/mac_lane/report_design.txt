@@ -1,20 +1,21 @@
+Warning: Design 'mac_lane' has '2' unresolved references. For more detailed information, use the "link" command. (UID-341)
  
 ****************************************
 Report : design
 Design : mac_lane
 Version: I-2013.12-SP4
-Date   : Sat Jan  8 01:58:46 2022
+Date   : Wed Nov 22 14:49:17 2023
 ****************************************
 
 Design allows ideal nets on clock nets.
 
 Library(s) Used:
 
-    14nm_sg_345K_maxfan4_wire (File: /u/chli/tools/Fisher/accelerator/Synthesis/library/14nm_sg_345K.db)
+    14nm_sg_345K_maxfan4_wire (File: /u/jmonas/acceltran/synthesis/library/14nm_sg_345K.db)
 
 Local Link Library:
 
-    {/u/chli/tools/Fisher/accelerator/Synthesis/library/14nm_sg_345K.db}
+    {./library/14nm_sg_345K.db}
 
 Flip-Flop Types:
 
@@ -83,4 +84,7 @@ Required Licenses:
 Design Parameters:
 
     None specified.
+
+Information: This design contains unmapped logic. (RPT-7)
+Information: This design contains black box (unknown) components. (RPT-8)
 1
