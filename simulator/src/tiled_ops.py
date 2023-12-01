@@ -80,7 +80,7 @@ class MatrixMultTiledOp(TiledOp):
 		"""Check if input matrices can be multiplied
 		
 		Raises:
-		    ValueError: if input matrices can't be multiplied
+			ValueError: if input matrices can't be multiplied
 		"""
 		if self.input_1_size[0] != self.input_2_size[0] or self.input_1_size[2] != self.input_2_size[1]:
 			raise ValueError(f'Input matrices of sizes: {self.input_1_size} and {self.input_2_size} can\'t be multiplied')
@@ -89,9 +89,35 @@ class MatrixMultTiledOp(TiledOp):
 		"""Get the size of the output matrix
 		
 		Returns:
-		    output_size (tuple): size of the output matrix
+			output_size (tuple): size of the output matrix
 		"""
 		return (self.input_1_size[0], self.input_1_size[1], self.input_2_size[2])
+
+
+
+class PatchifyTiledOp(TiledOp):
+	"""Patchify tiled operation
+	
+	Attributes:
+		patch_size (tuple): Size of the input patch.
+		compute_op (bool): If the operation is a compute operation.
+		required_in_buffer (list): List of data object names required in buffer.
+	"""
+
+	def __init__(self, op_name, required_in_buffer, patch_size_x_y):
+		TiledOp.__init__(self, op_name)
+		self.required_in_buffer = required_in_buffer
+		self.patch_size_x_y = patch_size_x_y  # Size of the input patch (e.g., 16x16)
+		self.compute_op = True
+
+	def output_size(self):
+		"""Get the size of the output vector
+		
+		Returns:
+			output_size (tuple): size of the output vector
+		"""
+		return self.patch_size_x_y[0] * self.patch_size_x_y[1]
+
 
 
 class Conv1DTiledOp(TiledOp):
