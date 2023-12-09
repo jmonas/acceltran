@@ -822,8 +822,8 @@ class ImagePatchify(Op):
 	def convert_to_fwd_base_ops(self):
 		"""Convert operation to forward base operations"""
 		self.fwd_base_ops = []
-		for _ in self.patch_rows:
-			for _ in self.patch_cols:
+		for _ in range(self.patch_rows):
+			for _ in range(self.patch_cols):
 				self.fwd_base_ops.append(PatchifyOp(f'{self.op_name}_p', self.config, [], self.patch_size))
 
 	def tile_op(self, tile_memory_ops=False):
