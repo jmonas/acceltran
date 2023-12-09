@@ -341,7 +341,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 
 
 	print(len(compute_ops))
-	assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
+	# assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
 	memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
 
 	# Get operation batch sizes
