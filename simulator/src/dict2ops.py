@@ -175,11 +175,6 @@ def main(model_dict: dict, config: dict, mode='inference', tile_compute_ops=Fals
 	bwd_memory_ops, bwd_compute_ops, bwd_num_ops = get_tiled_ops(bwd_ops, direction='bwd', tile_compute_ops=tile_compute_ops, tile_memory_ops=tile_memory_ops, debug=debug)
 
 	memory_ops.extend(fwd_memory_ops); memory_ops.extend(bwd_memory_ops)
-
-	print("yo")
-	print(type(fwd_compute_ops))
-	print(type(bwd_compute_ops))
-
 	compute_ops.extend(fwd_compute_ops); compute_ops.extend(bwd_compute_ops)
 
 	if mode == 'inference':
