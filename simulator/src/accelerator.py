@@ -190,7 +190,7 @@ class Accelerator(object):
 						height_ratios=height_ratios, subplot_spec=pe)
 				else:
 					height_ratios = [1, 1, 1] if self.config['lanes_per_pe'] < 8 else [2, 1, 1]
-					mac_lanes_spec, sftm_spec, ln_spec, patchifier_spec = gridspec.GridSpecFromSubplotSpec(3, 1, wspace=0, hspace=0, 
+					mac_lanes_spec, sftm_spec, ln_spec = gridspec.GridSpecFromSubplotSpec(3, 1, wspace=0, hspace=0, 
 						height_ratios=height_ratios, subplot_spec=pe)
 				
 				mac_lane_size = (1, len(self.pes[pe_count].mac_lanes)) if self.config['lanes_per_pe'] < 8 else (2, len(self.pes[pe_count].mac_lanes)//2)
