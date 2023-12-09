@@ -32,7 +32,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
 			# Load weights for projecting image patches to embeddings and adding positional embeddings
 			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES + 1), model_dict['h'][0]), 'weight'))
-
+			if debug: print(f'Added operation with name: {op_name}')
 
 	for layer in range(model_dict['l'] if not first_layer_only else 1):
 		layer_hidden_size = model_dict['h'][layer]
@@ -176,6 +176,11 @@ def main(model_dict: dict, config: dict, mode='inference', tile_compute_ops=Fals
 	bwd_memory_ops, bwd_compute_ops, bwd_num_ops = get_tiled_ops(bwd_ops, direction='bwd', tile_compute_ops=tile_compute_ops, tile_memory_ops=tile_memory_ops, debug=debug)
 
 	memory_ops.extend(fwd_memory_ops); memory_ops.extend(bwd_memory_ops)
+
+	print("yo")
+	print(type(fwd_compute_ops))
+	print(type(bwd_compute_ops))
+
 	compute_ops.extend(fwd_compute_ops); compute_ops.extend(bwd_compute_ops)
 
 	if mode == 'inference':
