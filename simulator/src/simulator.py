@@ -229,7 +229,8 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 		logs['weight_buffer_energy'].append((weight_buffer_energy[0] / cycle_difference, weight_buffer_energy[1] / cycle_difference))
 		logs['mask_buffer_energy'].append((mask_buffer_energy[0] / cycle_difference, mask_buffer_energy[1] / cycle_difference))
 
-		mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
+		if transformer_type == "language":
+			mac_lane_utilization, ln_utilization, sftm_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
 
 		logs['activation_buffer_utilization'].append(activation_buffer_utilization)
 		logs['weight_buffer_utilization'].append(weight_buffer_utilization)
@@ -237,7 +238,8 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 		logs['mac_lane_utilization'].append(mac_lane_utilization)
 		logs['ln_utilization'].append(ln_utilization)
 		logs['sftm_utilization'].append(sftm_utilization)
-		logs['patchifier_utilization'].append(patchifier_utilization)
+		if transformer_type == "language":
+			logs['patchifier_utilization'].append(patchifier_utilization)
 
 		logs['stalls'].append(stalls)
 
