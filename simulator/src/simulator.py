@@ -335,14 +335,16 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 	print(f'{color.GREEN}Accelerator area: {accelerator.area / 1e6 : 0.03f} mm\u00b2{color.ENDC}')
 	
 	# Get tiled ops from model dictionary
-	print("hi")
-	print(transformer_type)
+
 	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=config['scheduler']['compute_ops']['tiled'], tile_memory_ops=config['scheduler']['memory_ops']['tiled'], first_layer_only=first_layer_only, debug=debug, transformer_type = transformer_type)
 
 
 	print(len(compute_ops))
-	# assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
-	memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
+	assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
+	if transformer_type == "language":
+		memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
+	else:
+		memory_op_idx, compute_op_idx, ops_done = [0, []], [0, []], 0
 
 	# Get operation batch sizes
 	compute_ops_batch_size = config['scheduler']['compute_ops']['batch_size']
