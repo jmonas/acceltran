@@ -97,7 +97,7 @@ if __name__ == '__main__':
 		dest='transformer_type',
 		type=str,
 		help='language, vision, multi-modal',
-		action='store_true')
+		)
 
 	parser.set_defaults(debug=DEBUG, fast=False, plot_utilization=True, first_layer_only=False, transformer_type = "language")
 
