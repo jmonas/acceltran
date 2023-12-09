@@ -198,16 +198,18 @@ def get_ops_done(memory_ops, compute_ops):
 	return ops_done
 
 
-def get_utilization(accelerator):
+def get_utilization(accelerator, transformer_type):
 	num_mac_lanes_free, num_mac_lanes = accelerator.num_mac_lanes_free()
 	num_ln_free, num_ln = accelerator.num_ln_free()
 	num_sftm_free, num_sftm = accelerator.num_sftm_free()
+	if transformer_type =="language":
+		return (num_mac_lanes - num_mac_lanes_free) * 1.0 / num_mac_lanes, (num_ln - num_ln_free) * 1.0 / num_ln, (num_sftm - num_sftm_free) * 1.0 / num_sftm, accelerator.activation_buffer.used * 1.0 / accelerator.activation_buffer.buffer_size, accelerator.weight_buffer.used * 1.0 / accelerator.weight_buffer.buffer_size, accelerator.mask_buffer.used * 1.0 / accelerator.mask_buffer.buffer_size
+	
 	num_patchifier_free, num_patchifier = accelerator.num_patchifier_free()
-
 	return (num_mac_lanes - num_mac_lanes_free) * 1.0 / num_mac_lanes, (num_ln - num_ln_free) * 1.0 / num_ln, (num_sftm - num_sftm_free) * 1.0 / num_sftm, (num_patchifier - num_patchifier_free) * 1.0 / num_patchifier, accelerator.activation_buffer.used * 1.0 / accelerator.activation_buffer.buffer_size, accelerator.weight_buffer.used * 1.0 / accelerator.weight_buffer.buffer_size, accelerator.mask_buffer.used * 1.0 / accelerator.mask_buffer.buffer_size
 
 
-def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps):
+def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type):
 	"""Log energy values for every cycle"""
 	if 'cycle' in logs:
 		last_cycle = logs['cycle'][-1]
@@ -227,7 +229,7 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 		logs['weight_buffer_energy'].append((weight_buffer_energy[0] / cycle_difference, weight_buffer_energy[1] / cycle_difference))
 		logs['mask_buffer_energy'].append((mask_buffer_energy[0] / cycle_difference, mask_buffer_energy[1] / cycle_difference))
 
-		mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator)
+		mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
 
 		logs['activation_buffer_utilization'].append(activation_buffer_utilization)
 		logs['weight_buffer_utilization'].append(weight_buffer_utilization)
@@ -500,10 +502,10 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 		stalls = [stalls[i] + new_stalls[i] for i in range(7)]
 
 		# Log energy values for each cycle 
-		if DO_LOGGING: logs = log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps)
+		if DO_LOGGING: logs = log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type)
 
 		if debug:
-			mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator)
+			mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
 
 			tqdm.write(f'Activation Buffer used: {activation_buffer_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Weight Buffer used: {weight_buffer_utilization * 100.0 : 0.3f}%')
@@ -534,7 +536,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 
 				stalls = [stalls[i] + (new_stalls[i] * min_cycles) for i in range(7)]
 
-				if DO_LOGGING: logs = log_metrics(logs, (0, 0), activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps)
+				if DO_LOGGING: logs = log_metrics(logs, (0, 0), activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type)
 				continue
 
 		memory_op_idx, ops_done = update_op_idx(memory_ops, memory_op_idx, memory_stall, memory_ops_batch_size, ops_done)
