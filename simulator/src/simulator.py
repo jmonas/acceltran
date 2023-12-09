@@ -509,7 +509,10 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 		if DO_LOGGING: logs = log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type)
 
 		if debug:
-			mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
+			if transformer_type =="language":
+				mac_lane_utilization, ln_utilization, sftm_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
+			else:
+				mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
 
 			tqdm.write(f'Activation Buffer used: {activation_buffer_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Weight Buffer used: {weight_buffer_utilization * 100.0 : 0.3f}%')
@@ -517,7 +520,8 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 			tqdm.write(f'MAC Lanes used: {mac_lane_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Layer-norm used: {ln_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Softmax used: {sftm_utilization * 100.0 : 0.3f}%')
-			tqdm.write(f'Patchifier used: {patchifier_utilization * 100.0 : 0.3f}%')
+			if transformer_type =="language":
+				tqdm.write(f'Patchifier used: {patchifier_utilization * 100.0 : 0.3f}%')
 
 		if accelerator.cycle % plot_steps == 0:
 			# Plot utilization of the accelerator
