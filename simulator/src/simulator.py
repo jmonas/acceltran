@@ -231,6 +231,8 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 
 		if transformer_type == "language":
 			mac_lane_utilization, ln_utilization, sftm_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
+		else:
+			mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator, transformer_type)
 
 		logs['activation_buffer_utilization'].append(activation_buffer_utilization)
 		logs['weight_buffer_utilization'].append(weight_buffer_utilization)
@@ -238,7 +240,7 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 		logs['mac_lane_utilization'].append(mac_lane_utilization)
 		logs['ln_utilization'].append(ln_utilization)
 		logs['sftm_utilization'].append(sftm_utilization)
-		if transformer_type == "language":
+		if transformer_type != "language":
 			logs['patchifier_utilization'].append(patchifier_utilization)
 
 		logs['stalls'].append(stalls)
