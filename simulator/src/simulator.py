@@ -256,7 +256,7 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 	return logs
 
 
-def plot_metrics(logs_dir, constants):
+def plot_metrics(logs_dir, constants, transformer_type):
 	logs_metrics = {'cycle': [], 'total_pe_energy': [], 'activation_buffer_energy': [], 'weight_buffer_energy': [], 'mask_buffer_energy': [], 'activation_buffer_utilization': [], 'weight_buffer_utilization': [], 'mask_buffer_utilization': [], 'mac_lane_utilization': [], 'ln_utilization': [], 'sftm_utilization': [], 'patchifier_utilization': [], 'stalls': []}
 	log_files = os.listdir(os.path.join(logs_dir, 'metrics'))
 	log_files = sorted(log_files, key=lambda log_file: int(log_file.split('_')[1].split('.')[0]))
@@ -293,7 +293,7 @@ def plot_metrics(logs_dir, constants):
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['mac_lane_utilization']], color='tab:blue', linestyle='-', label='MAC Lanes')
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['ln_utilization']], color='tab:purple', linestyle='-', label='Layer-norm')
 	ax_utilization.plot(logs_metrics['cycle'], np.convolve([util * 100.0 for util in logs_metrics['sftm_utilization']], np.ones(moving_avg)/moving_avg, 'same'), color='tab:green', linestyle='-', label='Softmax')
-	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['patchifier_utilization']], color='tab:orange', linestyle='-', label='Patchifier')
+	if transformer_type !="language": ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['patchifier_utilization']], color='tab:orange', linestyle='-', label='Patchifier')
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['activation_buffer_utilization']], 'k-', label='Activation Buffer')
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['weight_buffer_utilization']], 'k--', label='Weight Buffer')
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['mask_buffer_utilization']], color='grey', label='Mask Buffer')
@@ -528,7 +528,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 			if plot_utilization: accelerator.plot_utilization(os.path.join(logs_dir, 'utilization'), transformer_type)
 
 			# Plot metrics
-			if DO_LOGGING: plot_metrics(logs_dir, constants)
+			if DO_LOGGING: plot_metrics(logs_dir, constants, transformer_type)
 
 		if memory_op_idx[0] is not None and memory_op_idx[0] < len(memory_ops) and  all([stall for stall in memory_stall if stall is not None]) and all([stall for stall in compute_stall if stall is not None]) and accelerator.all_resources_free():
 			cycles_list = [process_cycles for process_cycles in [accelerator.activation_buffer.process_cycles, accelerator.weight_buffer.process_cycles, accelerator.mask_buffer.process_cycles] if process_cycles not in [0, None]]
@@ -555,7 +555,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 	# Save remaining logs
 	if DO_LOGGING: 
 		json.dump(logs, open(os.path.join(logs_dir, 'metrics', f'logs_{accelerator.cycle}.json'), 'w+'))
-		plot_metrics(logs_dir, constants)
+		plot_metrics(logs_dir, constants, transformer_type)
 
 	pbar.close()
 	print(f'{color.GREEN}Finished simulation{color.ENDC}')
