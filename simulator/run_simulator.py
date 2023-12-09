@@ -130,5 +130,5 @@ if __name__ == '__main__':
 	if os.path.exists(args.logs_dir) and OVERWRITE_LOGS: shutil.rmtree(args.logs_dir)
 	os.makedirs(os.path.join(args.logs_dir, 'metrics')); os.makedirs(os.path.join(args.logs_dir, 'utilization'))
 
-	main(model_dict, config, constants, design_space, args.logs_dir, args.plot_steps, args.mode, args.plot_utilization, args.first_layer_only, args.fast, args.debug)
+	main(model_dict, config, constants, design_space, args.logs_dir, args.plot_steps, args.mode, args.plot_utilization, args.first_layer_only, args.fast, args.debug, args.transformer_type)
 
