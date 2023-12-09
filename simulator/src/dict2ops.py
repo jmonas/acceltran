@@ -41,7 +41,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 
 			op_name = attention_head + '_' + str(layer + 1) + '_' + str(i + 1)
 
-			
+			print(transformer_type)
 			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
 			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES + 1, layer_hidden_size)  # +1 for class token
 
