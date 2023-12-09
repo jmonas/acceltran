@@ -103,6 +103,18 @@ class Softmax(Module):
 		self.assigned_op = op
 
 
+class Patchifier(Module):
+	def __init__(self, module_name, config, constants):
+		Module.__init__(self, module_name, constants['patchifier'][f'tile_{config["patch_size"]}']['dynamic'], constants['patchifier'][f'tile_{config["patch_size"]}']['leakage'], constants['patch_size'][f'tile_{config["patch_size"]}']['area'], constants['clock_frequency'])
+		self.assigned_op = None
+
+	def assign_op(self, op):
+		self.process_cycles = 1
+		self.ready = False
+
+		self.assigned_op = op
+
+
 class FIFO(Module):
 	def __init__(self, module_name, config, constants):
 		Module.__init__(self, module_name, constants['fifo']['dynamic'], constants['fifo']['leakage'], constants['fifo']['area'], constants['clock_frequency'])

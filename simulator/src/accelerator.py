@@ -71,6 +71,8 @@ class Accelerator(object):
 				if not mac_lane.ready: return False
 			for sftm in pe.softmax:
 				if not sftm.ready: return False
+			for patchifier in pe.patchifier:
+				if not patchifier.ready: return False
 			if not pe.layer_norm.ready: return False
 			
 		return True
@@ -97,6 +99,14 @@ class Accelerator(object):
 				num_sftm += 1
 				if sftm.ready: num_free += 1
 		return num_free, num_sftm
+	
+	def num_patchifier_free(self):
+		num_patchifier, num_free = 0, 0
+		for pe in self.pes:
+			for patchifier in pe.patchifier:
+				num_patchifier += 1
+				if patchifier.ready: num_free += 1
+		return num_free, num_patchifier
 
 	def _fill_buffer(self, buffer_arr, num_ones):
 		count = 0
@@ -175,7 +185,7 @@ class Accelerator(object):
 				subplot_spec=pe_col)
 			for pe in pes:
 				height_ratios = [1, 1, 1] if self.config['lanes_per_pe'] < 8 else [2, 1, 1]
-				mac_lanes_spec, sftm_spec, ln_spec = gridspec.GridSpecFromSubplotSpec(3, 1, wspace=0, hspace=0, 
+				mac_lanes_spec, sftm_spec, ln_spec, patchifier_spec = gridspec.GridSpecFromSubplotSpec(4, 1, wspace=0, hspace=0, 
 					height_ratios=height_ratios, subplot_spec=pe)
 
 				mac_lane_size = (1, len(self.pes[pe_count].mac_lanes)) if self.config['lanes_per_pe'] < 8 else (2, len(self.pes[pe_count].mac_lanes)//2)
@@ -225,7 +235,24 @@ class Accelerator(object):
 				ax.set_yticks([])
 				fig.add_subplot(ax)
 
-				accel_dict[f'pe_{pe_count + 1}'] = {'mac_lanes': mac_lane_arr.tolist(), 'layer_norm': ln_arr.tolist(), 'softmax': sftm_arr.tolist()}
+				patchifier_arr = np.zeros((1, len(self.pes[pe_count].patchifier)))
+				patchifier_count = 0
+				for i in range(patchifier_arr.shape[1]):
+					patchifier_arr[0, i] = 1 if not self.pes[pe_count].patchifier[patchifier_count].ready else 0
+					patchifier_count += 1
+
+				ax = plt.Subplot(fig, patchifier_spec)
+				ax.imshow(patchifier_arr, interpolation='none', aspect='auto', 
+						  rasterized=True, cmap='Oranges', vmin=0, vmax=1.5)
+				ax.set_xticks(np.arange(-0.5, len(self.pes[pe_count].patchifier), 1))
+				ax.set_yticks(np.arange(-0.5, 1, 1))
+				ax.set_xticklabels([])
+				ax.set_yticklabels([])
+				ax.tick_params(axis=u'both', which=u'both',length=0)
+				ax.grid(color='k', linewidth=0.5)
+				fig.add_subplot(ax)
+
+				accel_dict[f'pe_{pe_count + 1}'] = {'mac_lanes': mac_lane_arr.tolist(), 'layer_norm': ln_arr.tolist(), 'softmax': sftm_arr.tolist(), 'patchifier': patchifier_arr.tolist()}
 
 				pe_count += 1
 
@@ -282,8 +309,10 @@ class Accelerator(object):
 		num_mac_lanes_free, num_mac_lanes = self.num_mac_lanes_free()
 		num_ln_free, num_ln = self.num_ln_free()
 		num_sftm_free, num_sftm = self.num_sftm_free()
+		num_patchifier_free, num_patchifier = self.num_patchifier_free()
 
-		num_mac_lanes_to_assign, num_ln_to_assign, num_sftm_to_assign = 0, 0, 0
+
+		num_mac_lanes_to_assign, num_ln_to_assign, num_sftm_to_assign, num_patchifier_to_assign = 0, 0, 0, 0
 
 		for op in op_list:
 			assert op.compute_op is True
@@ -293,8 +322,12 @@ class Accelerator(object):
 				num_ln_to_assign += 1
 			elif isinstance(op, (SoftmaxOp, SoftmaxTiledOp)):
 				num_sftm_to_assign += 1
+			elif isinstance(op, (PatchifyOp, PatchifyTiledOp)):
+				num_patchifier_to_assign += 1
 
-		if num_mac_lanes_free < num_mac_lanes_to_assign or num_ln_free < num_ln_to_assign or num_sftm_free < num_sftm_to_assign:
+
+
+		if num_mac_lanes_free < num_mac_lanes_to_assign or num_ln_free < num_ln_to_assign or num_sftm_free < num_sftm_to_assign or num_patchifier_free < num_patchifier_to_assign:
 			return False
 
 		return True

@@ -10,7 +10,7 @@ module transposer
 );
 
 parameter IL = 4, FL = 16;
-parameter row = 16, col = 256;
+parameter row = 4, col = 4;
 
 input clk, reset;
 input input_ready;

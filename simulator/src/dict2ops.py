@@ -10,17 +10,28 @@ from tqdm import tqdm
 from ops import *
 
 
+# for text transformer
 SEQ_LENGTH = 128
 VOCAB_SIZE = 30522
 
+# for image transformer
+IMAGE_SIZE = (224, 224)
 
-def get_ops(model_dict, config, direction, first_layer_only, debug):
+def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_type = "text"):
 	"""Get forward/backward operations for the given model"""
 	ops = []
 	batch_size = config['batch_size']
 
 	if direction == 'fwd':
-		ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
+		if transformer_type == "language":
+			ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
+		elif transformer_type == "vision":
+			# patchify input 
+			NUM_PATCHES = (IMAGE_SIZE[0] // config["patch_size"]) * (IMAGE_SIZE[1] // config["patch_size"])
+			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
+			# Load weights for projecting image patches to embeddings and adding positional embeddings
+			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES + 1), model_dict['h'][0]), 'weight'))
+
 
 	for layer in range(model_dict['l'] if not first_layer_only else 1):
 		layer_hidden_size = model_dict['h'][layer]
@@ -29,8 +40,12 @@ def get_ops(model_dict, config, direction, first_layer_only, debug):
 			type, param, hidden = attention_head.split('_')
 
 			op_name = attention_head + '_' + str(layer + 1) + '_' + str(i + 1)
-			input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
+
 			
+			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
+			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES + 1, layer_hidden_size)  # +1 for class token
+
+
 			if type == 'sa':
 				multihead_ops.append(SelfAttentionOp(op_name, config, input_size, hidden_size=int(hidden), type=param))
 			elif type == 'c':
@@ -147,11 +162,11 @@ def get_tiled_ops(ops, direction, tile_compute_ops, tile_memory_ops, debug):
 	return memory_ops, compute_ops, num_ops
 
 
-def main(model_dict: dict, config: dict, mode='inference', tile_compute_ops=False, tile_memory_ops=False, first_layer_only=False, debug=False):
+def main(model_dict: dict, config: dict, mode='inference', tile_compute_ops=False, tile_memory_ops=False, first_layer_only=False, debug=False, transformer_type = "text"):
 	"""Convert model dictionary to software compute operations"""
 	assert 'p' not in model_dict.keys(), 'Only model dictionaries in FlexiBERT 2.0 are supported'
 
-	fwd_ops = get_ops(model_dict, config, direction='fwd', first_layer_only=first_layer_only, debug=debug)
+	fwd_ops = get_ops(model_dict, config, direction='fwd', first_layer_only=first_layer_only, debug=debug, transformer_type =transformer_type)
 	bwd_ops = get_ops(model_dict, config, direction='bwd', first_layer_only=first_layer_only, debug=debug)
 
 	memory_ops, compute_ops = [], []
@@ -186,6 +201,11 @@ if __name__ == '__main__':
 	parser.add_argument('--debug',
 		dest='debug',
 		help='print debugging statements',
+		action='store_true')
+	parser.add_argument('--transformer_type',
+		dest='transformer_type',
+		type=str,
+		help='vision, language, multi-modal',
 		action='store_true')
 	parser.set_defaults(debug=False)
 	parser.set_defaults(tile_ops=False)

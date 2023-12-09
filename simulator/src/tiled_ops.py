@@ -104,11 +104,11 @@ class PatchifyTiledOp(TiledOp):
 		required_in_buffer (list): List of data object names required in buffer.
 	"""
 
-	def __init__(self, op_name, required_in_buffer, patch_size_x_y):
+	def __init__(self, op_name, required_in_buffer, input_size):
 		TiledOp.__init__(self, op_name)
 		self.required_in_buffer = required_in_buffer
-		self.patch_size_x_y = patch_size_x_y  # Size of the input patch (e.g., 16x16)
 		self.compute_op = True
+		self.input_size = input_size 
 
 	def output_size(self):
 		"""Get the size of the output vector
@@ -116,7 +116,7 @@ class PatchifyTiledOp(TiledOp):
 		Returns:
 			output_size (tuple): size of the output vector
 		"""
-		return self.patch_size_x_y[0] * self.patch_size_x_y[1]
+		return self.input_size[0] * self.input_size[1]
 
 
 

@@ -30,12 +30,12 @@ OVERWRITE_PLOT_STEPS_WITH_DEBUG = False
 OVERWRITE_LOGS = True
 
 
-def main(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode: str, plot_utilization=True, first_layer_only=False, fast=False, debug=False):
+def main(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode: str, plot_utilization=True, first_layer_only=False, fast=False, debug=False, transformer_type = "language"):
 
 	if fast == False:
-		simulate(model_dict, config, constants, design_space, logs_dir, plot_steps, mode, plot_utilization, first_layer_only, debug)
+		simulate(model_dict, config, constants, design_space, logs_dir, plot_steps, mode, plot_utilization, first_layer_only, debug, transformer_type)
 	else:
-		simulate_fast(model_dict, config, constants, design_space, logs_dir, plot_steps, mode, plot_utilization, first_layer_only, debug)
+		simulate_fast(model_dict, config, constants, design_space, logs_dir, plot_steps, mode, plot_utilization, first_layer_only, debug, transformer_type)
 	
 
 if __name__ == '__main__':
@@ -93,7 +93,13 @@ if __name__ == '__main__':
 		dest='debug',
 		help='print debugging statements',
 		action='store_true')
-	parser.set_defaults(debug=DEBUG, fast=False, plot_utilization=True, first_layer_only=False)
+	parser.add_argument('--transformer_type',
+		dest='transformer_type',
+		type=str,
+		help='language, vision, multi-modal',
+		action='store_true')
+
+	parser.set_defaults(debug=DEBUG, fast=False, plot_utilization=True, first_layer_only=False, transformer_type = "language")
 
 	args = parser.parse_args()
 

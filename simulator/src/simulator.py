@@ -52,6 +52,8 @@ def check_config(config: dict, design_space: dict):
 	if config['scheduler']['memory_ops']['tiled'] is True: raise NotImplementedError('Tiled memory operations are not implemented yet.')
 	if config['scheduler']['memory_ops']['batch_size'] != 1: raise NotImplementedError('Batch size > 1 for memory operations is not implemented yet.')
 
+	if 'patch_size' in config: assert config['patch_size'] in design_space['patch_size'], f'Configuration "patchifier" ({config["patch_size"]}) should be in {design_space["patch_size"]}'
+	if 'patchifier_per_pe' in config: assert config['patchifier_per_pe'] in design_space['patchifier_per_pe'], f'Cofiguration "patchifier_per_pe" ({config["patchifier_per_pe"]}) not in {design_space["patchifier_per_pe"]}'
 
 def get_op_list(ops, op_idx, batch_size):
 	assert type(op_idx) == list
@@ -200,8 +202,9 @@ def get_utilization(accelerator):
 	num_mac_lanes_free, num_mac_lanes = accelerator.num_mac_lanes_free()
 	num_ln_free, num_ln = accelerator.num_ln_free()
 	num_sftm_free, num_sftm = accelerator.num_sftm_free()
+	num_patchifier_free, num_patchifier = accelerator.num_patchifier_free()
 
-	return (num_mac_lanes - num_mac_lanes_free) * 1.0 / num_mac_lanes, (num_ln - num_ln_free) * 1.0 / num_ln, (num_sftm - num_sftm_free) * 1.0 / num_sftm, accelerator.activation_buffer.used * 1.0 / accelerator.activation_buffer.buffer_size, accelerator.weight_buffer.used * 1.0 / accelerator.weight_buffer.buffer_size, accelerator.mask_buffer.used * 1.0 / accelerator.mask_buffer.buffer_size
+	return (num_mac_lanes - num_mac_lanes_free) * 1.0 / num_mac_lanes, (num_ln - num_ln_free) * 1.0 / num_ln, (num_sftm - num_sftm_free) * 1.0 / num_sftm, (num_patchifier - num_patchifier_free) * 1.0 / num_patchifier, accelerator.activation_buffer.used * 1.0 / accelerator.activation_buffer.buffer_size, accelerator.weight_buffer.used * 1.0 / accelerator.weight_buffer.buffer_size, accelerator.mask_buffer.used * 1.0 / accelerator.mask_buffer.buffer_size
 
 
 def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps):
@@ -213,7 +216,7 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 		for log_file in os.listdir(os.path.join(logs_dir, 'metrics')):
 			last_cycle = max(last_cycle, int(log_file.split('_')[1].split('.')[0]))
 
-		logs = {'cycle': [], 'total_pe_energy': [], 'activation_buffer_energy': [], 'weight_buffer_energy': [], 'mask_buffer_energy': [], 'activation_buffer_utilization': [], 'weight_buffer_utilization': [], 'mask_buffer_utilization': [], 'mac_lane_utilization': [], 'ln_utilization': [], 'sftm_utilization': [], 'stalls': []}
+		logs = {'cycle': [], 'total_pe_energy': [], 'activation_buffer_energy': [], 'weight_buffer_energy': [], 'mask_buffer_energy': [], 'activation_buffer_utilization': [], 'weight_buffer_utilization': [], 'mask_buffer_utilization': [], 'mac_lane_utilization': [], 'ln_utilization': [], 'sftm_utilization': [], "patchifier_utilization": [], 'stalls': []}
 
 	cycle_difference = accelerator.cycle - last_cycle
 	assert cycle_difference > 0 
@@ -224,7 +227,7 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 		logs['weight_buffer_energy'].append((weight_buffer_energy[0] / cycle_difference, weight_buffer_energy[1] / cycle_difference))
 		logs['mask_buffer_energy'].append((mask_buffer_energy[0] / cycle_difference, mask_buffer_energy[1] / cycle_difference))
 
-		mac_lane_utilization, ln_utilization, sftm_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator)
+		mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator)
 
 		logs['activation_buffer_utilization'].append(activation_buffer_utilization)
 		logs['weight_buffer_utilization'].append(weight_buffer_utilization)
@@ -232,6 +235,7 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 		logs['mac_lane_utilization'].append(mac_lane_utilization)
 		logs['ln_utilization'].append(ln_utilization)
 		logs['sftm_utilization'].append(sftm_utilization)
+		logs['patchifier_utilization'].append(patchifier_utilization)
 
 		logs['stalls'].append(stalls)
 
@@ -247,7 +251,7 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 
 
 def plot_metrics(logs_dir, constants):
-	logs_metrics = {'cycle': [], 'total_pe_energy': [], 'activation_buffer_energy': [], 'weight_buffer_energy': [], 'mask_buffer_energy': [], 'activation_buffer_utilization': [], 'weight_buffer_utilization': [], 'mask_buffer_utilization': [], 'mac_lane_utilization': [], 'ln_utilization': [], 'sftm_utilization': [], 'stalls': []}
+	logs_metrics = {'cycle': [], 'total_pe_energy': [], 'activation_buffer_energy': [], 'weight_buffer_energy': [], 'mask_buffer_energy': [], 'activation_buffer_utilization': [], 'weight_buffer_utilization': [], 'mask_buffer_utilization': [], 'mac_lane_utilization': [], 'ln_utilization': [], 'sftm_utilization': [], 'patchifier_utilization': [], 'stalls': []}
 	log_files = os.listdir(os.path.join(logs_dir, 'metrics'))
 	log_files = sorted(log_files, key=lambda log_file: int(log_file.split('_')[1].split('.')[0]))
 	for log_file in log_files:
@@ -263,6 +267,7 @@ def plot_metrics(logs_dir, constants):
 		logs_metrics['mac_lane_utilization'].extend(logs_temp['mac_lane_utilization'])
 		logs_metrics['ln_utilization'].extend(logs_temp['ln_utilization'])
 		logs_metrics['sftm_utilization'].extend(logs_temp['sftm_utilization'])
+		logs_metrics['patchifier_utilization'].extend(logs_temp['patchifier_utilization'])
 		logs_metrics['stalls'].extend(logs_temp['stalls'])
 
 	fig, (ax_power, ax_utilization) = plt.subplots(2, 1)
@@ -282,6 +287,7 @@ def plot_metrics(logs_dir, constants):
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['mac_lane_utilization']], color='tab:blue', linestyle='-', label='MAC Lanes')
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['ln_utilization']], color='tab:purple', linestyle='-', label='Layer-norm')
 	ax_utilization.plot(logs_metrics['cycle'], np.convolve([util * 100.0 for util in logs_metrics['sftm_utilization']], np.ones(moving_avg)/moving_avg, 'same'), color='tab:green', linestyle='-', label='Softmax')
+	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['patchifier_utilization']], color='tab:orange', linestyle='-', label='Patchifier')
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['activation_buffer_utilization']], 'k-', label='Activation Buffer')
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['weight_buffer_utilization']], 'k--', label='Weight Buffer')
 	ax_utilization.plot(logs_metrics['cycle'], [util * 100.0 for util in logs_metrics['mask_buffer_utilization']], color='grey', label='Mask Buffer')
@@ -318,7 +324,7 @@ def tile_ops_fast(op, config):
 	return num_tiled_ops, num_muls
 
 
-def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode='inference', plot_utilization=True, first_layer_only=False, debug=False):
+def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode='inference', plot_utilization=True, first_layer_only=False, debug=False, transformer_type = "language"):
 	"""Run a model_dict on an Accelerator object"""
 
 	# Check if configuration is valid
@@ -329,7 +335,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 	print(f'{color.GREEN}Accelerator area: {accelerator.area / 1e6 : 0.03f} mm\u00b2{color.ENDC}')
 	
 	# Get tiled ops from model dictionary
-	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=config['scheduler']['compute_ops']['tiled'], tile_memory_ops=config['scheduler']['memory_ops']['tiled'], first_layer_only=first_layer_only, debug=debug)
+	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=config['scheduler']['compute_ops']['tiled'], tile_memory_ops=config['scheduler']['memory_ops']['tiled'], first_layer_only=first_layer_only, debug=debug, transformer_type = transformer_type)
 
 	assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
 	memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
@@ -389,7 +395,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 				data = head_op.convert_to_data()
 
 				# Word and position embeddings are always required in buffer
-				if 'emb' in head_op.op_name: data.required_in_buffer = True
+				if 'emb' in head_op.op_name or 'patch_projection' in head_op.op_name: data.required_in_buffer = True
 
 				last_compute_done, store_op = True, False
 				if isinstance(head_op, (MemoryStoreOp, MemoryStoreTiledOp)): 
@@ -491,7 +497,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 		if DO_LOGGING: logs = log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps)
 
 		if debug:
-			mac_lane_utilization, ln_utilization, sftm_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator)
+			mac_lane_utilization, ln_utilization, sftm_utilization, patchifier_utilization, activation_buffer_utilization, weight_buffer_utilization, mask_buffer_utilization = get_utilization(accelerator)
 
 			tqdm.write(f'Activation Buffer used: {activation_buffer_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Weight Buffer used: {weight_buffer_utilization * 100.0 : 0.3f}%')
@@ -499,6 +505,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 			tqdm.write(f'MAC Lanes used: {mac_lane_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Layer-norm used: {ln_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Softmax used: {sftm_utilization * 100.0 : 0.3f}%')
+			tqdm.write(f'Patchifier used: {patchifier_utilization * 100.0 : 0.3f}%')
 
 		if accelerator.cycle % plot_steps == 0:
 			# Plot utilization of the accelerator
@@ -538,7 +545,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 	print(f'{color.GREEN}Finished simulation{color.ENDC}')
 
 
-def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode='inference', plot_utilization=True, first_layer_only=False, debug=False):
+def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode='inference', plot_utilization=True, first_layer_only=False, debug=False, transformer_type = "language"):
 	"""Run model_dict in an approximate manner on the Accelerator object"""
 
 	# Check if configuration is valid
@@ -556,7 +563,7 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 	memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
 	memory_fast_idx, compute_fast_idx = 1, 0
 
-	energy = {'buffer': 0, 'main_memory': 0, 'mac_lanes': [0, 0], 'softmax': [0, 0], 'layer_norm': [0 ,0], 'sparsity': [0, 0], 'others': [0, 0]}
+	energy = {'buffer': 0, 'main_memory': 0, 'mac_lanes': [0, 0], 'softmax': [0, 0], 'patchifier': [0, 0] ,'layer_norm': [0 ,0], 'sparsity': [0, 0], 'others': [0, 0]}
 
 	# Current cycle
 	cycles = 0
@@ -575,11 +582,14 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 	num_mac_lanes = config['pe'] * config['lanes_per_pe']
 	num_macs = config['pe'] * config['lanes_per_pe'] * config['mac_per_lane']
 	num_softmax = config['pe'] * config['softmax_per_pe']
+	num_patchifier = config['pe'] * config['patchifier_per_pe']
 	num_layer_norm = config['pe']
 	mac_lane_dynamic = constants['lane'][f'mac_per_lane_{config["mac_per_lane"]}'][config['non_linearity']]['dynamic']
 	mac_lane_leakage = constants['lane'][f'mac_per_lane_{config["mac_per_lane"]}'][config['non_linearity']]['leakage'] 
 	softmax_dynamic = constants['softmax'][f'tile_{config["tile"]["tile_x"]}']['dynamic']
 	softmax_leakage = constants['softmax'][f'tile_{config["tile"]["tile_x"]}']['leakage']
+	patchifier_dynamic = constants['patchifier'][f'tile_{config["patch_size"]}']['dynamic'] 
+	patchifier_leakage = constants['patchifier'][f'tile_{config["patch_size"]}']['leakage']
 	layer_norm_dynamic = constants['layer_norm'][f'tile_{config["tile"]["tile_x"]}']['dynamic']
 	layer_norm_leakage = constants['layer_norm'][f'tile_{config["tile"]["tile_x"]}']['leakage']
 	sparsity_dynamic = constants['pre_sparsity']['dynamic'] + constants['post_sparsity']['dynamic']
@@ -630,8 +640,8 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 
 		if compute_fast_idx < len(compute_ops):
 			if type(compute_ops[compute_fast_idx]) == list:
-				mac_lanes_head, softmax_head, layer_norm_head = None, None, None
-				pe_cycles = [np.inf, np.inf, np.inf]
+				mac_lanes_head, softmax_head, patchifier_head, layer_norm_head = None, None, None, None
+				pe_cycles = [np.inf, np.inf, np.inf, np.inf]
 				head_ids = [0 for _ in range(len(compute_ops[compute_fast_idx]))]
 				while any([head_ids[i] < len(compute_ops[compute_fast_idx][i]) for i in range(len(head_ids))]):
 					for i, head_id in enumerate(head_ids):
@@ -661,7 +671,7 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 								energy['softmax'][1] += (softmax_leakage * num_softmax) / clock_frequency * softmax_cycles
 								pe_cycles[1], softmax_head = softmax_cycles, i
 								head_ids[i] = min(head_ids[i] + 1, len(compute_ops[compute_fast_idx][i]))
-						elif instance(head_op, LayerNormOp):
+						elif isinstance(head_op, LayerNormOp):
 							if layer_norm_head is not None:
 								tiled_ops = head_op.tile_op()
 								layer_norm_cycles = math.ceil(len(tiled_ops) * tiled_ops[0].input_size[0] * (tiled_ops[0].input_size[1] + tiled_ops[0].input_size[2]) * (1 - constants['sparsity']['activation']) / num_layer_norm)
@@ -669,7 +679,14 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 								energy['layer_norm'][1] += (layer_norm_leakage * num_layer_norm) / clock_frequency * layer_norm_cycles
 								pe_cycles[2], layer_norm_head = layer_norm_cycles, i
 								head_ids[i] = min(head_ids[i] + 1, len(compute_ops[compute_fast_idx][i]))
-
+						elif isinstance(head_op, PatchifyOp):
+							if patchifier_head is None:
+								tiled_ops = head_op.tile_op()
+								patchifier_cycles = len(tiled_ops)
+								energy['patchifier'][0] += (patchifier_dynamic * num_patchifier) / clock_frequency * patchifier_cycles
+								energy['patchifier'][1] += (patchifier_leakage * num_patchifier) / clock_frequency * patchifier_cycles
+								pe_cycles[3], patchifier_head = patchifier_cycles, i
+								head_ids[i] = min(head_ids[i] + 1, len(compute_ops[compute_fast_idx][i]))
 					min_cycles = min(pe_cycles)
 					cycles += min_cycles
 
@@ -679,8 +696,10 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 								mac_lanes_head = None
 							elif m == 1:
 								softmax_head = None
-							else:
+							elif m == 2:
 								layer_norm_head = None
+							else: 
+								patchifier_head = None
 							pe_cycles[m] = np.inf
 						else:
 							pe_cycles[m] -= min_cycles
@@ -699,6 +718,11 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 						assert pe_cycles[2] == np.inf
 					else:
 						assert pe_cycles[2] < np.inf
+
+					if patchifier_head is None:
+						assert pe_cycles[3] == np.inf
+					else:
+						assert pe_cycles[3] < np.inf
 			else:
 				head_op = compute_ops[compute_fast_idx]
 				if isinstance(head_op, (MatrixMultOp, Conv1DOp, NonLinearityOp)):
@@ -723,6 +747,12 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 					cycles += layer_norm_cycles
 					energy['layer_norm'][0] += (layer_norm_dynamic * num_layer_norm) / clock_frequency * layer_norm_cycles
 					energy['layer_norm'][1] += (layer_norm_leakage * num_layer_norm) / clock_frequency * layer_norm_cycles
+				elif isinstance(head_op, PatchifyOp):
+					tiled_ops = head_op.tile_op()
+					patchifier_cycles = len(tiled_ops)
+					cycles += patchifier_cycles
+					energy['patchifier'][0] += (patchifier_dynamic * num_patchifier) / clock_frequency * patchifier_cycles
+					energy['patchifier'][1] += (patchifier_leakage * num_patchifier) / clock_frequency * patchifier_cycles
 
 		memory_fast_idx = min(memory_fast_idx + 1, len(memory_ops))
 		compute_fast_idx = min(compute_fast_idx + 1, len(compute_ops))

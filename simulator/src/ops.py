@@ -201,8 +201,8 @@ class PatchifyOp(Op):
 		"""
 
 		# Calculate the number of tiles needed for patchification
-		num_tiles_x = math.ceil(self.patch_size / self.config['tile']['tile_x'])
-		num_tiles_y = math.ceil(self.patch_size / self.config['tile']['tile_y'])
+		num_tiles_x = math.ceil(self.patch_size * 1.0 / self.config['tile']['tile_x'])
+		num_tiles_y = math.ceil(self.patch_size * 1.0 / self.config['tile']['tile_y'])
 		
 		tile_size = (self.config['tile']['tile_x'], self.config['tile']['tile_y'])
 		self.tiled_ops = []
@@ -806,6 +806,7 @@ class ImagePatchify(Op):
 	
 	Attributes:
 		image_size (tuple): size of the input image in pixels
+		patch_size: size of patchifier
 	"""
 	def __init__(self, op_name, config, image_size, patch_size):
 		Op.__init__(self, op_name, config)
@@ -816,14 +817,14 @@ class ImagePatchify(Op):
 
 		self.patch_rows = image_size[0] / patch_size
 		self.patch_cols = image_size[1] / patch_size
-		self.ops = []
+		self.fwd_base_ops = []
 
-	def process_image(self):
-		self.ops.append(MemoryLoadOp(f'{self.op_name}_p-l', self.config, self.image_size, 'weight'))
-		for row in self.patch_rows:
-			for col in self.patch_cols:
-				self.ops.append(PatchifyOp(f'{self.op_name}_p', self.config, [f'{self.op_name}_p-l'], self.patch_size))
-		
+	def convert_to_fwd_base_ops(self):
+		"""Convert operation to forward base operations"""
+		self.fwd_base_ops = []
+		for _ in self.patch_rows:
+			for _ in self.patch_cols:
+				self.fwd_base_ops.append(PatchifyOp(f'{self.op_name}_p', self.config, [], self.patch_size))
 
 	def tile_op(self, tile_memory_ops=False):
 		"""Implement tiled operations

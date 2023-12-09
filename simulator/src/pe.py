@@ -16,6 +16,8 @@ class ProcessingElement(object):
 		dma (DMA): DMA module object
 		layer_norm (LayerNorm): LayerNorm module object
 		softmax (Softmax): Softmax module object
+		patchifier (Patchifier): Patchifier module object
+
 	"""
 	def __init__(self, pe_name, config, constants, mode='inference'):
 		self.pe_name = pe_name
@@ -30,6 +32,12 @@ class ProcessingElement(object):
 		self.softmax = []
 		for s in range(config['softmax_per_pe']):
 			self.softmax.append(Softmax(f'{self.pe_name}_sftm{(s + 1)}', config, constants))
+
+		self.patchifier = []
+		if 'patchifier_per_pe' in config:
+			for p in range(config['patchifier_per_pe']):
+				self.patchifier.append(Patchifier(f'{self.pe_name}_patchifier{(p + 1)}', config, constants))
+
 		
 		self.layer_norm = LayerNorm(f'{self.pe_name}_ln', config, constants)
 
@@ -41,6 +49,8 @@ class ProcessingElement(object):
 				self.area += mac_lane.stochastic_rounding.area
 		for sftm in self.softmax:
 			self.area += sftm.area
+		for patch in self.patchifier:
+			self.area += patch.area
 		self.area = self.area + self.dataflow.area + self.dma.area + self.layer_norm.area
 
 	def process_cycle(self):
@@ -54,12 +64,17 @@ class ProcessingElement(object):
 			sftm_energy = sftm.process_cycle()
 			softmax_energy[0] += sftm_energy[0]; total_energy[1] += sftm_energy[1]
 
+		patchifier_energy = [0, 0]
+		for patch in self.patchifier:
+			patch_energy = patch.process_cycle()
+			patchifier_energy[0] += patch_energy[0]; total_energy[1] += patch_energy[1]
+
 		dataflow_energy = self.dataflow.process_cycle()
 		dma_energy = self.dma.process_cycle()
 		layer_norm_energy = self.layer_norm.process_cycle()
 
 		for i in [0, 1]:
-			total_energy[i] = total_energy[i] + dataflow_energy[i] + dma_energy[i] + layer_norm_energy[i] + softmax_energy[i]
+			total_energy[i] = total_energy[i] + dataflow_energy[i] + dma_energy[i] + layer_norm_energy[i] + softmax_energy[i] + patchifier_energy[i]
 
 		return tuple(total_energy) # unit: nJ
 
@@ -82,6 +97,12 @@ class ProcessingElement(object):
 				if sftm.ready:
 					sftm.assign_op(op)
 					assigned_op = True
+		elif isinstance(op, (PatchifyOp, PatchifyTiledOp)):
+			for patch in self.patchifier:
+				if patch.ready:
+					patch.assign_op(op)
+					assigned_op = True
+		
 		else:
 			raise ValueError(f'Invalid operation: {op.op_name} of type: {type(op)}')
 
