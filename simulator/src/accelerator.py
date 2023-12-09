@@ -118,7 +118,7 @@ class Accelerator(object):
 					if count == num_ones: return buffer_arr
 		return buffer_arr
 
-	def plot_utilization(self, utilization_dir, debug=False):
+	def plot_utilization(self, utilization_dir, tranformer_type, debug=False):
 		if not os.path.exists(utilization_dir): os.makedirs(utilization_dir)
 
 		accel_dict = {}
@@ -241,17 +241,19 @@ class Accelerator(object):
 					patchifier_arr[0, i] = 1 if not self.pes[pe_count].patchifier[patchifier_count].ready else 0
 					patchifier_count += 1
 
-				ax = plt.Subplot(fig, patchifier_spec)
-				ax.imshow(patchifier_arr, interpolation='none', aspect='auto', 
-						  rasterized=True, cmap='Oranges', vmin=0, vmax=1.5)
-				ax.set_xticks(np.arange(-0.5, len(self.pes[pe_count].patchifier), 1))
-				ax.set_yticks(np.arange(-0.5, 1, 1))
-				ax.set_xticklabels([])
-				ax.set_yticklabels([])
-				ax.tick_params(axis=u'both', which=u'both',length=0)
-				ax.grid(color='k', linewidth=0.5)
-				fig.add_subplot(ax)
+				if tranformer_type != "language":
+					ax = plt.Subplot(fig, patchifier_spec)
+					ax.imshow(patchifier_arr, interpolation='none', aspect='auto', 
+							rasterized=True, cmap='Oranges', vmin=0, vmax=1.5)
+					ax.set_xticks(np.arange(-0.5, len(self.pes[pe_count].patchifier), 1))
+					ax.set_yticks(np.arange(-0.5, 1, 1))
+					ax.set_xticklabels([])
+					ax.set_yticklabels([])
+					ax.tick_params(axis=u'both', which=u'both',length=0)
+					ax.grid(color='k', linewidth=0.5)
+					fig.add_subplot(ax)
 
+				
 				accel_dict[f'pe_{pe_count + 1}'] = {'mac_lanes': mac_lane_arr.tolist(), 'layer_norm': ln_arr.tolist(), 'softmax': sftm_arr.tolist(), 'patchifier': patchifier_arr.tolist()}
 
 				pe_count += 1
