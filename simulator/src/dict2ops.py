@@ -17,7 +17,7 @@ VOCAB_SIZE = 30522
 # for image transformer
 IMAGE_SIZE = (224, 224)
 
-def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_type = "text"):
+def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_type = "language"):
 	"""Get forward/backward operations for the given model"""
 	ops = []
 	batch_size = config['batch_size']
@@ -167,7 +167,7 @@ def main(model_dict: dict, config: dict, mode='inference', tile_compute_ops=Fals
 	assert 'p' not in model_dict.keys(), 'Only model dictionaries in FlexiBERT 2.0 are supported'
 
 	fwd_ops = get_ops(model_dict, config, direction='fwd', first_layer_only=first_layer_only, debug=debug, transformer_type =transformer_type)
-	bwd_ops = get_ops(model_dict, config, direction='bwd', first_layer_only=first_layer_only, debug=debug)
+	bwd_ops = get_ops(model_dict, config, direction='bwd', first_layer_only=first_layer_only, debug=debug, transformer_type =transformer_type)
 
 	memory_ops, compute_ops = [], []
 
@@ -205,10 +205,10 @@ if __name__ == '__main__':
 	parser.add_argument('--transformer_type',
 		dest='transformer_type',
 		type=str,
-		help='vision, language, multi-modal',
-		action='store_true')
+		help='vision, language, multi-modal')
 	parser.set_defaults(debug=False)
 	parser.set_defaults(tile_ops=False)
+	parser.set_defaults(transformer_type='language')
 
 	args = parser.parse_args()
 
@@ -222,4 +222,4 @@ if __name__ == '__main__':
 	else:
 		raise FileNotFoundError(f'Couldn\'t find JSON file for given path: {args.config_path}')
 
-	main(model_dict, config, args.tile_ops, args.debug)
+	main(model_dict, config, args.tile_ops, args.debug, transformer_type=args.transformer_type)
