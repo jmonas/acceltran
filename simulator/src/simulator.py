@@ -347,10 +347,10 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 
 	print(len(compute_ops))
 	# assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
-	if transformer_type == "language":
-		memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
-	else:
-		memory_op_idx, compute_op_idx, ops_done = [0, []], [0, []], 0
+	# if transformer_type == "language":
+	memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
+	# else:
+		# memory_op_idx, compute_op_idx, ops_done = [0, []], [0, []], 0
 
 	# Get operation batch sizes
 	compute_ops_batch_size = config['scheduler']['compute_ops']['batch_size']

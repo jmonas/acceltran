@@ -29,7 +29,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
 		elif transformer_type == "vision":
 			# patchify input 
-			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
+			# ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
 			# Load weights for projecting image patches to embeddings and adding positional embeddings
 			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES + 1), model_dict['h'][0]), 'weight'))
 
