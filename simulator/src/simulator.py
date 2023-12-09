@@ -556,7 +556,7 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 	print(f'{color.GREEN}Accelerator area: {accelerator.area / 1e6 : 0.03f} mm\u00b2{color.ENDC}')
 	
 	# Get ops from model_dict
-	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=False, tile_memory_ops=False, first_layer_only=first_layer_only, debug=debug)
+	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=False, tile_memory_ops=False, first_layer_only=first_layer_only, debug=debug, transformer_type = transformer_type)
 	print('No tiling implemented in a fast run')
 
 	assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
