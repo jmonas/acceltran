@@ -21,13 +21,14 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 	"""Get forward/backward operations for the given model"""
 	ops = []
 	batch_size = config['batch_size']
+	if transformer_type == "vision":
+		NUM_PATCHES = (IMAGE_SIZE[0] // config["patch_size"]) * (IMAGE_SIZE[1] // config["patch_size"])
 
 	if direction == 'fwd':
 		if transformer_type == "language":
 			ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
 		elif transformer_type == "vision":
 			# patchify input 
-			NUM_PATCHES = (IMAGE_SIZE[0] // config["patch_size"]) * (IMAGE_SIZE[1] // config["patch_size"])
 			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
 			# Load weights for projecting image patches to embeddings and adding positional embeddings
 			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES + 1), model_dict['h'][0]), 'weight'))
@@ -162,7 +163,7 @@ def get_tiled_ops(ops, direction, tile_compute_ops, tile_memory_ops, debug):
 	return memory_ops, compute_ops, num_ops
 
 
-def main(model_dict: dict, config: dict, mode='inference', tile_compute_ops=False, tile_memory_ops=False, first_layer_only=False, debug=False, transformer_type = "text"):
+def main(model_dict: dict, config: dict, mode='inference', tile_compute_ops=False, tile_memory_ops=False, first_layer_only=False, debug=False, transformer_type = "language"):
 	"""Convert model dictionary to software compute operations"""
 	assert 'p' not in model_dict.keys(), 'Only model dictionaries in FlexiBERT 2.0 are supported'
 
