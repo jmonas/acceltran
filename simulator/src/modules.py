@@ -105,7 +105,7 @@ class Softmax(Module):
 
 class Patchifier(Module):
 	def __init__(self, module_name, config, constants):
-		Module.__init__(self, module_name, constants['patchifier'][f'tile_{config["patch_size"]}']['dynamic'], constants['patchifier'][f'tile_{config["patch_size"]}']['leakage'], constants['patch_size'][f'tile_{config["patch_size"]}']['area'], constants['clock_frequency'])
+		Module.__init__(self, module_name, constants['patchifier'][f'tile_{config["patch_size"]}']['dynamic'], constants['patchifier'][f'tile_{config["patch_size"]}']['leakage'], constants['patchifier'][f'tile_{config["patch_size"]}']['area'], constants['clock_frequency'])
 		self.assigned_op = None
 
 	def assign_op(self, op):
