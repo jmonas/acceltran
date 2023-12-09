@@ -520,7 +520,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 			tqdm.write(f'MAC Lanes used: {mac_lane_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Layer-norm used: {ln_utilization * 100.0 : 0.3f}%')
 			tqdm.write(f'Softmax used: {sftm_utilization * 100.0 : 0.3f}%')
-			if transformer_type =="language":
+			if transformer_type !="language":
 				tqdm.write(f'Patchifier used: {patchifier_utilization * 100.0 : 0.3f}%')
 
 		if accelerator.cycle % plot_steps == 0:
