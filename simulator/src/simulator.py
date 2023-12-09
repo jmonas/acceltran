@@ -489,7 +489,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 				if not compute_stall[head_idx]:
 					for head_op in head_ops:
 						assigned_op = accelerator.assign_op(head_op)
-						assert assigned_op is True
+						assert assigned_op is True,  f"The assertion failed: {head_op}"
 						ops_to_set_required.append(head_op)
 							
 		# Process cycle for every module
