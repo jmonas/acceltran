@@ -170,6 +170,51 @@ class MatrixMultOp(Op):
 		return self.tiled_ops
 
 
+class PatchifyOp(Op):
+	"""Patchify operation for transforming a 2D image patch into a 1D vector.
+	
+	Attributes:
+		patch_size (int): The size of the input patch.
+		compute_op (bool): If the operation is a compute operation.
+		required_in_buffer (list): List of data object names required in buffer.
+	"""
+	def __init__(self, op_name, config, required_in_buffer, patch_size):
+		Op.__init__(self, op_name, config)
+		self.required_in_buffer = required_in_buffer
+		self.patch_size = patch_size
+		self.compute_op = True
+		self.base_op = True
+	
+	def output_size(self):
+		"""Get the size of the output vector
+
+		Returns:
+			output_size: size of the output vector
+		"""
+		return self.patch_size * self.patch_size
+
+	def tile_op(self):
+		"""Implement tiled patchify operation.
+
+		Returns:
+			self.tiled_ops (list): List of PatchifyTiledOps.
+		"""
+
+		# Calculate the number of tiles needed for patchification
+		num_tiles_x = math.ceil(self.patch_size / self.config['tile']['tile_x'])
+		num_tiles_y = math.ceil(self.patch_size / self.config['tile']['tile_y'])
+		
+		tile_size = (self.config['tile']['tile_x'], self.config['tile']['tile_y'])
+		self.tiled_ops = []
+		for x in range(num_tiles_x):
+			for y in range(num_tiles_y):
+				op_name = f'{self.op_name}_x{x}_y{y}'
+				self.tiled_ops.append(PatchifyTiledOp(op_name, self.required_in_buffer, tile_size))
+
+		return self.tiled_ops
+
+
+
 class Conv1DOp(Op):
 	"""1D convolution base operation
 
@@ -754,3 +799,46 @@ class FeedForwardOp(Op):
 
 		return self.tiled_ops
 
+
+
+class ImagePatchify(Op):
+	""" 
+	
+	Attributes:
+		image_size (tuple): size of the input image in pixels
+	"""
+	def __init__(self, op_name, config, image_size, patch_size):
+		Op.__init__(self, op_name, config)
+		self.image_size = image_size
+		self.patch_size = patch_size
+
+		assert image_size[0] % patch_size == 0  and image_size[1] % patch_size == 0
+
+		self.patch_rows = image_size[0] / patch_size
+		self.patch_cols = image_size[1] / patch_size
+		self.ops = []
+
+	def process_image(self):
+		self.ops.append(MemoryLoadOp(f'{self.op_name}_p-l', self.config, self.image_size, 'weight'))
+		for row in self.patch_rows:
+			for col in self.patch_cols:
+				self.ops.append(PatchifyOp(f'{self.op_name}_p', self.config, [f'{self.op_name}_p-l'], self.patch_size))
+		
+
+	def tile_op(self, tile_memory_ops=False):
+		"""Implement tiled operations
+
+		Returns:
+			self.tiled_ops (list): list of tiled base ops
+		"""
+		self.tiled_ops = []
+		for op in self.ops:
+			if isinstance(op, (MemoryLoadOp)):
+				if tile_memory_ops: 
+					self.tile_op.extend(op.tile_op())
+				else:
+					self.tile_op.append(op)
+			else:
+				self.tile_op.extend(op.tile_op())
+
+		return self.tiled_ops

@@ -68,6 +68,16 @@ layer_norm:
     dynamic: 151.4800
     leakage: 10.03566
 
+patchifier:
+  tile_8:
+    area: 5543.667485
+    dynamic: 0.3877869
+    leakage: 0.1391826
+  tile_16:
+    area: 21721.671212
+    dynamic: 0.6901036
+    leakage: 0.4092877
+    
 softmax:
   tile_8:
     area: 22008.079435
