@@ -253,7 +253,6 @@ class Accelerator(object):
 					ax.grid(color='k', linewidth=0.5)
 					fig.add_subplot(ax)
 
-				
 				accel_dict[f'pe_{pe_count + 1}'] = {'mac_lanes': mac_lane_arr.tolist(), 'layer_norm': ln_arr.tolist(), 'softmax': sftm_arr.tolist(), 'patchifier': patchifier_arr.tolist()}
 
 				pe_count += 1

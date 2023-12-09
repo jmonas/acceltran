@@ -525,7 +525,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 
 		if accelerator.cycle % plot_steps == 0:
 			# Plot utilization of the accelerator
-			if plot_utilization: accelerator.plot_utilization(os.path.join(logs_dir, 'utilization'))
+			if plot_utilization: accelerator.plot_utilization(os.path.join(logs_dir, transformer_type, 'utilization'))
 
 			# Plot metrics
 			if DO_LOGGING: plot_metrics(logs_dir, constants)
