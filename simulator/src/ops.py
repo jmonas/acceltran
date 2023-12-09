@@ -815,8 +815,8 @@ class ImagePatchify(Op):
 
 		assert image_size[0] % patch_size == 0  and image_size[1] % patch_size == 0
 
-		self.patch_rows = image_size[0] / patch_size
-		self.patch_cols = image_size[1] / patch_size
+		self.patch_rows = math.ceil(image_size[0] / patch_size)
+		self.patch_cols = math.ceil(image_size[1] / patch_size)
 		self.fwd_base_ops = []
 
 	def convert_to_fwd_base_ops(self):
