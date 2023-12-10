@@ -35,8 +35,6 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			# Load weights for projecting image patches to embeddings and adding positional embeddings
 			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES+1), model_dict['h'][0]), 'weight'))
 
-	if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
-	elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, layer_hidden_size)  # +1 for class token
 	for layer in range(model_dict['l'] if not first_layer_only else 1):
 		layer_hidden_size = model_dict['h'][layer]
 		multihead_ops = []
@@ -46,7 +44,8 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			op_name = attention_head + '_' + str(layer + 1) + '_' + str(i + 1)
 
 			print(transformer_type)
-
+			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
+			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, layer_hidden_size)  # +1 for class token
 
 
 			if type == 'sa':
@@ -65,7 +64,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 		last_hidden_size = layer_hidden_size
 		for i, hidden in enumerate(model_dict['f'][layer]):
 			op_name = 'ff' + '_' + str(layer + 1) + '_' + str(i + 1)
-			input_size = (batch_size, SEQ_LENGTH, last_hidden_size)
+			input_size = input_size
 			ops.append(FeedForwardOp(op_name, config, input_size, hidden_size=hidden))
 			ops.append(NonLinearityOp(f'nl_{layer}_{(i+1)}', config, [f'{op_name}_f-s'], input_size, type=config['non_linearity']))
 			last_hidden_size = hidden
