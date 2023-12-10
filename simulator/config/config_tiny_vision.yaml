@@ -15,7 +15,7 @@ mac_per_lane: 16
 
 softmax_per_pe: 4
 
-patchifier_per_pe: 4
+patchifier_per_pe: 1
 
 patch_size: 16
 
