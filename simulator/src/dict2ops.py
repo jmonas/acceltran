@@ -15,7 +15,7 @@ SEQ_LENGTH = 128
 VOCAB_SIZE = 30522
 
 # for image transformer
-IMAGE_SIZE = (224, 224)
+IMAGE_SIZE = (64, 64)
 
 def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_type = "language"):
 	"""Get forward/backward operations for the given model"""
@@ -33,7 +33,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			# patchify input 
 			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
 			# Load weights for projecting image patches to embeddings and adding positional embeddings
-			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES + 1), model_dict['h'][0]), 'weight'))
+			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES), model_dict['h'][0]), 'weight'))
 
 	for layer in range(model_dict['l'] if not first_layer_only else 1):
 		layer_hidden_size = model_dict['h'][layer]
@@ -44,8 +44,8 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			op_name = attention_head + '_' + str(layer + 1) + '_' + str(i + 1)
 
 			print(transformer_type)
-			input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
-			# elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES + 1, layer_hidden_size)  # +1 for class token
+			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
+			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES, layer_hidden_size)  # +1 for class token
 
 
 			if type == 'sa':
