@@ -45,7 +45,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 
 			print(transformer_type)
 			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
-			elif transformer_type == "vision": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)  # +1 for class token
+			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, layer_hidden_size)  # +1 for class token
 
 
 			if type == 'sa':
@@ -64,7 +64,9 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 		last_hidden_size = layer_hidden_size
 		for i, hidden in enumerate(model_dict['f'][layer]):
 			op_name = 'ff' + '_' + str(layer + 1) + '_' + str(i + 1)
-			input_size = input_size
+
+			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, last_hidden_size)
+			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, last_hidden_size)
 			ops.append(FeedForwardOp(op_name, config, input_size, hidden_size=hidden))
 			ops.append(NonLinearityOp(f'nl_{layer}_{(i+1)}', config, [f'{op_name}_f-s'], input_size, type=config['non_linearity']))
 			last_hidden_size = hidden
@@ -73,12 +75,15 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 
 			if i == len(model_dict['f'][layer]) - 1:
 				op_name = 'ff' + '_' + str(layer + 1) + '_' + str(i + 2)
-				input_size = (batch_size, SEQ_LENGTH, last_hidden_size)
-				ops.append(FeedForwardOp(op_name, config, input_size, hidden_size=layer_hidden_size))
+				if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, last_hidden_size)
+				elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, last_hidden_size)				ops.append(FeedForwardOp(op_name, config, input_size, hidden_size=layer_hidden_size))
 				ops.append(NonLinearityOp(f'nl_{layer}_{(i+2)}', config, [f'{op_name}_f-s'], input_size, type=config['non_linearity']))
 
 				if debug: print(f'Added operation with name: {op_name}')
 
+		
+		if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
+		elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, layer_hidden_size)
 		ops.append(LayerNormOp(f'ln_{layer}_2', config, [], input_size=input_size))
 
 		projection_head = True
@@ -90,7 +95,8 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 
 		if projection_head:
 			op_name = 'ff' + '_' + str(layer + 1) + '_' + 'proj'
-			input_size = input_size
+			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
+			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, layer_hidden_size)			
 			ops.append(FeedForwardOp(op_name, config, input_size, hidden_size=model_dict['h'][layer + 1]))
 			ops.append(NonLinearityOp(f'nl_{layer}_{(i+1)}', config, [f'{op_name}_f-s'], input_size, type=config['non_linearity']))
 
