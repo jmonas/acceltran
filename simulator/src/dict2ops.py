@@ -33,8 +33,10 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			# patchify input 
 			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
 			# Load weights for projecting image patches to embeddings and adding positional embeddings
-			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES), model_dict['h'][0]), 'weight'))
+			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES+1), model_dict['h'][0]), 'weight'))
 
+	if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
+	elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, layer_hidden_size)  # +1 for class token
 	for layer in range(model_dict['l'] if not first_layer_only else 1):
 		layer_hidden_size = model_dict['h'][layer]
 		multihead_ops = []
@@ -44,8 +46,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			op_name = attention_head + '_' + str(layer + 1) + '_' + str(i + 1)
 
 			print(transformer_type)
-			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
-			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES, layer_hidden_size)  # +1 for class token
+
 
 
 			if type == 'sa':
@@ -59,7 +60,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 
 		ops.append(multihead_ops)
 
-		ops.append(LayerNormOp(f'ln_{layer}_1', config, [], input_size=(batch_size, SEQ_LENGTH, layer_hidden_size)))
+		ops.append(LayerNormOp(f'ln_{layer}_1', config, [], input_size=input_size))
 
 		last_hidden_size = layer_hidden_size
 		for i, hidden in enumerate(model_dict['f'][layer]):
@@ -79,7 +80,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 
 				if debug: print(f'Added operation with name: {op_name}')
 
-		ops.append(LayerNormOp(f'ln_{layer}_2', config, [], input_size=(batch_size, SEQ_LENGTH, layer_hidden_size)))
+		ops.append(LayerNormOp(f'ln_{layer}_2', config, [], input_size=input_size))
 
 		projection_head = True
 
@@ -90,7 +91,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 
 		if projection_head:
 			op_name = 'ff' + '_' + str(layer + 1) + '_' + 'proj'
-			input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
+			input_size = input_size
 			ops.append(FeedForwardOp(op_name, config, input_size, hidden_size=model_dict['h'][layer + 1]))
 			ops.append(NonLinearityOp(f'nl_{layer}_{(i+1)}', config, [f'{op_name}_f-s'], input_size, type=config['non_linearity']))
 
