@@ -76,7 +76,8 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			if i == len(model_dict['f'][layer]) - 1:
 				op_name = 'ff' + '_' + str(layer + 1) + '_' + str(i + 2)
 				if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, last_hidden_size)
-				elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, last_hidden_size)				ops.append(FeedForwardOp(op_name, config, input_size, hidden_size=layer_hidden_size))
+				elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES+1, last_hidden_size)				
+				ops.append(FeedForwardOp(op_name, config, input_size, hidden_size=layer_hidden_size))
 				ops.append(NonLinearityOp(f'nl_{layer}_{(i+2)}', config, [f'{op_name}_f-s'], input_size, type=config['non_linearity']))
 
 				if debug: print(f'Added operation with name: {op_name}')
