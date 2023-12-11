@@ -10,11 +10,11 @@ from tqdm import tqdm
 from ops import *
 
 
-# for text transformer
+# for language transformer
 SEQ_LENGTH = 128
 VOCAB_SIZE = 30522
 
-# for image transformer
+# for vision transformer
 IMAGE_SIZE = (128, 128)
 
 def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_type = "language"):
@@ -27,12 +27,11 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 		if transformer_type == "language":
 			ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
 		elif transformer_type == "vision":
-			# ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
-
 			# patchify input 
 			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
+			embedding_feature_size = config["patch_size"] * config["patch_size"] * 3
 			# Load weights for projecting image patches to embeddings and adding positional embeddings
-			ops.append(MemoryLoadOp('patch_projection', config, (2*(NUM_PATCHES), model_dict['h'][0]), 'weight'))
+			ops.append(MemoryLoadOp('patch_projection', config, (embedding_feature_size + NUM_PATCHES, model_dict['h'][0]), 'weight'))
 
 	for layer in range(model_dict['l'] if not first_layer_only else 1):
 		layer_hidden_size = model_dict['h'][layer]
