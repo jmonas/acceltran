@@ -575,8 +575,10 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=False, tile_memory_ops=False, first_layer_only=first_layer_only, debug=debug, transformer_type = transformer_type)
 	print('No tiling implemented in a fast run')
 
-	assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
-	memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
+	# assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
+	memory_op_idx, compute_op_idx, ops_done = [0, []], [0, []], 0
+
+	# memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
 	memory_fast_idx, compute_fast_idx = 1, 0
 
 	energy = {'buffer': 0, 'main_memory': 0, 'mac_lanes': [0, 0], 'softmax': [0, 0], 'patchifier': [0, 0] ,'layer_norm': [0 ,0], 'sparsity': [0, 0], 'others': [0, 0]}
