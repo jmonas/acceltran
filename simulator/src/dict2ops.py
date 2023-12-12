@@ -15,14 +15,15 @@ SEQ_LENGTH = 128
 VOCAB_SIZE = 30522
 
 # for vision transformer
-IMAGE_SIZE = (128, 128)
+# IMAGE_SIZE = (128, 128)
+IMAGE_SIZE = (224, 224)
 
 def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_type = "language"):
 	"""Get forward/backward operations for the given model"""
 	ops = []
 	batch_size = config['batch_size']
 	if transformer_type == "vision":
-		NUM_PATCHES = (IMAGE_SIZE[0] // config["patch_size"]) * (IMAGE_SIZE[1] // config["patch_size"])
+		NUM_PATCHES = (IMAGE_SIZE[0] // config["patch_size"]) * (IMAGE_SIZE[1] // config["patch_size"]) + 1
 	if direction == 'fwd':
 		if transformer_type == "language":
 			ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
@@ -43,7 +44,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 
 			print(transformer_type)
 			if transformer_type == "language": input_size = (batch_size, SEQ_LENGTH, layer_hidden_size)
-			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES, layer_hidden_size)  # +1 for class token
+			elif transformer_type == "vision": input_size = (batch_size, NUM_PATCHES, layer_hidden_size)
 
 
 			if type == 'sa':
