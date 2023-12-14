@@ -208,7 +208,7 @@ class PatchifyOp(Op):
 		# num_tiles_y = math.ceil(self.patch_size * 1.0 / self.config['tile']['tile_y'])
 		
 		# tile_size = (self.config['tile']['tile_b'], self.config['tile']['tile_x'], self.config['tile']['tile_y'])
-		tile_size = (self.batch_size[0], self.patch_size, self.patch_size)
+		tile_size = (self.batch_size, self.patch_size, self.patch_size)
 
 		self.tiled_ops = []
 		for b in range(self.batch_size[0]):
