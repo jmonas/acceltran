@@ -42,15 +42,34 @@ class ProcessingElement(object):
 		self.layer_norm = LayerNorm(f'{self.pe_name}_ln', config, constants)
 
 		self.area = 0
+		self.mac_lane_area = 0
+		self.sftm_area = 0 
+		self.patch_area = 0
+		self.layer_norm_area = 0
+		self.sparsity =0
 		for mac_lane in self.mac_lanes:
+			self.mac_lane_area += mac_lane.area
+			self.sparsity +=mac_lane.pre_sparsity.area + mac_lane.post_sparsity.area + mac_lane.fifo.area
+
 			self.area += mac_lane.area
 			self.area += mac_lane.pre_sparsity.area + mac_lane.post_sparsity.area + mac_lane.fifo.area
 			if mode == 'training':
 				self.area += mac_lane.stochastic_rounding.area
 		for sftm in self.softmax:
+			self.sftm_area +=  sftm.area
+
 			self.area += sftm.area
 		for patch in self.patchifier:
+			self.patch_area += patch.area
+
 			self.area += patch.area
+
+		print("mac_lane_area", self.mac_lane_area )
+		print("sftm_area", self.sftm_area )
+		print("Layer_norm area", self.layer_norm_area )
+		print("patchifier area", self.patch_area )
+		print("sparsity area", self.sparsity)
+
 		self.area = self.area + self.dataflow.area + self.dma.area + self.layer_norm.area
 
 	def process_cycle(self):
