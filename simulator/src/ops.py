@@ -211,7 +211,7 @@ class PatchifyOp(Op):
 		tile_size = (self.batch_size, self.patch_size, self.patch_size)
 
 		self.tiled_ops = []
-		for b in range(self.batch_size[0]):
+		for b in range(self.batch_size):
 			op_name = f'{self.op_name}_{b}'
 			self.tiled_ops.append(PatchifyTiledOp(op_name, self.required_in_buffer, tile_size))	
 		# for b in range(num_tiles_b):
