@@ -23,7 +23,7 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 	ops = []
 	batch_size = config['batch_size']
 	if transformer_type == "vision":
-		NUM_PATCHES = (IMAGE_SIZE[0] // config["patch_size"]) * (IMAGE_SIZE[1] // config["patch_size"]) + 1
+		NUM_PATCHES = (IMAGE_SIZE[0] // config["patch_size"]) * (IMAGE_SIZE[1] // config["patch_size"]) 
 	if direction == 'fwd':
 		if transformer_type == "language":
 			ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
