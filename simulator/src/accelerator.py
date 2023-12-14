@@ -273,10 +273,26 @@ class Accelerator(object):
 		plt.close()
 
 	def process_cycle(self, memory_ops, compute_ops, ops_to_set_required):
-		total_pe_energy = [0, 0]
+		total_energy = {
+			"total_pe_energy": [0, 0],
+			"total_mac_lane_energy" : [0, 0],
+			"total_dataflow_energy" :[0, 0],
+			"total_dma_energy" :[0, 0],
+			"total_layer_norm_energy" : [0, 0],
+			"total_softmax_energy" :[0, 0],
+			"total_patchifier_energy" : [0, 0]
+		}
+
 		for pe in self.pes:
-			pe_energy = pe.process_cycle()
-			total_pe_energy[0] += pe_energy[0]; total_pe_energy[1] += pe_energy[1]
+			pe_energy, mac_lane_energy, dataflow_energy, dma_energy, layer_norm_energy,  softmax_energy, patchifier_energy = pe.process_cycle()
+			total_energy["total_pe_energy"][0] += pe_energy[0]; total_energy['total_pe_energy'][1] += pe_energy[1]
+			total_energy["total_mac_lane_energy"][0] += mac_lane_energy[0]; total_energy["total_mac_lane_energy"][1] += mac_lane_energy[1]
+			total_energy["total_dataflow_energy"][0] += dataflow_energy[0]; total_energy["total_dataflow_energy"][1] += dataflow_energy[1]
+			total_energy["total_dma_energy"][0] += dma_energy[0]; total_energy["total_dma_energy"][1] += dma_energy[1]
+			total_energy["total_layer_norm_energy"][0] += layer_norm_energy[0]; total_energy["total_layer_norm_energy"][1] += layer_norm_energy[1]
+			total_energy["total_softmax_energy"][0] += softmax_energy[0]; total_energy["total_softmax_energy"][1] += softmax_energy[1]
+			total_energy["total_patchifier_energy"][0] += patchifier_energy[0];total_energy[ "total_patchifier_energy"][1] += patchifier_energy[1]
+
 
 		activation_buffer_energy = self.activation_buffer.process_cycle()
 		weight_buffer_energy = self.weight_buffer.process_cycle()
@@ -308,7 +324,7 @@ class Accelerator(object):
 				self.set_required(op)
 
 		# All energy in nJ
-		return tuple(total_pe_energy), activation_buffer_energy, weight_buffer_energy, mask_buffer_energy
+		return total_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy
 
 	def can_assign(self, op_list):
 		assert type(op_list) == list

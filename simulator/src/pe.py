@@ -55,9 +55,11 @@ class ProcessingElement(object):
 
 	def process_cycle(self):
 		total_energy = [0, 0]
+
+		mac_lane_energy = [0, 0]
 		for mac_lane in self.mac_lanes:
-			mac_lane_energy = mac_lane.process_cycle()
-			total_energy[0] += mac_lane_energy[0]; total_energy[1] += mac_lane_energy[1]
+			mac_energy = mac_lane.process_cycle()
+			mac_lane_energy[0] += mac_energy[0]; mac_lane_energy[1] += mac_energy[1]
 
 		softmax_energy = [0, 0]
 		for sftm in self.softmax:
@@ -74,9 +76,9 @@ class ProcessingElement(object):
 		layer_norm_energy = self.layer_norm.process_cycle()
 
 		for i in [0, 1]:
-			total_energy[i] = total_energy[i] + dataflow_energy[i] + dma_energy[i] + layer_norm_energy[i] + softmax_energy[i] + patchifier_energy[i]
+			total_energy[i] = total_energy[i] + mac_lane_energy[i] + dataflow_energy[i] + dma_energy[i] + layer_norm_energy[i] + softmax_energy[i] + patchifier_energy[i]
 
-		return tuple(total_energy) # unit: nJ
+		return tuple(total_energy), tuple(mac_lane_energy), tuple(dataflow_energy), tuple(dma_energy), tuple(layer_norm_energy),  tuple(softmax_energy), tuple(patchifier_energy)    # unit: nJ
 
 	def assign_op(self, op):
 		assert op.compute_op is True
