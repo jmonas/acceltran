@@ -617,7 +617,8 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 	num_mac_lanes = config['pe'] * config['lanes_per_pe']
 	num_macs = config['pe'] * config['lanes_per_pe'] * config['mac_per_lane']
 	num_softmax = config['pe'] * config['softmax_per_pe']
-	num_patchifier = config['pe'] * config['patchifier_per_pe']
+	if "patchifier_per_pe" in config:
+		num_patchifier = config['pe'] * config['patchifier_per_pe']
 	num_layer_norm = config['pe']
 	mac_lane_dynamic = constants['lane'][f'mac_per_lane_{config["mac_per_lane"]}'][config['non_linearity']]['dynamic']
 	mac_lane_leakage = constants['lane'][f'mac_per_lane_{config["mac_per_lane"]}'][config['non_linearity']]['leakage'] 
