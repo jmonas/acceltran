@@ -209,7 +209,7 @@ def get_utilization(accelerator, transformer_type):
 	return (num_mac_lanes - num_mac_lanes_free) * 1.0 / num_mac_lanes, (num_ln - num_ln_free) * 1.0 / num_ln, (num_sftm - num_sftm_free) * 1.0 / num_sftm, (num_patchifier - num_patchifier_free) * 1.0 / num_patchifier, accelerator.activation_buffer.used * 1.0 / accelerator.activation_buffer.buffer_size, accelerator.weight_buffer.used * 1.0 / accelerator.weight_buffer.buffer_size, accelerator.mask_buffer.used * 1.0 / accelerator.mask_buffer.buffer_size
 
 
-def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type):
+def log_metrics(logs, total_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type):
 	"""Log energy values for every cycle"""
 	if 'cycle' in logs:
 		last_cycle = logs['cycle'][-1]
@@ -224,7 +224,15 @@ def log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_e
 	assert cycle_difference > 0 
 	for c in range(last_cycle + 1, accelerator.cycle + 1):
 		logs['cycle'].append(c)
-		logs['total_pe_energy'].append((total_pe_energy[0] / cycle_difference, total_pe_energy[1] / cycle_difference))
+		logs['total_pe_energy'].append((total_energy['total_pe_energy'][0] / cycle_difference, total_energy['total_pe_energy'][1] / cycle_difference))
+		logs['total_mac_lane_energy'].append((total_energy['total_mac_lane_energy'][0] / cycle_difference, total_energy['total_mac_lane_energy'][1] / cycle_difference))
+		logs['total_dataflow_energy'].append((total_energy['total_dataflow_energy'][0] / cycle_difference, total_energy['total_dataflow_energy'][1] / cycle_difference))
+		logs['total_dma_energy'].append((total_energy['total_dma_energy'][0] / cycle_difference, total_energy['total_dma_energy'][1] / cycle_difference))
+		logs['total_layer_norm_energy'].append((total_energy['total_layer_norm_energy'][0] / cycle_difference, total_energy['total_layer_norm_energy'][1] / cycle_difference))
+		logs['total_softmax_energy'].append((total_energy['total_softmax_energy'][0] / cycle_difference, total_energy['total_softmax_energy'][1] / cycle_difference))
+		logs['total_patchifier_energy'].append((total_energy['total_patchifier_energy'][0] / cycle_difference, total_energy['total_patchifier_energy'][1] / cycle_difference))
+
+
 		logs['activation_buffer_energy'].append((activation_buffer_energy[0] / cycle_difference, activation_buffer_energy[1] / cycle_difference))
 		logs['weight_buffer_energy'].append((weight_buffer_energy[0] / cycle_difference, weight_buffer_energy[1] / cycle_difference))
 		logs['mask_buffer_energy'].append((mask_buffer_energy[0] / cycle_difference, mask_buffer_energy[1] / cycle_difference))
@@ -499,14 +507,14 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 						ops_to_set_required.append(head_op)
 							
 		# Process cycle for every module
-		total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy = accelerator.process_cycle(memory_ops, compute_ops, ops_to_set_required + compute_op)
+		total_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy = accelerator.process_cycle(memory_ops, compute_ops, ops_to_set_required + compute_op)
 		accelerator.cycle += 1
 
 		# Update stalls
 		stalls = [stalls[i] + new_stalls[i] for i in range(7)]
 
 		# Log energy values for each cycle 
-		if DO_LOGGING: logs = log_metrics(logs, total_pe_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type)
+		if DO_LOGGING: logs = log_metrics(logs, total_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type)
 
 		if debug:
 			if transformer_type =="language":
@@ -544,7 +552,17 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 
 				stalls = [stalls[i] + (new_stalls[i] * min_cycles) for i in range(7)]
 
-				if DO_LOGGING: logs = log_metrics(logs, (0, 0), activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type)
+				if DO_LOGGING: 
+					zero_energy = {
+							"total_pe_energy": [0, 0],
+							"total_mac_lane_energy" : [0, 0],
+							"total_dataflow_energy" :[0, 0],
+							"total_dma_energy" :[0, 0],
+							"total_layer_norm_energy" : [0, 0],
+							"total_softmax_energy" :[0, 0],
+							"total_patchifier_energy" : [0, 0]
+							}
+					logs = log_metrics(logs, zero_energy, activation_buffer_energy, weight_buffer_energy, mask_buffer_energy, stalls, logs_dir, accelerator, plot_steps, transformer_type)
 				continue
 
 		memory_op_idx, ops_done = update_op_idx(memory_ops, memory_op_idx, memory_stall, memory_ops_batch_size, ops_done)
