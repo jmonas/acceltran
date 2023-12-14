@@ -218,8 +218,7 @@ def log_metrics(logs, total_energy, activation_buffer_energy, weight_buffer_ener
 		for log_file in os.listdir(os.path.join(logs_dir, 'metrics')):
 			last_cycle = max(last_cycle, int(log_file.split('_')[1].split('.')[0]))
 
-		logs = {'cycle': [], 'total_pe_energy': [], 'activation_buffer_energy': [], 'weight_buffer_energy': [], 'mask_buffer_energy': [], 'activation_buffer_utilization': [], 'weight_buffer_utilization': [], 'mask_buffer_utilization': [], 'mac_lane_utilization': [], 'ln_utilization': [], 'sftm_utilization': [], "patchifier_utilization": [], 'stalls': []}
-
+		logs = {'cycle': [], 'total_pe_energy': [], 'total_mac_lane_energy': [], 'total_dataflow_energy': [], 'total_dma_energy': [], 'total_layer_norm_energy': [], 'total_softmax_energy': [], 'total_patchifier_energy': [], 'activation_buffer_energy': [], 'weight_buffer_energy': [], 'mask_buffer_energy': [], 'activation_buffer_utilization': [], 'weight_buffer_utilization': [], 'mask_buffer_utilization': [], 'mac_lane_utilization': [], 'ln_utilization': [], 'sftm_utilization': [], "patchifier_utilization": [], 'stalls': []}
 	cycle_difference = accelerator.cycle - last_cycle
 	assert cycle_difference > 0 
 	for c in range(last_cycle + 1, accelerator.cycle + 1):
