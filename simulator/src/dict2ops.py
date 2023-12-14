@@ -15,8 +15,8 @@ SEQ_LENGTH = 128
 VOCAB_SIZE = 30522
 
 # for vision transformer
-# IMAGE_SIZE = (128, 128)
-IMAGE_SIZE = (224, 224)
+IMAGE_SIZE = (128, 128)
+# IMAGE_SIZE = (224, 224)
 
 def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_type = "language"):
 	"""Get forward/backward operations for the given model"""
