@@ -624,7 +624,7 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 	mac_lane_leakage = constants['lane'][f'mac_per_lane_{config["mac_per_lane"]}'][config['non_linearity']]['leakage'] 
 	softmax_dynamic = constants['softmax'][f'tile_{config["tile"]["tile_x"]}']['dynamic']
 	softmax_leakage = constants['softmax'][f'tile_{config["tile"]["tile_x"]}']['leakage']
-	if patch_size in config:
+	if "patch_size" in config:
 		patchifier_dynamic = constants['patchifier'][f'tile_{config["patch_size"]}']['dynamic'] 
 	patchifier_leakage = constants['patchifier'][f'tile_{config["patch_size"]}']['leakage']
 	layer_norm_dynamic = constants['layer_norm'][f'tile_{config["tile"]["tile_x"]}']['dynamic']
