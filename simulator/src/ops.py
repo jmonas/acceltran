@@ -177,11 +177,13 @@ class PatchifyOp(Op):
 		patch_size (int): The size of the input patch.
 		compute_op (bool): If the operation is a compute operation.
 		required_in_buffer (list): List of data object names required in buffer.
+		batch_size (int): size of batch
 	"""
-	def __init__(self, op_name, config, required_in_buffer, patch_size):
+	def __init__(self, op_name, config, required_in_buffer, patch_size, batch_size):
 		Op.__init__(self, op_name, config)
 		self.required_in_buffer = required_in_buffer
 		self.patch_size = patch_size
+		self.batch_size = batch_size
 		self.compute_op = True
 		self.base_op = True
 	
@@ -191,7 +193,7 @@ class PatchifyOp(Op):
 		Returns:
 			output_size: size of the output vector
 		"""
-		return self.patch_size * self.patch_size
+		return self.patch_size * self.patch_size * self.batch_size
 
 	def tile_op(self):
 		"""Implement tiled patchify operation.
@@ -201,15 +203,21 @@ class PatchifyOp(Op):
 		"""
 
 		# Calculate the number of tiles needed for patchification
-		num_tiles_x = math.ceil(self.patch_size * 1.0 / self.config['tile']['tile_x'])
-		num_tiles_y = math.ceil(self.patch_size * 1.0 / self.config['tile']['tile_y'])
+		# num_tiles_b = math.ceil(self.batch_size[0] * 1.0 / self.config['tile']['tile_b'])
+		# num_tiles_x = math.ceil(self.patch_size * 1.0 / self.config['tile']['tile_x'])
+		# num_tiles_y = math.ceil(self.patch_size * 1.0 / self.config['tile']['tile_y'])
 		
-		tile_size = (self.config['tile']['tile_x'], self.config['tile']['tile_y'])
+		# tile_size = (self.config['tile']['tile_b'], self.config['tile']['tile_x'], self.config['tile']['tile_y'])
+		tile_size = (self.batch_size[0], self.patch_size, self.patch_size)
+
 		self.tiled_ops = []
-		for x in range(num_tiles_x):
-			for y in range(num_tiles_y):
-				op_name = f'{self.op_name}_x{x}_y{y}'
-				self.tiled_ops.append(PatchifyTiledOp(op_name, self.required_in_buffer, tile_size))
+		for b in range(self.batch_size[0]):
+			op_name = f'{self.op_name}_{b}'
+			self.tiled_ops.append(PatchifyTiledOp(op_name, self.required_in_buffer, tile_size))	
+		# for b in range(num_tiles_b):
+			# for x in range(num_tiles_x):
+			# 	for y in range(num_tiles_y):
+					
 
 		return self.tiled_ops
 
@@ -808,11 +816,11 @@ class ImagePatchify(Op):
 		image_size (tuple): size of the input image in pixels
 		patch_size: size of patchifier
 	"""
-	def __init__(self, op_name, config, image_size, patch_size):
+	def __init__(self, op_name, config, image_size, patch_size, batch_size):
 		Op.__init__(self, op_name, config)
 		self.image_size = image_size
 		self.patch_size = patch_size
-
+		self.batch_size = batch_size
 		assert image_size[0] % patch_size == 0  and image_size[1] % patch_size == 0
 
 		self.patch_rows = math.ceil(image_size[0] / patch_size)
@@ -824,7 +832,7 @@ class ImagePatchify(Op):
 		self.fwd_base_ops = []
 		for _ in range(self.patch_rows):
 			for _ in range(self.patch_cols):
-				self.fwd_base_ops.append(PatchifyOp(f'{self.op_name}_p', self.config, [], self.patch_size))
+				self.fwd_base_ops.append(PatchifyOp(f'{self.op_name}_p', self.config, [], self.patch_size, self.batch_size))
 
 	def tile_op(self, tile_memory_ops=False):
 		"""Implement tiled operations

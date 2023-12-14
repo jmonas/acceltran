@@ -116,7 +116,7 @@ class PatchifyTiledOp(TiledOp):
 		Returns:
 			output_size (tuple): size of the output vector
 		"""
-		return self.input_size[0] * self.input_size[1]
+		return self.input_size[0] * self.input_size[1] * self.input_size[2]
 
 
 

@@ -29,10 +29,11 @@ def get_ops(model_dict, config, direction, first_layer_only, debug, transformer_
 			ops.append(MemoryLoadOp('emb', config, (VOCAB_SIZE + SEQ_LENGTH, model_dict['h'][0]), 'weight'))
 		elif transformer_type == "vision":
 			# patchify input 
-			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"]))
+			ops.append(ImagePatchify('patchify', config, IMAGE_SIZE, config["patch_size"], batch_size))
 			embedding_feature_size = config["patch_size"] * config["patch_size"] * 3
 			# Load weights for projecting image patches to embeddings and adding positional embeddings
-			ops.append(MemoryLoadOp('patch_projection', config, (embedding_feature_size + NUM_PATCHES, model_dict['h'][0]), 'weight'))
+			ops.append(MemoryLoadOp('emb', config, (embedding_feature_size + NUM_PATCHES, model_dict['h'][0]), 'weight'))
+			ops.append(MatrixMultOp(f'patch_projection', config, [f'emb'], (batch_size, NUM_PATCHES, embedding_feature_size),(batch_size, embedding_feature_size, model_dict['h'][0])))
 
 	for layer in range(model_dict['l'] if not first_layer_only else 1):
 		layer_hidden_size = model_dict['h'][layer]
