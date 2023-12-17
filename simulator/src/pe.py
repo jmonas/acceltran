@@ -66,7 +66,7 @@ class ProcessingElement(object):
 
 		print("mac_lane_area", self.mac_lane_area )
 		print("sftm_area", self.sftm_area )
-		print("Layer_norm area", self.layer_norm_area )
+		print("Layer_norm area", self.layer_norm.area )
 		print("patchifier area", self.patch_area )
 		print("sparsity area", self.sparsity)
 
