@@ -39,9 +39,6 @@ class Accelerator(object):
 		self.area = 0
 		for pe in self.pes:
 			self.area += pe.area
-		print("activation_buffer.area",self.activation_buffer.area)
-		print("weight_buffer.area",self.weight_buffer.area)
-		print("mask_buffer.area",self.mask_buffer.area)
 
 
 		self.area = self.area + self.activation_buffer.area + self.weight_buffer.area + self.mask_buffer.area

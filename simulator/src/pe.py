@@ -64,11 +64,6 @@ class ProcessingElement(object):
 
 			self.area += patch.area
 
-		print("mac_lane_area", self.mac_lane_area )
-		print("sftm_area", self.sftm_area )
-		print("Layer_norm area", self.layer_norm.area )
-		print("patchifier area", self.patch_area )
-		print("sparsity area", self.sparsity)
 
 		self.area = self.area + self.dataflow.area + self.dma.area + self.layer_norm.area
 

@@ -30,14 +30,13 @@ OVERWRITE_PLOT_STEPS_WITH_DEBUG = False
 OVERWRITE_LOGS = True
 
 
-def main(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode: str, plot_utilization=True, first_layer_only=False, fast=False, debug=False, transformer_type = "language"):
-
+def main(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode: str, plot_utilization=True, first_layer_only=False, fast=False, debug=False):
 	if fast == False:
-		simulate(model_dict, config, constants, design_space, logs_dir, plot_steps, mode, plot_utilization, first_layer_only, debug, transformer_type)
+		simulate(model_dict, config, constants, design_space, logs_dir, plot_steps, mode, plot_utilization, first_layer_only, debug)
 	else:
-		simulate_fast(model_dict, config, constants, design_space, logs_dir, plot_steps, mode, plot_utilization, first_layer_only, debug, transformer_type)
+		simulate_fast(model_dict, config, constants, design_space, logs_dir, plot_steps, mode, plot_utilization, first_layer_only, debug)
+		
 	
-
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(
 		description='Input parameters for conversion',
@@ -93,13 +92,9 @@ if __name__ == '__main__':
 		dest='debug',
 		help='print debugging statements',
 		action='store_true')
-	parser.add_argument('--transformer_type',
-		dest='transformer_type',
-		type=str,
-		help='language, vision, multi-modal',
-		)
 
-	parser.set_defaults(debug=DEBUG, fast=False, plot_utilization=True, first_layer_only=False, transformer_type = "language")
+
+	parser.set_defaults(debug=DEBUG, fast=False, plot_utilization=True, first_layer_only=False)
 
 	args = parser.parse_args()
 
@@ -130,5 +125,5 @@ if __name__ == '__main__':
 	if os.path.exists(args.logs_dir) and OVERWRITE_LOGS: shutil.rmtree(args.logs_dir)
 	os.makedirs(os.path.join(args.logs_dir, 'metrics')); os.makedirs(os.path.join(args.logs_dir, 'utilization'))
 
-	main(model_dict, config, constants, design_space, args.logs_dir, args.plot_steps, args.mode, args.plot_utilization, args.first_layer_only, args.fast, args.debug, args.transformer_type)
+	main(model_dict, config, constants, design_space, args.logs_dir, args.plot_steps, args.mode, args.plot_utilization, args.first_layer_only, args.fast, args.debug)
 

@@ -56,8 +56,10 @@ def check_config(config: dict, design_space: dict):
 	if 'patchifier_per_pe' in config: assert config['patchifier_per_pe'] in design_space['patchifier_per_pe'], f'Cofiguration "patchifier_per_pe" ({config["patchifier_per_pe"]}) not in {design_space["patchifier_per_pe"]}'
 
 def get_op_list(ops, op_idx, batch_size):
+	# print("TONGITH")
+	# print(ops)
+	# print(op_idx)
 	assert type(op_idx) == list
-
 	if op_idx[0] is None:
 		return [None]
 	elif type(ops[op_idx[0]]) == list:
@@ -91,6 +93,12 @@ def get_last_compute_op(head_op, head_idx, memory_op_idx, memory_ops, compute_op
 
 	last_compute_op = None
 	compute_op_found = False
+
+	# print("opopo")
+	# print(memory_op_idx)
+	# print(head_idx)
+	# print(memory_ops)
+	# print(compute_ops)
 
 	if memory_op_idx[1] != []:
 		num_lists = len([idx for idx in range(memory_op_idx[0]) if type(memory_ops[idx]) == list]) + 1
@@ -337,7 +345,7 @@ def tile_ops_fast(op, config):
 	return num_tiled_ops, num_muls
 
 
-def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode='inference', plot_utilization=True, first_layer_only=False, debug=False, transformer_type = "language"):
+def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode='inference', plot_utilization=True, first_layer_only=False, debug=False):
 	"""Run a model_dict on an Accelerator object"""
 
 	# Check if configuration is valid
@@ -349,15 +357,16 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 	
 	# Get tiled ops from model dictionary
 
-	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=config['scheduler']['compute_ops']['tiled'], tile_memory_ops=config['scheduler']['memory_ops']['tiled'], first_layer_only=first_layer_only, debug=debug, transformer_type = transformer_type)
-
-
-	print(len(compute_ops))
+	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=config['scheduler']['compute_ops']['tiled'], tile_memory_ops=config['scheduler']['memory_ops']['tiled'], first_layer_only=first_layer_only, debug=debug)
+	# print("Start: ", compute_ops[0])
+	# print("len compute_ops[0]: ", len(compute_ops[0]))
+	# print("Start2: ", memory_ops)
+	transformer_type = model_dict["type"]
 	# assert type(memory_ops[1]) == list and type(compute_ops[0]) == list
 	if transformer_type == "language":
 		memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0] * len(compute_ops[0])], 0
 	else:
-		memory_op_idx, compute_op_idx, ops_done = [0, []], [0, []], 0
+		memory_op_idx, compute_op_idx, ops_done = [0, []], [0, [0]* len(compute_ops[0])], 0
 
 	# Get operation batch sizes
 	compute_ops_batch_size = config['scheduler']['compute_ops']['batch_size']
@@ -378,11 +387,16 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 	last_compute_ops = {}
 	stalls = [0] * 7
 
+
+
 	# Run operations on the accelerator in a cycle-accurate manner
 	while not compute_ops[-1].done:
+		# print(memory_op)
+		# print(compute_op)
+		# print(last_compute_ops)
 		# Update progress bar
 		if not debug:
-			pbar.set_description(f'Simulating accelerator at cycle: {accelerator.cycle}')
+			pbar.set_descriptionf(f'Simulating accelerator at cycle: {accelerator.cycle}')
 		pbar.update(get_ops_done(memory_ops, compute_ops) - pbar.n)
 
 		# Print cycle
@@ -414,15 +428,19 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 				data = head_op.convert_to_data()
 
 				# Word and position embeddings are always required in buffer
-				if 'emb' in head_op.op_name or 'patch_projection' in head_op.op_name: data.required_in_buffer = True
+				if 'emb' in head_op.op_name or 'patchify' in head_op.op_name: data.required_in_buffer = True
 
 				last_compute_done, store_op = True, False
 				if isinstance(head_op, (MemoryStoreOp, MemoryStoreTiledOp)): 
 					if head_op.op_name in last_compute_ops:
+						# print("hok")
 						last_compute_op = last_compute_ops[head_op.op_name]
 					else:
+						# print("hok2")
 						last_compute_op = get_last_compute_op(head_op, head_idx, memory_op_idx, memory_ops, compute_ops)
 						last_compute_ops[head_op.op_name] = last_compute_op
+					# print(last_compute_op)
+					# print("hidada")
 					last_compute_done = last_compute_op.done
 					store_op = True
 
@@ -578,7 +596,7 @@ def simulate(model_dict: dict, config: dict, constants: dict, design_space: dict
 	print(f'{color.GREEN}Finished simulation{color.ENDC}')
 
 
-def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode='inference', plot_utilization=True, first_layer_only=False, debug=False, transformer_type = "language"):
+def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space: dict, logs_dir: str, plot_steps: int, mode='inference', plot_utilization=True, first_layer_only=False, debug=False):
 	"""Run model_dict in an approximate manner on the Accelerator object"""
 
 	# Check if configuration is valid
@@ -587,9 +605,10 @@ def simulate_fast(model_dict: dict, config: dict, constants: dict, design_space:
 	# Instantiate accelerator based on given configuration
 	accelerator = Accelerator(config, constants, mode)
 	print(f'{color.GREEN}Accelerator area: {accelerator.area / 1e6 : 0.03f} mm\u00b2{color.ENDC}')
-	
+
+	transformer_type = model_dict["type"]
 	# Get ops from model_dict
-	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=False, tile_memory_ops=False, first_layer_only=first_layer_only, debug=debug, transformer_type = transformer_type)
+	memory_ops, compute_ops, num_ops = dict2ops(model_dict, config, mode=mode, tile_compute_ops=False, tile_memory_ops=False, first_layer_only=first_layer_only, debug=debug)
 	print('No tiling implemented in a fast run')
 
 	# assert type(memory_ops[1]) == list and type(compute_ops[0]) == list

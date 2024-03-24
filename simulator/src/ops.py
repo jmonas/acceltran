@@ -193,7 +193,7 @@ class PatchifyOp(Op):
 		Returns:
 			output_size: size of the output vector
 		"""
-		return self.patch_size * self.patch_size * self.batch_size
+		return (self.patch_size, self.patch_size, self.batch_size)
 
 	def tile_op(self):
 		"""Implement tiled patchify operation.
@@ -208,10 +208,11 @@ class PatchifyOp(Op):
 		# num_tiles_y = math.ceil(self.patch_size * 1.0 / self.config['tile']['tile_y'])
 		
 		# tile_size = (self.config['tile']['tile_b'], self.config['tile']['tile_x'], self.config['tile']['tile_y'])
-		tile_size = (self.batch_size, self.patch_size, self.patch_size)
+		tile_size = (self.config['tile']['tile_b'], self.patch_size, self.patch_size)
 
 		self.tiled_ops = []
-		for b in range(self.batch_size):
+		
+		for b in range(math.ceil(self.batch_size * 1.0 / self.config['tile']['tile_b'])):
 			op_name = f'{self.op_name}_{b}'
 			self.tiled_ops.append(PatchifyTiledOp(op_name, self.required_in_buffer, tile_size))	
 		# for b in range(num_tiles_b):
@@ -364,18 +365,27 @@ class SelfAttentionOp(Op):
 		input_size (tuple): size of the input matrix
 		hidden_size (int): hidden size of the attention head
 		type (str): type of self-attention in ['sdp', 'wma']
+		op_name2 (bool): cross-attension operation prefix
 	"""
-	def __init__(self, op_name, config, input_size, hidden_size, type):
+	def __init__(self, op_name, config, input_size, hidden_size, type, op_name_cross = None):
 		Op.__init__(self, op_name, config)
 		self.input_size = input_size
 		self.hidden_size = hidden_size
+		self.op_name_cross = op_name_cross
 		self.type = type
 		self.fwd_base_ops = []
 		self.bwd_base_ops = []
+		
 
 	def convert_to_fwd_base_ops(self):
 		"""Convert operation to forward base operations"""
 		self.fwd_base_ops = []
+
+		if self.op_name_cross:
+			self.op_name_proxy = self.op_name_cross
+		else: 
+			self.op_name_proxy = self.op_name
+
 
 		# Input activations are assumed to be in the activation buffer for throughput calculation (i.e., only loaded once)
 		## self.fwd_base_ops.append(MemoryLoadOp(f'{self.op_name}_inp-l', self.config, self.input_size, 'activation'))
@@ -383,13 +393,13 @@ class SelfAttentionOp(Op):
 		# Load weight matrices
 		self.weight_size = (self.input_size[0], self.input_size[2], self.hidden_size)
 		self.fwd_base_ops.append(MemoryLoadOp(f'{self.op_name}_q-l', self.config, self.weight_size, 'weight'))
-		self.fwd_base_ops.append(MemoryLoadOp(f'{self.op_name}_k-l', self.config, self.weight_size, 'weight'))
-		self.fwd_base_ops.append(MemoryLoadOp(f'{self.op_name}_v-l', self.config, self.weight_size, 'weight'))
+		self.fwd_base_ops.append(MemoryLoadOp(f'{self.op_name_proxy}_k-l', self.config, self.weight_size, 'weight'))
+		self.fwd_base_ops.append(MemoryLoadOp(f'{self.op_name_proxy}_v-l', self.config, self.weight_size, 'weight'))
 
 		# Get query, key, and value matrices
 		query_op = MatrixMultOp(f'{self.op_name}_q', self.config, [f'{self.op_name}_q-l'], self.input_size, self.weight_size)
-		key_op = MatrixMultOp(f'{self.op_name}_k', self.config, [f'{self.op_name}_k-l'], self.input_size, self.weight_size)
-		value_op = MatrixMultOp(f'{self.op_name}_v', self.config, [f'{self.op_name}_v-l'], self.input_size, self.weight_size)
+		key_op = MatrixMultOp(f'{self.op_name_proxy}_k', self.config, [f'{self.op_name_proxy}_k-l'], self.input_size, self.weight_size)
+		value_op = MatrixMultOp(f'{self.op_name_proxy}_v', self.config, [f'{self.op_name_proxy}_v-l'], self.input_size, self.weight_size)
 
 		self.fwd_base_ops.extend([query_op, key_op, value_op])
 
@@ -399,8 +409,8 @@ class SelfAttentionOp(Op):
 
 		# Store key, query and value matrices in buffer
 		self.fwd_base_ops.append(MemoryStoreOp(f'{self.op_name}_q-s', self.config, self.query_size, 'activation'))
-		self.fwd_base_ops.append(MemoryStoreOp(f'{self.op_name}_k-s', self.config, self.key_size, 'activation'))
-		self.fwd_base_ops.append(MemoryStoreOp(f'{self.op_name}_v-s', self.config, self.value_size, 'activation'))
+		self.fwd_base_ops.append(MemoryStoreOp(f'{self.op_name_proxy}_k-s', self.config, self.key_size, 'activation'))
+		self.fwd_base_ops.append(MemoryStoreOp(f'{self.op_name_proxy}_v-s', self.config, self.value_size, 'activation'))
 
 		# Implement weighted multiplicative attention
 		if self.type == 'wma':
@@ -420,7 +430,7 @@ class SelfAttentionOp(Op):
 			self.mult_key_size = self.key_transposed_size
 
 		# Implement scaled dot-product
-		sdp_1_op = MatrixMultOp(f'{self.op_name}_sdp-qk', self.config, [f'{self.op_name}_q-s', f'{self.op_name}_k-s', f'{self.op_name}_v-s'], self.query_size, self.mult_key_size)
+		sdp_1_op = MatrixMultOp(f'{self.op_name}_sdp-qk', self.config, [f'{self.op_name}_q-s', f'{self.op_name_cross}_k-s', f'{self.op_name_cross}_v-s'], self.query_size, self.mult_key_size)
 		self.fwd_base_ops.append(sdp_1_op)
 
 		self.sdp_1_size = sdp_1_op.output_size()
@@ -821,33 +831,39 @@ class ImagePatchify(Op):
 		self.image_size = image_size
 		self.patch_size = patch_size
 		self.batch_size = batch_size
-		assert image_size[0] % patch_size == 0  and image_size[1] % patch_size == 0
+		assert image_size % patch_size == 0
 
-		self.patch_rows = math.ceil(image_size[0] / patch_size)
-		self.patch_cols = math.ceil(image_size[1] / patch_size)
+		self.patch_rows = self.patch_cols =  math.ceil(image_size / patch_size)
 		self.fwd_base_ops = []
 
 	def convert_to_fwd_base_ops(self):
 		"""Convert operation to forward base operations"""
 		self.fwd_base_ops = []
-		for _ in range(self.patch_rows):
-			for _ in range(self.patch_cols):
-				self.fwd_base_ops.append(PatchifyOp(f'{self.op_name}_p', self.config, [], self.patch_size, self.batch_size))
+		for i in range(self.patch_rows):
+			for j in range(self.patch_cols):
+				patch_op = PatchifyOp(f'{self.op_name}_{i*self.patch_rows+j}', self.config, [], self.patch_size, self.batch_size)
+				self.fwd_base_ops.append(patch_op)
+		# self.fwd_base_ops.append(MemoryStoreOp(f'{self.op_name}-s', self.config, (self.batch_size, self.patch_rows* self.patch_cols, self.patch_size**2), 'activation'))
 
-	def tile_op(self, tile_memory_ops=False):
+	def tile_op(self, direction, tile_memory_ops=False):
 		"""Implement tiled operations
 
 		Returns:
 			self.tiled_ops (list): list of tiled base ops
 		"""
+		if direction == 'fwd':
+			if not self.fwd_base_ops: self.convert_to_fwd_base_ops()
+			base_ops = self.fwd_base_ops
+		# else:
+		# 	if not self.bwd_base_ops: self.convert_to_bwd_base_ops()
+		# 	base_ops = self.bwd_base_ops
 		self.tiled_ops = []
-		for op in self.ops:
-			if isinstance(op, (MemoryLoadOp)):
+		for op in base_ops:
+			if isinstance(op, (MemoryLoadOp, MemoryStoreOp)):
 				if tile_memory_ops: 
 					self.tile_op.extend(op.tile_op())
 				else:
 					self.tile_op.append(op)
 			else:
 				self.tile_op.extend(op.tile_op())
-
 		return self.tiled_ops

@@ -109,6 +109,7 @@ class Patchifier(Module):
 		self.assigned_op = None
 
 	def assign_op(self, op):
+		print(f"{self.module_name} --- {op.op_name}")
 		self.process_cycles = 1
 		self.ready = False
 
