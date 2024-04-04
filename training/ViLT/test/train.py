@@ -6290,7 +6290,6 @@ config = {
   "image_size": 384,
   "initializer_range": 0.02,
   "intermediate_size": 512,
-  "label2id": None,
   "layer_norm_eps": 1e-12,
   "max_image_length": -1,
   "max_position_embeddings": 40,
@@ -6349,7 +6348,6 @@ f = open('/scratch/gpfs/jmonas/VQA/v2_mscoco_train2014_annotations.json')
 # Return JSON object as dictionary
 annotations = json.load(f)['annotations']
 
-print(config["label2id"])
 for annotation in tqdm(annotations):
     answers = annotation['answers']
     answer_count = {}
@@ -6359,10 +6357,7 @@ for annotation in tqdm(annotations):
     labels = []
     scores = []
     for answer in answer_count: 
-        print(config.keys())
-        print(config["label2id"])
-        ids = config["label2id"]
-        if answer not in list(ids.keys()):
+        if answer not in list(config["label2id"].keys()):
             continue
         labels.append(config["label2id"][answer])
         score = get_score(answer_count[answer])
