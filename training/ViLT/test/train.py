@@ -6421,16 +6421,16 @@ class VQADataset(torch.utils.data.Dataset):
 
 # training_dataset = load_dataset("json", data_files="/scratch/gpfs/jmonas/IconDomainVQAData/train.jsonl", split="train[:90%]")
 # valid_dataset = load_dataset("json", data_files="/scratch/gpfs/jmonas/IconDomainVQAData/train.jsonl", split="train[90%:]")
-train_count = round(len(questions) * .9)
-validation_count = len(questions) - train_count
+train_count = round(len(questions) * .5)
+VALIDATION_SIZE = 1512  # Number of examples to use for validation
 
 train_dataset = VQADataset(questions=questions[:train_count],
                            annotations=annotations[:train_count],
                            processor=processor)
-valid_dataset = VQADataset(questions=questions[train_count:],
-                           annotations=annotations[:train_count:],
+valid_dataset = VQADataset(questions=questions[train_count:train_count + VALIDATION_SIZE],
+                           annotations=annotations[train_count:train_count + VALIDATION_SIZE],
                           processor=processor)
-print("Training sets: {} - Validating set: {}".format(train_count, validation_count))
+print("Training sets: {} - Validating set: {}".format(train_count, VALIDATION_SIZE))
 
 
 def collate_fn(batch):
@@ -6495,36 +6495,38 @@ for epoch in range(num_epochs):
         scaler.step(optimizer)
         scaler.update()
         print(f"{idx}, Loss: {loss}")
-    
-    model.eval()
-    eval_loss = 0
-    for idx, batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
-        input_ids = batch.pop('input_ids').to(device)
-        pixel_values = batch.pop('pixel_values').to(device)
-        attention_masked = batch.pop('attention_mask').to(device)
-        labels = batch.pop('labels').to(device)
 
-        with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
-            outputs = model(input_ids=input_ids,
-                        pixel_values=pixel_values,
-                        attention_mask=attention_masked,
-                        labels=labels)
-        
-        loss = outputs.loss
-        eval_loss += loss.item()
+        if idx % 500:
+            model.eval()
+            eval_loss = 0
+            for idx, batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
+                input_ids = batch.pop('input_ids').to(device)
+                pixel_values = batch.pop('pixel_values').to(device)
+                attention_masked = batch.pop('attention_mask').to(device)
+                labels = batch.pop('labels').to(device)
 
-    tracking_information.append((epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]))
-    print("Epoch: {} - Training loss: {} - Eval Loss: {} - LR: {}".format(epoch+1, epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]))
-    scheduler.step()
-    if eval_loss < min_eval_loss:
-        model.save_pretrained("Model/vilt-saved-model", from_pt=True) 
-        print("Saved model to Model/vilt-saved-model")
-        min_eval_loss = eval_loss
-        early_stopping_hook = 0
-    else:
-        early_stopping_hook += 1
-        if early_stopping_hook > patience:
-            break
+                with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
+                    outputs = model(input_ids=input_ids,
+                                pixel_values=pixel_values,
+                                attention_mask=attention_masked,
+                                labels=labels)
+                
+                loss = outputs.loss
+                eval_loss += loss.item()
+
+            tracking_information.append((epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]))
+            print("Epoch: {} - Training loss: {} - Eval Loss: {} - LR: {}".format(epoch+1, epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]))
+            # scheduler.step()
+            if eval_loss < min_eval_loss:
+                model.save_pretrained(f"Model/vilt-saved-model-{idx//500}", from_pt=True) 
+                print(f"Saved model to Model/vilt-saved-model-{idx//500}")
+                min_eval_loss = eval_loss
+                early_stopping_hook = 0
+            else:
+                early_stopping_hook += 1
+                if early_stopping_hook > patience:
+                    break
+            model.train()
     
-pickle.dump(tracking_information, open("tracking_information.pkl", "wb"))
+pickle.dump(trackings_information, open("tracking_information.pkl", "wb"))
 print("The finetuning process has done!")
