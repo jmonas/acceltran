@@ -6474,7 +6474,7 @@ scaler = torch.cuda.amp.GradScaler()
 for epoch in range(num_epochs):
     epoch_loss = 0
     model.train()
-    for idx, batch in zip(tqdm(range(len(train_dataloader)), desc='Training batch: ...'), train_dataloader):
+    for idx, batch in enumerate(train_dataloader):
         input_ids = batch.pop('input_ids').to(device)
         pixel_values = batch.pop('pixel_values').to(device)
         attention_masked = batch.pop('attention_mask').to(device)
@@ -6497,7 +6497,7 @@ for epoch in range(num_epochs):
         scaler.update()
         print(f"{idx}, Loss: {loss}")
 
-        if idx % 500:
+        if (idx+1) % 500==0:
             model.eval()
             eval_loss = 0
             for idx, batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
@@ -6529,5 +6529,5 @@ for epoch in range(num_epochs):
                     break
             model.train()
     
-            pickle.dump(tracking_information, open(f"tracking_information-{idx//500}.pkl", "wb"))
+            pickle.dump(tracking_information, open(f"Model/tracking_information-{idx//500}.pkl", "wb"))
 print("The finetuning process has done!")
