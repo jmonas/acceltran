@@ -6360,6 +6360,7 @@ for annotation in tqdm(annotations):
     scores = []
     for answer in answer_count: 
         print(config.keys())
+        print(config.vocab_size)
         ids = config["label2id"]
         if answer not in list(ids.keys()):
             continue
