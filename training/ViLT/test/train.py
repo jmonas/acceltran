@@ -6349,7 +6349,6 @@ f = open('/scratch/gpfs/jmonas/VQA/v2_mscoco_train2014_annotations.json')
 # Return JSON object as dictionary
 annotations = json.load(f)['annotations']
 
-print(config.keys())
 for annotation in tqdm(annotations):
     answers = annotation['answers']
     answer_count = {}
@@ -6405,6 +6404,8 @@ class VQADataset(torch.utils.data.Dataset):
         # add labels
         labels = annotation['labels']
         scores = annotation['scores']
+        print(config.keys())
+
         # based on: https://github.com/dandelin/ViLT/blob/762fd3975c180db6fc88f577cf39549983fa373a/vilt/modules/objectives.py#L301
         targets = torch.zeros(len(config.id2label))
         for label, score in zip(labels, scores):
