@@ -3220,7 +3220,6 @@ train_dataset = VQADataset(dataset=training_dataset,
                           processor=processor)
 valid_dataset = VQADataset(dataset=valid_dataset,
                           processor=processor)
-/home/jmonas/acceltran/training/ViLT/test
 
 batch_size = 12
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
