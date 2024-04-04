@@ -6359,9 +6359,9 @@ for annotation in tqdm(annotations):
     labels = []
     scores = []
     for answer in answer_count: 
-        if answer not in list(config.label2id.keys()):
+        if answer not in list(config["label2id"].keys()):
             continue
-        labels.append(config.label2id[answer])
+        labels.append(config["label2id"][answer])
         score = get_score(answer_count[answer])
         scores.append(score)
     annotation['labels'] = labels
