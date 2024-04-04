@@ -3152,7 +3152,7 @@ config = {
   "model_type": "vilt",
   "num_attention_heads": 2,
   "num_channels": 3,
-  "num_hidden_layers": 4,
+  "num_hidden_layers": 2,
   "num_images": -1,
   "patch_size": 32,
   "qkv_bias": True,
