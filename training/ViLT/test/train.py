@@ -8,6 +8,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import pickle
+from torchvision.transforms import Compose, Resize, ToTensor, Normalize
 
 config = {
   "architectures": [
@@ -3187,10 +3188,15 @@ torch.manual_seed(42)
 class VQADataset(torch.utils.data.Dataset):
     """VQA (v2) dataset."""
 
-    def __init__(self, dataset, processor):
+    def __init__(self, dataset, processor, transform=None):
         self.dataset = dataset
         self.processor = processor
-
+        self.transform = transform if transform is not None else Compose([
+            Resize((384, 384)),  # Resize to a fixed size. You can adjust the size as needed.
+            ToTensor(),
+            # If normalization is required, include Normalize with the appropriate mean and std
+            # Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
     def __len__(self):
         return len(self.dataset)
 
