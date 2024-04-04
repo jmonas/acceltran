@@ -6404,7 +6404,7 @@ class VQADataset(torch.utils.data.Dataset):
         labels = annotation['labels']
         scores = annotation['scores']
         # based on: https://github.com/dandelin/ViLT/blob/762fd3975c180db6fc88f577cf39549983fa373a/vilt/modules/objectives.py#L301
-        targets = torch.zeros(len(config.id2label))
+        targets = torch.zeros(len(config["id2label"]))
         for label, score in zip(labels, scores):
               targets[label] = score
         encoding["labels"] = targets
