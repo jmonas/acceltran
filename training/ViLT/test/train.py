@@ -3199,7 +3199,7 @@ class VQADataset(torch.utils.data.Dataset):
         question = self.dataset[idx]['question']
         answer = self.dataset[idx]['answer']
         image_id = self.dataset[idx]['pid']
-        image_path = f"/scratch/gpfs/jmonas/IconDomainVQAData/train_fill_in_blank/{image_id}/image.png"
+        image_path = f"/scratch/gpfs/jmonas/IconDomainVQAData/train_fill_in_blank/train_fill_in_blank/{image_id}/image.png"
         image = Image.open(image_path).convert("RGB")
         text = question
         
