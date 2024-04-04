@@ -6349,7 +6349,7 @@ f = open('/scratch/gpfs/jmonas/VQA/v2_mscoco_train2014_annotations.json')
 # Return JSON object as dictionary
 annotations = json.load(f)['annotations']
 
-
+print(config["label2id"])
 for annotation in tqdm(annotations):
     answers = annotation['answers']
     answer_count = {}
