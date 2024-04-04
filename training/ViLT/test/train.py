@@ -6349,6 +6349,7 @@ f = open('/scratch/gpfs/jmonas/VQA/v2_mscoco_train2014_annotations.json')
 # Return JSON object as dictionary
 annotations = json.load(f)['annotations']
 
+print(config.keys())
 for annotation in tqdm(annotations):
     answers = annotation['answers']
     answer_count = {}
@@ -6357,7 +6358,7 @@ for annotation in tqdm(annotations):
         answer_count[answer_] = answer_count.get(answer_, 0) + 1
     labels = []
     scores = []
-    for answer in answer_count:
+    for answer in answer_count: 
         if answer not in list(config.label2id.keys()):
             continue
         labels.append(config.label2id[answer])
