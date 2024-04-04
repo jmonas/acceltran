@@ -3170,7 +3170,7 @@ url = "http://images.cocodataset.org/val2017/000000039769.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
 text = "How many people in this photo?"
 configuration = ViltConfig(**config)
-processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa")
+processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
 model =ViltForQuestionAnswering(configuration)
 
 # prepare inputs
