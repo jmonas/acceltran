@@ -6374,6 +6374,7 @@ model =ViltForQuestionAnswering(configuration)
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
 model.to(device)
 
 torch.cuda.empty_cache()
@@ -6528,5 +6529,5 @@ for epoch in range(num_epochs):
                     break
             model.train()
     
-pickle.dump(trackings_information, open("tracking_information.pkl", "wb"))
+            pickle.dump(tracking_information, open(f"tracking_information-{idx//500}.pkl", "wb"))
 print("The finetuning process has done!")
