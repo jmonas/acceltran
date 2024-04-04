@@ -3208,6 +3208,9 @@ class VQADataset(torch.utils.data.Dataset):
         image_path = f"/scratch/gpfs/jmonas/IconDomainVQAData/train_fill_in_blank/train_fill_in_blank/{image_id}/image.png"
         image = Image.open(image_path).convert("RGB")
         text = question
+
+        if self.transform:
+            image = self.transform(image)
         
         encoding = self.processor(image, text, padding="max_length", truncation=True, return_tensors="pt")
         labels = self.processor.tokenizer.encode(
