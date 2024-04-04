@@ -15,6 +15,7 @@ from typing import Optional
 from os import listdir
 from os.path import isfile, join
 from tqdm.auto import tqdm
+import torchvision.transforms as transforms
 
 config = {
   "architectures": [
@@ -6385,6 +6386,9 @@ class VQADataset(torch.utils.data.Dataset):
         self.questions = questions
         self.annotations = annotations
         self.processor = processor
+        self.transform = transforms.Compose([
+            transforms.Lambda(lambda img: img.convert('RGB')),
+        ])
 
     def __len__(self):
         return len(self.annotations)
@@ -6393,7 +6397,11 @@ class VQADataset(torch.utils.data.Dataset):
         # get image + text
         annotation = self.annotations[idx]
         questions = self.questions[idx]
-        image = Image.open(id_to_filename[annotation['image_id']])
+        image_path = id_to_filename[annotation['image_id']]
+        with Image.open(image_path) as img:
+            # Convert any image to RGB (3 channels)
+            image = self.transform(img)
+            
         text = questions['question']
 
         encoding = self.processor(image, text, padding="max_length", truncation=True, return_tensors="pt")
