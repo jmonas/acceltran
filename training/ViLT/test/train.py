@@ -6413,8 +6413,8 @@ class VQADataset(torch.utils.data.Dataset):
 
 # training_dataset = load_dataset("json", data_files="/scratch/gpfs/jmonas/IconDomainVQAData/train.jsonl", split="train[:90%]")
 # valid_dataset = load_dataset("json", data_files="/scratch/gpfs/jmonas/IconDomainVQAData/train.jsonl", split="train[90%:]")
-train_count = len(questions) * .9
-validation_count = len(questions) * .9
+train_count = round(len(questions) * .9)
+validation_count = len(questions) - train_count
 
 train_dataset = VQADataset(questions=questions[:train_count],
                            annotations=annotations[:train_count],
