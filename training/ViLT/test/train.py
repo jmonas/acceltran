@@ -6401,7 +6401,7 @@ class VQADataset(torch.utils.data.Dataset):
         with Image.open(image_path) as img:
             # Convert any image to RGB (3 channels)
             image = self.transform(img)
-            
+
         text = questions['question']
 
         encoding = self.processor(image, text, padding="max_length", truncation=True, return_tensors="pt")
@@ -6494,6 +6494,7 @@ for epoch in range(num_epochs):
         scaler.scale(loss).backward()
         scaler.step(optimizer)
         scaler.update()
+        print(f"{idx}, Loss: {loss}")
     
     model.eval()
     eval_loss = 0
