@@ -6336,7 +6336,7 @@ def id_from_filename(filename: str) -> Optional[int]:
         return None
     return int(match.group(1))
 
-root = '/content/drive/MyDrive/ViLT/Datasets/VQAv2/train2014'
+root = '/scratch/gpfs/jmonas/VQA/train2014'
 file_names = [f for f in tqdm(listdir(root)) if isfile(join(root, f))]
 
 filename_to_id = {root + "/" + file: id_from_filename(file) for file in file_names}
