@@ -21,7 +21,7 @@ from PIL import Image
 
 url = "https://upload.wikimedia.org/wikipedia/commons/3/38/Adorable-animal-cat-20787.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "How many cats are there?"
+text = "Is this a cat?"
 
 config = json.load(open('config.json'))
 
