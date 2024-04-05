@@ -23,7 +23,7 @@ url = "https://img.freepik.com/premium-photo/blue-premium-business-sedan-car-spo
 image = Image.open(requests.get(url, stream=True).raw)
 text = "What is in the picture?"
 
-config = json.load(open('config.json'))
+config = json.load(open('config_small.json'))
 
 configuration = ViltConfig(**config)
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
