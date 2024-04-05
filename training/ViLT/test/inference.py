@@ -21,7 +21,7 @@ from PIL import Image
 
 url = "http://images.cocodataset.org/val2017/000000039769.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "Is there a dog?"
+text = "Is there a person?"
 
 config = json.load(open('config.json'))
 
