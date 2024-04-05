@@ -77,7 +77,7 @@ class VQADataset(torch.utils.data.Dataset):
 
 def collate_fn(batch):
   input_ids = [item['input_ids'] for item in batch]
-  pixel_values = [item['pixel_values'] for item in batch]
+  pixel_values = [item['pixel_values'][0] for item in batch]
   token_type_ids = [item['token_type_ids'] for item in batch]
   question_ids = [item['question_id'] for item in batch]
 
