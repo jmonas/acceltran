@@ -223,7 +223,7 @@ for epoch in range(num_epochs):
                 with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
                     outputs = model(input_ids=input_ids,
                                 pixel_values=pixel_values,
-                                attention_mask=attention_masked,
+                                # attention_mask=attention_masked,
                                 labels=labels)
                 
                 loss = outputs.loss
