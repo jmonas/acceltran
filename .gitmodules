@@ -10,3 +10,6 @@
 [submodule "training/training/VQA"]
 	path = training/training/VQA
 	url = https://github.com/GT-Vision-Lab/VQA.git
+[submodule "training/dataset/VQA"]
+	path = training/dataset/VQA
+	url = https://github.com/GT-Vision-Lab/VQA.git
