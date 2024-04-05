@@ -84,11 +84,11 @@ with torch.no_grad():
         outputs = model(**inputs)
         preds = outputs.logits.argmax(-1).tolist()  # Convert logits to predicted indices
         
-        for question_id, pred in zip(batch['question_id'], preds):
+        for item, pred in zip(batch, preds):
             # Convert `pred` to the corresponding answer string. This may involve a mapping similar to `id2label`.
             answer = config["id2label"][pred]  # This is a placeholder; adapt it to your model's specifics
             
-            predictions.append({'question_id': question_id, 'answer': answer})
+            predictions.append({'question_id': item["question_id"], 'answer': answer})
 
 # Save predictions to a JSON file
 with open('vqa_predictions.json', 'w') as f:
