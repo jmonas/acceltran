@@ -11,6 +11,7 @@ from tqdm.auto import tqdm
 from os import listdir
 from os.path import isfile, join
 import torchvision.transforms as transforms
+from torch.utils.data import DataLoader
 
 config = json.load(open('config_small.json'))
 
@@ -96,7 +97,8 @@ def collate_fn(batch):
 batch_size = 32
 
 test_dataloader = VQADataset(questions=questions,
-                           processor=processor, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
+                           processor=processor)
+train_dataloader = DataLoader(test_dataloader, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
 
 model.eval()  # Set the model to evaluation mode
 
