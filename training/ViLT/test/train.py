@@ -90,7 +90,6 @@ print(device)
 model.to(device)
 
 torch.cuda.empty_cache()
-torch.manual_seed(42)
 
 class VQADataset(torch.utils.data.Dataset):
     """VQA (v2) dataset."""
@@ -134,14 +133,14 @@ class VQADataset(torch.utils.data.Dataset):
 
 # training_dataset = load_dataset("json", data_files="/scratch/gpfs/jmonas/IconDomainVQAData/train.jsonl", split="train[:90%]")
 # valid_dataset = load_dataset("json", data_files="/scratch/gpfs/jmonas/IconDomainVQAData/train.jsonl", split="train[90%:]")
-train_count = round(len(questions) * .5)
-VALIDATION_SIZE = 1512  # Number of examples to use for validation
+train_count = round(len(questions) * .99)
+VALIDATION_SIZE = len(questions) - train_count  # Number of examples to use for validation
 
 train_dataset = VQADataset(questions=questions[:train_count],
                            annotations=annotations[:train_count],
                            processor=processor)
-valid_dataset = VQADataset(questions=questions[train_count:train_count + VALIDATION_SIZE],
-                           annotations=annotations[train_count:train_count + VALIDATION_SIZE],
+valid_dataset = VQADataset(questions=questions[train_count:],
+                           annotations=annotations[train_count:],
                           processor=processor)
 print("Training sets: {} - Validating set: {}".format(train_count, VALIDATION_SIZE))
 
