@@ -82,9 +82,7 @@ def collate_fn(batch):
   question_ids = [item['question_id'] for item in batch]
 
   # create padded pixel values and corresponding pixel mask
-  print(pixel_values)
-  for img in pixel_values:
-      print(img.shape)
+  print(question_ids)
   encoding = processor.image_processor.pad(pixel_values, return_tensors="pt")
 
   # create new batch
