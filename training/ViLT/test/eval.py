@@ -96,11 +96,12 @@ def collate_fn(batch):
 
 batch_size = 32
 
-test_dataset = VQADataset(questions=questions,
+test_dataset = VQADataset(questions=questions[:10000],
                            processor=processor)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
 
 model.eval()  # Set the model to evaluation mode
+model.to(device)
 
 predictions = []
 
