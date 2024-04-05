@@ -18,7 +18,7 @@ from tqdm.auto import tqdm
 import torchvision.transforms as transforms
 
 
-config = json.load(open('config_medium.json'))
+config = json.load(open('config_medium_plus.json'))
 size = f"l{config["num_hidden_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 
 def get_score(occurences):
