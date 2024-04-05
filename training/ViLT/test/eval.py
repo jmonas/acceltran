@@ -96,16 +96,16 @@ def collate_fn(batch):
 
 batch_size = 32
 
-test_dataloader = VQADataset(questions=questions,
+test_dataset = VQADataset(questions=questions,
                            processor=processor)
-train_dataloader = DataLoader(test_dataloader, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
+test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
 
 model.eval()  # Set the model to evaluation mode
 
 predictions = []
 
 with torch.no_grad():
-    for batch in test_dataloader:
+    for idx, batch in enumerate(test_dataloader):
         print(batch)
         # Adapt these lines based on how your DataLoader and model are set up
         inputs = {'pixel_values': batch['pixel_values'].to(device), 'input_ids': batch['input_ids'].to(device)}
