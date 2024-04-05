@@ -76,13 +76,12 @@ class VQADataset(torch.utils.data.Dataset):
 
 
 def collate_fn(batch):
-  input_ids = [item['input_ids'] for item in batch]
+  input_ids = [item['input_ids'][0] for item in batch]
   pixel_values = [item['pixel_values'][0] for item in batch]
-  token_type_ids = [item['token_type_ids'] for item in batch]
+  token_type_ids = [item['token_type_ids'][0] for item in batch]
   question_ids = [item['question_id'] for item in batch]
 
   # create padded pixel values and corresponding pixel mask
-  print(question_ids)
   encoding = processor.image_processor.pad(pixel_values, return_tensors="pt")
 
   # create new batch
@@ -107,7 +106,6 @@ predictions = []
 
 with torch.no_grad():
     for idx, batch in enumerate(test_dataloader):
-        print(batch)
         # Adapt these lines based on how your DataLoader and model are set up
         inputs = {'pixel_values': batch['pixel_values'].to(device), 'input_ids': batch['input_ids'].to(device)}
         outputs = model(**inputs)
