@@ -19,9 +19,9 @@ import torchvision.transforms as transforms
 import requests
 from PIL import Image
 
-url = "https://st.depositphotos.com/1594920/2143/i/450/depositphotos_21432503-stock-photo-close-up-of-border-collie.jpg"
+url = "https://www.realmenrealstyle.com/wp-content/uploads/2023/11/The-Porkpie-hat-stubble.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "How many dogs are there?"
+text = "What does the man have on his head?"
 
 config = json.load(open('config_medium_plus.json'))
 
