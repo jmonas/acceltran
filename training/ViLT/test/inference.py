@@ -23,11 +23,11 @@ url = "https://img.freepik.com/premium-photo/blue-premium-business-sedan-car-spo
 image = Image.open(requests.get(url, stream=True).raw)
 text = "Is there a car?"
 
-config = json.load(open('config_small.json'))
+config = json.load(open('config_small2.json'))
 
 configuration = ViltConfig(**config)
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
-model =ViltForQuestionAnswering.from_pretrained("/home/jmonas/acceltran/training/ViLT/test/Model/vilt-saved-model-0", config=configuration, use_safetensors=True)
+model =ViltForQuestionAnswering.from_pretrained("/home/jmonas/acceltran/training/ViLT/test/Models/l2_h256_i512/vilt-saved-model-0-17", config=configuration, use_safetensors=True)
 
 model2 =ViltForQuestionAnswering.from_pretrained("dandelin/vilt-b32-finetuned-vqa")
 
