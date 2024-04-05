@@ -19,9 +19,9 @@ import torchvision.transforms as transforms
 import requests
 from PIL import Image
 
-url = "https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg"
+url = "http://images.cocodataset.org/val2017/000000039769.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "How many people are there?"
+text = "what color is the blanket?"
 
 config = json.load(open('config.json'))
 
