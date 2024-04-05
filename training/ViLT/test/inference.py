@@ -21,7 +21,7 @@ from PIL import Image
 
 url = "https://www.realmenrealstyle.com/wp-content/uploads/2023/11/The-Porkpie-hat-stubble.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "Is this a man or woman?"
+text = "Man or woman?"
 
 config = json.load(open('config_medium_plus.json'))
 
