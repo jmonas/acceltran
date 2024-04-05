@@ -87,7 +87,7 @@ with torch.no_grad():
         for item, pred in zip(batch, preds):
             # Convert `pred` to the corresponding answer string. This may involve a mapping similar to `id2label`.
             answer = config["id2label"][str(pred)]  # This is a placeholder; adapt it to your model's specifics
-            
+            print(item)
             predictions.append({'question_id': item["question_id"], 'answer': answer})
 
 # Save predictions to a JSON file
