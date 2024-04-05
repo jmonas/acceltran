@@ -84,7 +84,7 @@ with torch.no_grad():
         outputs = model(**inputs)
         preds = outputs.logits.argmax(-1).tolist()  # Convert logits to predicted indices
         
-        for question_id, pred in zip(batch['question_ids'], preds):
+        for question_id, pred in zip(batch['question_id'], preds):
             # Convert `pred` to the corresponding answer string. This may involve a mapping similar to `id2label`.
             answer = config["id2label"][pred]  # This is a placeholder; adapt it to your model's specifics
             
