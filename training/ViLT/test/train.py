@@ -6495,12 +6495,12 @@ for epoch in range(num_epochs):
         scaler.scale(loss).backward()
         scaler.step(optimizer)
         scaler.update()
-        print(f"{idx}, Loss: {loss}")
+        print(f"{idx}, Loss: {loss}", flush=True)
 
         if (idx+1) % 500==0:
             model.eval()
             eval_loss = 0
-            for idx, batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
+            for j, batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
                 input_ids = batch.pop('input_ids').to(device)
                 pixel_values = batch.pop('pixel_values').to(device)
                 attention_masked = batch.pop('attention_mask').to(device)
@@ -6516,11 +6516,11 @@ for epoch in range(num_epochs):
                 eval_loss += loss.item()
 
             tracking_information.append((epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]))
-            print("Epoch: {} - Training loss: {} - Eval Loss: {} - LR: {}".format(epoch+1, epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]))
+            print("Epoch: {} - Training loss: {} - Eval Loss: {} - LR: {}".format(epoch+1, epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]), flush=True)
             # scheduler.step()
             if eval_loss < min_eval_loss:
-                model.save_pretrained(f"Model/vilt-saved-model-{idx//500}", from_pt=True) 
-                print(f"Saved model to Model/vilt-saved-model-{idx//500}")
+                model.save_pretrained(f"Model/vilt-saved-model-{epoch}-{idx//500}", from_pt=True) 
+                print(f"Saved model to Model/vilt-saved-model-{epoch}-{idx//500}")
                 min_eval_loss = eval_loss
                 early_stopping_hook = 0
             else:
