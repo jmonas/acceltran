@@ -21,7 +21,7 @@ from PIL import Image
 
 url = "https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "Is this a person?"
+text = "How many people are there?"
 
 config = json.load(open('config.json'))
 
