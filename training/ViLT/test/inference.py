@@ -19,9 +19,9 @@ import torchvision.transforms as transforms
 import requests
 from PIL import Image
 
-url = "https://img.freepik.com/premium-photo/blue-premium-business-sedan-car-sports-configuration-white-background-3d-rendering_101266-26564.jpg?size=626&ext=jpg&ga=GA1.1.1292351815.1712188800&semt=sph"
+url = "https://st.depositphotos.com/1594920/2143/i/450/depositphotos_21432503-stock-photo-close-up-of-border-collie.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "What vehicle is in the picture?"
+text = "What animal is in the picture?"
 
 config = json.load(open('config_medium_plus.json'))
 
