@@ -13,6 +13,7 @@ from os.path import isfile, join
 import torchvision.transforms as transforms
 
 config = json.load(open('config_small.json'))
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 configuration = ViltConfig(**config)
