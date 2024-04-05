@@ -117,7 +117,7 @@ with torch.no_grad():
             print(question)
             print(answer)
             print()
-            predictions.append({'question_id': question["question_id"], 'answer': answer})
+            predictions.append({'question_id': question.item(), 'answer': answer})
 
 # Save predictions to a JSON file
 with open('vqa_predictions.json', 'w') as f:
