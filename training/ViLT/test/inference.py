@@ -28,8 +28,15 @@ config = json.load(open('config.json'))
 configuration = ViltConfig(**config)
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
 model =ViltForQuestionAnswering.from_pretrained("/home/jmonas/acceltran/training/ViLT/test/Model/vilt-saved-model-0", config=configuration, use_safetensors=True)
+
+model2 =ViltForQuestionAnswering.from_pretrained("dandelin/vilt-b32-finetuned-vqa")
+
 total_params = sum(p.numel() for p in model.parameters())
 print(f"Number of parameters: {total_params}")
+
+
+total_params = sum(p.numel() for p in model2.parameters())
+print(f"Number of parameters2: {total_params}")
 # prepare inputs
 encoding = processor(image, text, return_tensors="pt")
 
