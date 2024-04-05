@@ -107,6 +107,7 @@ predictions = []
 
 with torch.no_grad():
     for idx, batch in enumerate(test_dataloader):
+        print(idx)
         # Adapt these lines based on how your DataLoader and model are set up
         inputs = {'pixel_values': batch['pixel_values'].to(device), 'input_ids': batch['input_ids'].to(device)}
         outputs = model(**inputs)
