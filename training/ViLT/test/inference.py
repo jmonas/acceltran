@@ -27,7 +27,7 @@ config = json.load(open('config_medium_plus.json'))
 
 configuration = ViltConfig(**config)
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
-model =ViltForQuestionAnswering.from_pretrained("/home/jmonas/acceltran/training/ViLT/test/Models/l6_h512_i102/vilt-saved-model-0-12", config=configuration, use_safetensors=True)
+model =ViltForQuestionAnswering.from_pretrained("/home/jmonas/acceltran/training/ViLT/test/Models/l6_h512_i1024/vilt-saved-model-0-12", config=configuration, use_safetensors=True)
 
 model2 =ViltForQuestionAnswering.from_pretrained("dandelin/vilt-b32-finetuned-vqa")
 
