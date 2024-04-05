@@ -21,7 +21,7 @@ from PIL import Image
 
 url = "https://st.depositphotos.com/1594920/2143/i/450/depositphotos_21432503-stock-photo-close-up-of-border-collie.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "What animal is in the picture?"
+text = "How many dogs are there?"
 
 config = json.load(open('config_medium_plus.json'))
 
