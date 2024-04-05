@@ -1,21 +1,6 @@
-from transformers import ViltProcessor, ViltModel, ViltForQuestionAnswering, ViltConfig
+from transformers import ViltProcessor, ViltForQuestionAnswering, ViltConfig
 import requests
-from PIL import Image
-import torch
-import os
-from datasets import load_dataset
-import torch
-from torch.utils.data import DataLoader
-from tqdm import tqdm
-import pickle
-from torchvision.transforms import Compose, Resize, ToTensor, Normalize
 import json
-import re
-from typing import Optional
-from os import listdir
-from os.path import isfile, join
-from tqdm.auto import tqdm
-import torchvision.transforms as transforms
 import requests
 from PIL import Image
 
