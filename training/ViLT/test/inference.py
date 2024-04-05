@@ -19,9 +19,9 @@ import torchvision.transforms as transforms
 import requests
 from PIL import Image
 
-url = "https://upload.wikimedia.org/wikipedia/commons/1/18/Dog_Breeds.jpg"
+url = "https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "Is this a dog?"
+text = "Is this a person?"
 
 config = json.load(open('config.json'))
 
