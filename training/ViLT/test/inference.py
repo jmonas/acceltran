@@ -19,9 +19,9 @@ import torchvision.transforms as transforms
 import requests
 from PIL import Image
 
-url = "http://images.cocodataset.org/val2017/000000039769.jpg"
+url = "https://upload.wikimedia.org/wikipedia/commons/3/38/Adorable-animal-cat-20787.jpg"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "How many people are there?"
+text = "How many cats are there?"
 
 config = json.load(open('config.json'))
 
