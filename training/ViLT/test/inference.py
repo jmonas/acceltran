@@ -21,7 +21,7 @@ from PIL import Image
 
 url = "https://img.freepik.com/premium-photo/blue-premium-business-sedan-car-sports-configuration-white-background-3d-rendering_101266-26564.jpg?size=626&ext=jpg&ga=GA1.1.1292351815.1712188800&semt=sph"
 image = Image.open(requests.get(url, stream=True).raw)
-text = "What is in the picture?"
+text = "Is there a car?"
 
 config = json.load(open('config_small.json'))
 
