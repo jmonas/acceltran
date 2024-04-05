@@ -19,7 +19,7 @@ import torchvision.transforms as transforms
 import requests
 from PIL import Image
 
-url = "https://aambassador.com/images/car/car-1-old.jpg"
+url = "https://img.freepik.com/premium-photo/blue-premium-business-sedan-car-sports-configuration-white-background-3d-rendering_101266-26564.jpg?size=626&ext=jpg&ga=GA1.1.1292351815.1712188800&semt=sph"
 image = Image.open(requests.get(url, stream=True).raw)
 text = "Is this a car?"
 
