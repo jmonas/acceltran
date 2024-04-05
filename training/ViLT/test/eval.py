@@ -67,11 +67,36 @@ class VQADataset(torch.utils.data.Dataset):
         text = question['question']
 
         encoding = self.processor(image, text, padding="max_length", truncation=True, return_tensors="pt")
-        encoding['question_id'] = question["question_id"]
+        
+        encoding["question_id"] = question["question_id"]
         return encoding
 
+
+
+
+def collate_fn(batch):
+  input_ids = [item['input_ids'] for item in batch]
+  pixel_values = [item['pixel_values'] for item in batch]
+  token_type_ids = [item['token_type_ids'] for item in batch]
+  question_ids = [item['question_id'] for item in batch]
+
+  # create padded pixel values and corresponding pixel mask
+  encoding = processor.image_processor.pad(pixel_values, return_tensors="pt")
+
+  # create new batch
+  batch = {}
+  batch['input_ids'] = torch.stack(input_ids)
+  batch['question_ids'] = torch.stack(token_type_ids)
+  batch['token_type_ids'] = torch.stack(question_ids)
+  batch['pixel_values'] = encoding['pixel_values']
+  batch['pixel_mask'] = encoding['pixel_mask']
+
+  return batch
+
+batch_size = 32
+
 test_dataloader = VQADataset(questions=questions,
-                           processor=processor)  
+                           processor=processor, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
 
 model.eval()  # Set the model to evaluation mode
 
@@ -85,11 +110,13 @@ with torch.no_grad():
         outputs = model(**inputs)
         preds = outputs.logits.argmax(-1).tolist()  # Convert logits to predicted indices
         
-        for item, pred in zip(batch, preds):
+        for question, pred in zip(batch["question_ids"], preds):
             # Convert `pred` to the corresponding answer string. This may involve a mapping similar to `id2label`.
             answer = config["id2label"][str(pred)]  # This is a placeholder; adapt it to your model's specifics
-            print(item)
-            predictions.append({'question_id': item["question_id"], 'answer': answer})
+            print(question)
+            print(answer)
+            print()
+            predictions.append({'question_id': question["question_id"], 'answer': answer})
 
 # Save predictions to a JSON file
 with open('vqa_predictions.json', 'w') as f:
