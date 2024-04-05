@@ -82,12 +82,13 @@ def collate_fn(batch):
   question_ids = [item['question_id'] for item in batch]
 
   # create padded pixel values and corresponding pixel mask
+  print(pixel_values)
   encoding = processor.image_processor.pad(pixel_values, return_tensors="pt")
 
   # create new batch
   batch = {}
   batch['input_ids'] = torch.stack(input_ids)
-#   batch['question_ids'] = torch.stack(question_ids)
+  batch['question_ids'] = torch.stack(question_ids)
   batch['token_type_ids'] = torch.stack(token_type_ids)
   batch['pixel_values'] = encoding['pixel_values']
   batch['pixel_mask'] = encoding['pixel_mask']
