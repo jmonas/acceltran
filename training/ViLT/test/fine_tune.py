@@ -18,7 +18,7 @@ from tqdm.auto import tqdm
 import torchvision.transforms as transforms
 
 
-config = json.load(open('config_medium_plus.json'))
+config = json.load(open('config_medium.json'))
 size = f"l{config["num_hidden_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 
 def get_score(occurences):
@@ -82,7 +82,7 @@ for annotation in tqdm(annotations):
 
 configuration = ViltConfig(**config)
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
-model =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/l6_h512_i1024/vilt-saved-model-2-14", config = configuration)
+model =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-3-0", config = configuration)
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -233,8 +233,8 @@ for epoch in range(num_epochs):
             print("Epoch: {} - Training loss: {} - Eval Loss: {} - LR: {}".format(epoch+1, epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]), flush=True)
             # scheduler.step()
             if eval_loss < min_eval_loss:
-                model.save_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-pre-{epoch}-{idx//500}", from_pt=True) 
-                print(f"Saved model to /scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-{epoch}-{idx//500}")
+                model.save_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-ft-{epoch}-{idx//500}", from_pt=True) 
+                print(f"Saved model to /scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-ft-{epoch}-{idx//500}")
                 min_eval_loss = eval_loss
                 early_stopping_hook = 0
             else:
