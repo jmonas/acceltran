@@ -13,7 +13,7 @@ from os.path import isfile, join
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
-config = json.load(open('config_small2.json'))
+config = json.load(open('config_medium_plus.json'))
 size = "l6_h512_i1024"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
