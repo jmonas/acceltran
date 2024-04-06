@@ -13,14 +13,14 @@ from os.path import isfile, join
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
-config = json.load(open('config_medium_plus.json'))
-size = "l6_h512_i1024"
+config = json.load(open('config_small2.json'))
+size = "l2_h256_i512"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 configuration = ViltConfig(**config)
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
-model =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-2-14", config=configuration, use_safetensors=True)
+model =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-3-2", config=configuration, use_safetensors=True)
 
 
 
