@@ -18,7 +18,7 @@ from tqdm.auto import tqdm
 import torchvision.transforms as transforms
 
 
-config = json.load(open('config_medium_plus.json'))
+config = json.load(open('config_medium.json'))
 size = f"l{config["num_hidden_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 
 def get_score(occurences):
@@ -82,7 +82,7 @@ for annotation in tqdm(annotations):
 
 configuration = ViltConfig(**config)
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
-model =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-2-10", config = configuration)
+model =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-3-0", config = configuration)
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
