@@ -24,7 +24,7 @@ model =ViltForQuestionAnswering.from_pretrained("/home/jmonas/acceltran/training
 
 
 # Opening JSON file
-f = open('/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_test-dev2015_questions.json')
+f = open('/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_test2015_questions.json')
 
 # Return JSON object as dictionary
 questions = json.load(f)['questions']
