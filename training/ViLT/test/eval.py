@@ -13,13 +13,13 @@ from os.path import isfile, join
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
-config = json.load(open('config_small.json'))
+config = json.load(open('config_medium_plus.json'))
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 configuration = ViltConfig(**config)
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
-model =ViltForQuestionAnswering.from_pretrained("/home/jmonas/acceltran/training/ViLT/test/Model/vilt-saved-model-0", config=configuration, use_safetensors=True)
+model =ViltForQuestionAnswering.from_pretrained("/scratch/gpfs/jmonas/ViLT/Models/l6_h512_i1024/vilt-saved-model-2-14", config=configuration, use_safetensors=True)
 
 
 
@@ -119,7 +119,6 @@ with torch.no_grad():
             predictions.append({'question_id': question.item(), 'answer': answer})
 
 # Save predictions to a JSON file
-with open('vqa_predictions_.json', 'w') as f:
+with open('vqa_predictions_l6_h512_i1024.json', 'w') as f:
     json.dump(predictions, f)
 
-resFile = 'predictions/small/vqa_predictions_0.json'
