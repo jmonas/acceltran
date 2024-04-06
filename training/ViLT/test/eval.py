@@ -107,7 +107,7 @@ predictions = []
 
 with torch.no_grad():
     for idx, batch in enumerate(test_dataloader):
-        print(idx)
+        print(idx, flush=True)
         # Adapt these lines based on how your DataLoader and model are set up
         inputs = {'pixel_values': batch['pixel_values'].to(device), 'input_ids': batch['input_ids'].to(device)}
         outputs = model(**inputs)
@@ -119,7 +119,7 @@ with torch.no_grad():
             predictions.append({'question_id': question.item(), 'answer': answer})
 
 # Save predictions to a JSON file
-with open('vqa_predictions.json', 'w') as f:
+with open('vqa_predictions_.json', 'w') as f:
     json.dump(predictions, f)
 
 resFile = 'predictions/small/vqa_predictions_0.json'
