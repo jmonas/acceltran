@@ -95,8 +95,8 @@ def collate_fn(batch):
   return batch
 
 batch_size = 32
-
-test_dataset = VQADataset(questions=questions[:10000],
+print(len(questions))
+test_dataset = VQADataset(questions=questions,
                            processor=processor)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
 
