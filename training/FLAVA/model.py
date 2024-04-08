@@ -28,7 +28,7 @@ class FlavaForVQA(nn.Module):
         self.vqa_classifier = VQAClassifierHead(flava_model.config.multimodal_config.hidden_size, flava_model.config.multimodal_config.hidden_size, num_labels)
         
     def forward(self, input_ids, pixel_values, attention_mask, labels = None):
-        outputs = self.flava_model(input_ids=input_ids, pixel_values=pixel_values, attention_mask=attention_mask)
+        outputs = self.flava_model(input_ids=input_ids, pixel_values=pixel_values)
         multimodal_embeddings = outputs.multimodal_embeddings
         print(f"Shape of multimodal_embeddings: {multimodal_embeddings.shape}")
 
