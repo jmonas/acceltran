@@ -135,26 +135,26 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, annFile = No
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser(description='Set DELLA and TEST parameters.')
-    parser.add_argument('--della', action='store_false', dest='della', help='Enable DELLA parameter')
-    parser.add_argument('--test', action='store_false', dest='test', help='Disable TEST parameter')
+    parser.add_argument('--adroit', action='store_True', dest='adroit', help='Enable adroit parameter')
+    parser.add_argument('--test', action='store_True',  dest='test', help='Disable TEST parameter')
 
     args = parser.parse_args()
 
-    DELLA = args.della
+    ADROIT = args.adroit
     TEST = args.test
 
     config_file = 'config_medium_plus.json'
     size = "l6_h512_i1024"
-    cache_dir = "/scratch/gpfs/jmonas" if DELLA else "/scratch/network/jmonas"
+    cache_dir = "/scratch/gpfs/jmonas" if ADROIT else "/scratch/network/jmonas"
     questions_type = "v2_OpenEnded_mscoco_test2015_questions.json" if TEST else "v2_OpenEnded_mscoco_val2014_questions.json"
     images_type = "test2015" if TEST else "val2014"
-    model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0" if DELLA else f"jmonas/ViLT-11M-vqa"
+    model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0" if ADROIT else f"jmonas/ViLT-11M-vqa"
     questions_file= f'{cache_dir}/VQA/{questions_type}'
     images_dir = f'{cache_dir}/VQA/{images_type}'
 
     if TEST:
-        eval(config_file, questions_file, images_dir, 32, DELLA, TEST,)
+        eval(config_file, questions_file, images_dir, 32,)
     # get validation proxy accuracy
     else: 
         annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-        eval(config_file, questions_file, images_dir, 32, DELLA, TEST, annFile)
+        eval(config_file, questions_file, images_dir, 32, annFile)
