@@ -33,7 +33,7 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, VALIDATE=Fal
 
     # Return JSON object as dictionary
     questions = json.load(f)['questions']
-    questions  =   questions[:round(len(questions)*.25)]
+    questions  =   questions[:round(len(questions)*.1)]
 
     filename_re = re.compile(r".*(\d{12})\.((jpg)|(png))")
 
