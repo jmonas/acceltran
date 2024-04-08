@@ -179,6 +179,6 @@ class VQA:
             ann['answer_type']   = qaAnn['answer_type']
         print('DONE (t=%0.2fs)'%((datetime.datetime.utcnow() - time_t).total_seconds()))
 
-        res.dataset['annotations'] = anns
+        res.annotations_list = anns
         res.createIndex()
         return res
