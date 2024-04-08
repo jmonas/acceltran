@@ -183,6 +183,9 @@ def collate_fn(batch):
   pixel_values = [item['pixel_values'] for item in batch]
   attention_mask = [item['attention_mask'] for item in batch]
   token_type_ids = [item['token_type_ids'] for item in batch]
+  for item in batch:
+      print(item.keys())
+      break
   labels = [item['labels'] for item in batch]
 
   # create padded pixel values and corresponding pixel mask
