@@ -105,9 +105,9 @@ for annotation in tqdm(annotations):
     labels = []
     scores = []
     for answer in answer_count: 
-        if answer not in list("label2id".keys()):
+        if answer not in list(label2id.keys()):
             continue
-        labels.append("label2id"[answer])
+        labels.append(label2id[answer])
         score = get_score(answer_count[answer])
         scores.append(score)
     annotation['labels'] = labels
