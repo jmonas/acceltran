@@ -19,7 +19,7 @@ import sys
 sys.path.insert(0, '../../VQA/PythonEvaluationTools')
 from vqaEvalDemo import get_accuracy
 
-def eval (config_file, questions_file, images_dir, batch_size = 32, annFile = None):
+def eval (config_file, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None):
     config = json.load(open(config_file))
     size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -107,6 +107,7 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, annFile = No
 
     predictions = []
     print("start test")
+    print(f"TOTAL BATCHES: {len(test_dataloader)}")
     with torch.no_grad():
         for idx, batch in enumerate(test_dataloader):
             print(idx, flush=True)
@@ -121,7 +122,7 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, annFile = No
                 predictions.append({'question_id': question.item(), 'answer': answer})
 
     current_date = datetime.datetime.now().strftime("%Y%m%d")
-    predictions_file = f'vqa_predictions_{size}_{current_date}.json'
+    predictions_file = f'val_vqa_predictions_{size}_{current_date}.json' if VALIDATE else f'test_vqa_predictions_{size}_{current_date}.json'
     with open(predictions_file, 'w') as f:
         json.dump(predictions, f)
     
@@ -136,25 +137,25 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, annFile = No
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser(description='Set DELLA and TEST parameters.')
     parser.add_argument('--adroit', action='store_true', dest='adroit', help='Enable adroit parameter')
-    parser.add_argument('--test', action='store_true',  dest='test', help='Disable TEST parameter')
+    parser.add_argument('--validate', action='store_true',  dest='validate', help='Enable validate parameter')
 
     args = parser.parse_args()
 
     ADROIT = args.adroit
-    TEST = args.test
+    VALIDATE = args.validate
 
     config_file = 'config_medium_plus.json'
     size = "l6_h512_i1024"
     cache_dir = "/scratch/network/jmonas" if ADROIT else "/scratch/gpfs/jmonas"  
-    questions_type = "v2_OpenEnded_mscoco_test2015_questions.json" if TEST else "v2_OpenEnded_mscoco_val2014_questions.json"
-    images_type = "test2015" if TEST else "val2014"
+    questions_type = "v2_OpenEnded_mscoco_val2014_questions.json" if VALIDATE else  "v2_OpenEnded_mscoco_test2015_questions.json" 
+    images_type =   "val2014" if VALIDATE else "test2015"
     model_location = f"jmonas/ViLT-11M-vqa" if ADROIT else f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
     questions_file= f'{cache_dir}/VQA/{questions_type}'
     images_dir = f'{cache_dir}/VQA/{images_type}'
 
-    if TEST:
-        eval(config_file, questions_file, images_dir, 32,)
-    # get validation proxy accuracy
-    else: 
+    if VALIDATE:
+        # get validation proxy accuracy
         annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-        eval(config_file, questions_file, images_dir, 32, annFile)
+        eval(config_file, questions_file, images_dir, 32, True, annFile)        
+    else:
+        eval(config_file, questions_file, images_dir, 32,)
