@@ -106,7 +106,7 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, annFile = No
     model.to(device)
 
     predictions = []
-
+    print("start test")
     with torch.no_grad():
         for idx, batch in enumerate(test_dataloader):
             print(idx, flush=True)

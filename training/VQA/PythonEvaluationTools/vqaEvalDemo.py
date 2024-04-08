@@ -6,7 +6,7 @@ sys.path.insert(0, '%s/PythonHelperTools/vqaTools' %(dataDir))
 from vqa import VQA
 from vqaEvaluation.vqaEval import VQAEval
 import matplotlib.pyplot as plt
-import skimage.io as io
+# import skimage.io as io
 import json
 import random
 import os
