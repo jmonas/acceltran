@@ -62,9 +62,10 @@ def get_score(occurences):
         return 1.0
 
 
-
-id2label = json.load("id2label.json")
-label2id = json.load("label2id.json")
+f = open("id2label.json")
+id2label = json.load(f)
+f = open("label2id.json")
+label2id = json.load(f)
 
 # Opening JSON file
 f = open('/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_train2014_questions.json')
