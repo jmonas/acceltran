@@ -119,6 +119,6 @@ with torch.no_grad():
             predictions.append({'question_id': question.item(), 'answer': answer})
 
 # Save predictions to a JSON file
-with open(f'vqa_predictions_{size}_round2.json', 'w') as f:
+with open(f'vqa_predictions_{size}_round_3.json', 'w') as f:
     json.dump(predictions, f)
 
