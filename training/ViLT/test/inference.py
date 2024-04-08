@@ -9,8 +9,8 @@ image = Image.open(requests.get(url, stream=True).raw)
 text = "?"
 
 # size0 = "l2_h128_i512"
-size1 = "l2_h256_i512"
-# size2 = "l4_h256_i512" 
+# size1 = "l2_h256_i512"
+size2 = "l4_h256_i512" 
 # size3 = "l6_h512_i1024"
 
 # config0 = json.load(open('config_small.json'))
