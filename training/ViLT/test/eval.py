@@ -13,18 +13,21 @@ from os.path import isfile, join
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 
+DELLA = False
 config = json.load(open('config_medium_plus.json'))
 size = "l6_h512_i1024"
-
+cache_dir = "/scratch/gpfs/jmonas" if DELLA else "/scratch/network/jmonas"
+model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-1-1"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 configuration = ViltConfig(**config)
-processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
-model =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size}/vilt-saved-model-ft-1-1", config=configuration, use_safetensors=True)
+processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir=cache_dir)
+model =ViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True)
 
 
 # Opening JSON file
-f = open('/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_test2015_questions.json')
+f = open(f'{cache_dir}/VQA/v2_OpenEnded_mscoco_test2015_questions.json')
 
 # Return JSON object as dictionary
 questions = json.load(f)['questions']
@@ -38,7 +41,7 @@ def id_from_filename(filename: str) -> Optional[int]:
         return None
     return int(match.group(1))
 
-root = '/scratch/gpfs/jmonas/VQA/test2015'
+root = f'{cache_dir}/VQA/test2015'
 file_names = [f for f in tqdm(listdir(root)) if isfile(join(root, f))]
 
 filename_to_id = {root + "/" + file: id_from_filename(file) for file in file_names}
