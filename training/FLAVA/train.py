@@ -1,4 +1,3 @@
-from transformers import ViltProcessor, ViltModel, ViltForQuestionAnswering, ViltConfig
 import requests
 from PIL import Image
 import torch
@@ -32,7 +31,7 @@ def config_maker(unilayers, hidden_size, number_heads, intermediate_size):
         num_hidden_layers=unilayers, 
         hidden_size=hidden_size, 
         num_attention_heads=number_heads, 
-        intermediate_size= intermediate_size
+        intermediate_size= intermediate_size        
         )
     text_config  = FlavaTextConfig(
         num_hidden_layers=unilayers, 
@@ -41,9 +40,9 @@ def config_maker(unilayers, hidden_size, number_heads, intermediate_size):
         intermediate_size= intermediate_size
         )
     configuration = FlavaConfig(
-        multimodal_config=multi_config, 
-        image_config=image_config, 
-        text_config=text_config, 
+        multimodal_config=multi_config.return_dict, 
+        image_config=image_config.return_dict, 
+        text_config=text_config.return_dict, 
         hidden_size=hidden_size
         )
     return configuration
