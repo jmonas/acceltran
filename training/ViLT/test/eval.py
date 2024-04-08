@@ -21,7 +21,7 @@ from vqaEvalDemo import get_accuracy
 
 def eval (config_file, questions_file, images_dir, batch_size = 32, annFile = None):
     config = json.load(open(config_file))
-    size = f"l{config["num_hidden_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
+    size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     configuration = ViltConfig(**config)
     processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir=cache_dir)
