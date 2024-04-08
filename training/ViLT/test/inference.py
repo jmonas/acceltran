@@ -26,9 +26,9 @@ configuration1 = ViltConfig(**config1)
 
 processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="/scratch/gpfs/jmonas")
 # model0 =ViltForQuestionAnswering.from_pretrained("/home/jmonas/acceltran/training/ViLT/test/Model/vilt-saved-model-0", config=configuration0, use_safetensors=True)
-model1 =ViltForQuestionAnswering.from_pretrained("/scratch/gpfs/jmonas/ViLT/Models/{size1}/vilt-saved-model-ft-97-0", config=configuration1, use_safetensors=True)
-# model2 =ViltForQuestionAnswering.from_pretrained("/scratch/gpfs/jmonas/ViLT/Models/{size2}/vilt-saved-model-ft-97-5", config=configuration2, use_safetensors=True)
-# model3 =ViltForQuestionAnswering.from_pretrained("/scratch/gpfs/jmonas/ViLT/Models/{size3}/vilt-saved-model-ft-93-0", config=configuration3, use_safetensors=True)
+model1 =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size1}/vilt-saved-model-ft-97-0", config=configuration1, use_safetensors=True)
+# model2 =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size2}/vilt-saved-model-ft-97-5", config=configuration2, use_safetensors=True)
+# model3 =ViltForQuestionAnswering.from_pretrained(f"/scratch/gpfs/jmonas/ViLT/Models/{size3}/vilt-saved-model-ft-93-0", config=configuration3, use_safetensors=True)
 
 
 # total_params = sum(p.numel() for p in model0.parameters())
