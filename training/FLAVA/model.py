@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from transformers import FlavaModel
+from transformers.modeling_outputs import SequenceClassifierOutput
 
 # Define the classifier head
 class VQAClassifierHead(nn.Module):
@@ -26,7 +27,7 @@ class FlavaForVQA(nn.Module):
         self.flava_model = flava_model
         self.vqa_classifier = VQAClassifierHead(flava_model.config.multimodal_config.hidden_size, flava_model.config.multimodal_config.hidden_size, num_labels)
         
-    def forward(self, input_ids, pixel_values, attention_mask):
+    def forward(self, input_ids, pixel_values, attention_mask, labels = None):
         # Get the multimodal encoder outputs
         outputs = self.flava_model(input_ids=input_ids, pixel_values=pixel_values, attention_mask=attention_mask)
         # Use the output corresponding to the [CLS_M] token
@@ -35,5 +36,17 @@ class FlavaForVQA(nn.Module):
         # Pass the [CLS_M] representation through the classifier head
         logits = self.vqa_classifier(hCLS_M)
         
-        return logits
+        loss = None
+        if labels is not None:
+            # move labels to correct device to enable PP
+            labels = labels.to(logits.device)
+            loss = nn.functional.binary_cross_entropy_with_logits(logits, labels) * labels.shape[1]
+            # see https://github.com/jnhwkim/ban-vqa/blob/master/train.py#L19
+
+        return SequenceClassifierOutput(
+            loss=loss,
+            logits=logits,
+            hidden_states=outputs.hidden_states,
+            attentions=outputs.attentions,
+        )
 
