@@ -135,8 +135,8 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, annFile = No
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser(description='Set DELLA and TEST parameters.')
-    parser.add_argument('--adroit', action='store_True', dest='adroit', help='Enable adroit parameter')
-    parser.add_argument('--test', action='store_True',  dest='test', help='Disable TEST parameter')
+    parser.add_argument('--adroit', action='store_true', dest='adroit', help='Enable adroit parameter')
+    parser.add_argument('--test', action='store_true',  dest='test', help='Disable TEST parameter')
 
     args = parser.parse_args()
 
