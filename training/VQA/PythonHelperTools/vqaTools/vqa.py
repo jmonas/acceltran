@@ -21,7 +21,7 @@ import datetime
 import copy
 
 class VQA:
-    def __init__(self, annotation_file=None, question_file=None):
+    def __init__(self, annotation_file=None, question_file=None, percentage = 1):
         """
            Constructor of VQA helper class for reading and visualizing questions and answers.
         :param annotation_file (str): location of VQA annotation file
@@ -41,18 +41,22 @@ class VQA:
             print( datetime.datetime.utcnow() - time_t)
             self.dataset = dataset
             self.questions = questions
+            
+            self.annotations_list = dataset['annotations'][:round(len(dataset['annotations'])*percentage)]
+            self.questions_list = questions['questions'][:round(len(questions['questions'])*percentage)]
+
             self.createIndex()
 
     def createIndex(self):
         # create index
         print('creating index...')
-        imgToQA = {ann['image_id']: [] for ann in self.dataset['annotations']}
-        qa =  {ann['question_id']:       [] for ann in self.dataset['annotations']}
-        qqa = {ann['question_id']:       [] for ann in self.dataset['annotations']}
-        for ann in self.dataset['annotations']:
+        imgToQA = {ann['image_id']: [] for ann in self.annotations_list}
+        qa =  {ann['question_id']:       [] for ann in self.annotations_list}
+        qqa = {ann['question_id']:       [] for ann in self.annotations_list}
+        for ann in self.annotations_list:
             imgToQA[ann['image_id']] += [ann]
             qa[ann['question_id']] = ann
-        for ques in self.questions['questions']:
+        for ques in self.questions_list:
               qqa[ques['question_id']] = ques
         print('index created!')
 
@@ -82,12 +86,12 @@ class VQA:
         ansTypes  = ansTypes  if type(ansTypes)  == list else [ansTypes]
 
         if len(imgIds) == len(quesTypes) == len(ansTypes) == 0:
-            anns = self.dataset['annotations']
+            anns = self.annotations_list
         else:
             if not len(imgIds) == 0:
                 anns = sum([self.imgToQA[imgId] for imgId in imgIds if imgId in self.imgToQA],[])
             else:
-                 anns = self.dataset['annotations']
+                 anns = self.annotations_list
             anns = anns if len(quesTypes) == 0 else [ann for ann in anns if ann['question_type'] in quesTypes]
             anns = anns if len(ansTypes)  == 0 else [ann for ann in anns if ann['answer_type'] in ansTypes]
         ids = [ann['question_id'] for ann in anns]
@@ -106,12 +110,12 @@ class VQA:
         ansTypes  = ansTypes  if type(ansTypes)  == list else [ansTypes]
 
         if len(quesIds) == len(quesTypes) == len(ansTypes) == 0:
-            anns = self.dataset['annotations']
+            anns = self.annotations_list
         else:
             if not len(quesIds) == 0:
                 anns = sum([self.qa[quesId] for quesId in quesIds if quesId in self.qa],[])
             else:
-                anns = self.dataset['annotations']
+                anns = self.annotations_list
             anns = anns if len(quesTypes) == 0 else [ann for ann in anns if ann['question_type'] in quesTypes]
             anns = anns if len(ansTypes)  == 0 else [ann for ann in anns if ann['answer_type'] in ansTypes]
         ids = [ann['image_id'] for ann in anns]

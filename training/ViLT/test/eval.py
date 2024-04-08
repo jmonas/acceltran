@@ -19,7 +19,7 @@ import sys
 sys.path.insert(0, '../../VQA/PythonEvaluationTools')
 from vqaEvalDemo import get_accuracy
 
-def eval (config_file, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None):
+def eval (config_file, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
     config = json.load(open(config_file))
     size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,7 +33,7 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, VALIDATE=Fal
 
     # Return JSON object as dictionary
     questions = json.load(f)['questions']
-    questions  =   questions[:round(len(questions)*.05)]
+    questions  = questions[:round(len(questions)*percentage)]
 
     filename_re = re.compile(r".*(\d{12})\.((jpg)|(png))")
 
@@ -130,7 +130,7 @@ def eval (config_file, questions_file, images_dir, batch_size = 32, VALIDATE=Fal
     if annFile:
         pwd = os.getcwd()
         predictions_with_path = os.path.join(pwd, predictions_file)
-        get_accuracy(annFile, predictions_with_path, questions_file)
+        get_accuracy(annFile, predictions_with_path, questions_file, percentage)
     
     
 
@@ -157,6 +157,6 @@ if __name__ == '__main__':
     if VALIDATE:
         # get validation proxy accuracy
         annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-        eval(config_file, questions_file, images_dir, 32, True, annFile)        
+        eval(config_file, questions_file, images_dir, 32, True, annFile, .05)        
     else:
         eval(config_file, questions_file, images_dir, 32,)
