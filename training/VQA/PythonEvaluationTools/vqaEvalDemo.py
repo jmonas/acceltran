@@ -11,7 +11,7 @@ import json
 import random
 import os
 
-def get_accuracy(annFile, resFile, quesFile):
+def get_accuracy(annFile, resFile, quesFile, percentage=1):
 
 	# annFile     ='/home/jmonas/acceltran/training/ViLT/test/vqa_predictions.json'
 	# resFile     ='/home/jmonas/acceltran/training/ViLT/test/vqa_predictions.json'
@@ -26,7 +26,7 @@ def get_accuracy(annFile, resFile, quesFile):
 	# resultType, fileType) for fileType in fileTypes]  
 
 	# create vqa object and vqaRes object
-	vqa = VQA(annFile, quesFile)
+	vqa = VQA(annFile, quesFile, percentage)
 	vqaRes = vqa.loadRes(resFile, quesFile)
 
 	# create vqaEval object by taking vqa and vqaRes
