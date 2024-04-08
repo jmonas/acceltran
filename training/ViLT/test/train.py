@@ -176,7 +176,7 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=4e-5)
 scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9, last_epoch=-1, verbose=False)
 
 num_epochs = 100
-patience = 2
+patience = 3
 min_eval_loss = float("inf")
 early_stopping_hook = 0
 tracking_information = []
@@ -194,13 +194,11 @@ for epoch in range(num_epochs):
         with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
             outputs = model(input_ids=input_ids,
                         pixel_values=pixel_values,
-                        # attention_mask=attention_masked,
+                        attention_mask=attention_masked,
                         labels=labels)
             
         loss = outputs.loss
         epoch_loss += loss.item()
-        # loss.backward()
-        # optimizer.step()
         optimizer.zero_grad()
         
         scaler.scale(loss).backward()
@@ -223,7 +221,7 @@ for epoch in range(num_epochs):
                 with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
                     outputs = model(input_ids=input_ids,
                                 pixel_values=pixel_values,
-                                # attention_mask=attention_masked,
+                                attention_mask=attention_masked,
                                 labels=labels)
                 
                 loss = outputs.loss
