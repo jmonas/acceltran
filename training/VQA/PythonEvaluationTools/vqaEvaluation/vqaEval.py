@@ -71,19 +71,7 @@ class VQAEval:
 			quesIds = [quesId for quesId in self.params['question_id']]
 		gts = {}
 		res = {}
-		print("results")
-		a = self.vqa.qa.keys()
-		b = self.vqaRes.qa.keys()
-		print(a)
-		print(b)
-		unique_to_list1 = set(a) - set(b)
-		unique_to_list2 = set(a) - set(b)
 
-		# Combine the unique items from both lists
-		differences = unique_to_list1.union(unique_to_list2)
-
-		# Print the items that are different
-		print("Items that are different between the two lists:", differences)
 		for quesId in quesIds:
 			gts[quesId] = self.vqa.qa[quesId]
 			res[quesId] = self.vqaRes.qa[quesId]
