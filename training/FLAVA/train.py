@@ -204,8 +204,8 @@ def collate_fn(batch):
 
 batch_size = 32
 
-train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
-valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
+train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)
 
 
 optimizer = torch.optim.AdamW(model.parameters(), lr=4e-5)
