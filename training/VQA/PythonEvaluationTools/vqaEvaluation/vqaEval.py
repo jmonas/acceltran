@@ -75,7 +75,7 @@ class VQAEval:
 		a = self.vqa.qa.keys()
 		b = self.vqaRes.qa.keys()
 		print(a)
-		print(a)
+		print(b)
 		unique_to_list1 = set(a) - set(b)
 		unique_to_list2 = set(a) - set(b)
 
