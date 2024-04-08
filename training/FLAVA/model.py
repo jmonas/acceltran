@@ -37,13 +37,3 @@ class FlavaForVQA(nn.Module):
         
         return logits
 
-# Assuming you've loaded your FLAVA model
-flava_model = FlavaModel.from_pretrained("facebook/flava-full")
-# Instantiate the model for VQA
-hidden_dim = 1536  # Hidden dimension for the classifier head as mentioned in the paper
-num_labels = ...  # The number of possible answers in your VQA task
-flava_for_vqa = FlavaForVQA(flava_model, hidden_dim, num_labels)
-
-# Move model to device (GPU or CPU)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-flava_for_vqa.to(device)
