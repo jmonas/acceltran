@@ -145,10 +145,10 @@ if __name__ == '__main__':
 
     config_file = 'config_medium_plus.json'
     size = "l6_h512_i1024"
-    cache_dir = "/scratch/gpfs/jmonas" if ADROIT else "/scratch/network/jmonas"
+    cache_dir = "/scratch/network/jmonas" if ADROIT else "/scratch/gpfs/jmonas"  
     questions_type = "v2_OpenEnded_mscoco_test2015_questions.json" if TEST else "v2_OpenEnded_mscoco_val2014_questions.json"
     images_type = "test2015" if TEST else "val2014"
-    model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0" if ADROIT else f"jmonas/ViLT-11M-vqa"
+    model_location = f"jmonas/ViLT-11M-vqa" if ADROIT else f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
     questions_file= f'{cache_dir}/VQA/{questions_type}'
     images_dir = f'{cache_dir}/VQA/{images_type}'
 
