@@ -30,6 +30,8 @@ class VQA:
         # load dataset
         self.dataset = {}
         self.questions = {}
+        self.annotations_list = []
+        self.questions_list = []
         self.qa = {}
         self.qqa = {}
         self.imgToQA = {}
