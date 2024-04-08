@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 
 DELLA = False
 config = json.load(open('config_medium.json'))
-size = "l6_h512_i1024"
+size = "l4_h256_i512"
 cache_dir = "/scratch/gpfs/jmonas" if DELLA else "/scratch/network/jmonas"
 model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-1-1" if DELLA else f"jmonas/ViLT-12M-vqa"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
