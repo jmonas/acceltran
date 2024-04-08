@@ -50,6 +50,7 @@ def get_accuracy(annFile, resFile, quesFile):
 	for ansType in vqaEval.accuracy['perAnswerType']:
 		print( "%s : %.02f" %(ansType, vqaEval.accuracy['perAnswerType'][ansType]))
 	print( "\n")
+	return vqaEval.accuracy['overall'], vqaEval.accuracy['perAnswerType']
 	# # demo how to use evalQA to retrieve low score result
 	# evals = [quesId for quesId in vqaEval.evalQA if vqaEval.evalQA[quesId]<35]   #35 is per question percentage accuracy
 	# if len(evals) > 0:
