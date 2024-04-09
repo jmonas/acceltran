@@ -40,7 +40,7 @@ class FlavaForVQA(nn.Module):
         logits = self.vqa_classifier(hCLS)
         
         loss = None
-        if labels:
+        if labels is not None:
             loss = nn.functional.binary_cross_entropy_with_logits(logits, labels, reduction="mean") * labels.shape[1]
 
         return SequenceClassifierOutput(
