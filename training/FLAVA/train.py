@@ -250,7 +250,7 @@ for epoch in range(num_epochs):
         if (idx+1) % 5000 ==0:
             scheduler.step()
 
-        if (idx+1) % 500==0:
+        if (idx+1) % 10==0:
             model.eval()
             eval_loss = 0
             for j, batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
