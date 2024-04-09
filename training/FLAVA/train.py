@@ -119,6 +119,10 @@ configuration = config_maker(config["uni_layers"], config["hidden_size"], config
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 flava_model = FlavaModel(config=configuration)
 model = FlavaForVQA(flava_model, len(id2label))
+
+flava_params = sum(p.numel() for p in flava_model.parameters())
+print(f"Total number of FLAVA parameters: {flava_params}")
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
@@ -269,7 +273,8 @@ for epoch in range(num_epochs):
             print("Epoch: {} - Training loss: {} - Eval Loss: {} - LR: {}".format(epoch+1, epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]), flush=True)
             # scheduler.step()
             if eval_loss < min_eval_loss:
-                model.save_pretrained(f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-{epoch}-{idx//500}", from_pt=True) 
+                torch.save(model.state_dict(), f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-{epoch}-{idx//500}.pt")
+                # model.save_pretrained(f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-{epoch}-{idx//500}", from_pt=True) 
                 print(f"Saved model to /scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-{epoch}-{idx//500}")
                 min_eval_loss = eval_loss
                 early_stopping_hook = 0

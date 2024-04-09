@@ -1,0 +1,6 @@
+{
+    "uni_layers": 6,
+    "hidden_size": 512,
+    "intermediate_size": 1024,
+    "number_heads": 8
+}
