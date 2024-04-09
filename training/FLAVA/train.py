@@ -222,16 +222,15 @@ for epoch in range(num_epochs):
     epoch_loss = 0
     model.train()
     for idx, batch in enumerate(train_dataloader):
-        input_ids = batch.pop('input_ids').to(device)
-        pixel_values = batch.pop('pixel_values').to(device)
-        attention_masked = batch.pop('attention_mask').to(device)
-        labels = batch.pop('labels').to(device)
-        
+        # input_ids = batch.pop('input_ids').to(device)
+        # pixel_values = batch.pop('pixel_values').to(device)
+        # attention_masked = batch.pop('attention_mask').to(device)
+        # labels = batch.pop('labels').to(device)
+        batch = batch.to(device)
+
+
         with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
-            outputs = model(input_ids=input_ids,
-                        pixel_values=pixel_values,
-                        attention_mask=attention_masked,
-                        labels=labels)
+            outputs = model(batch)
             
         loss = outputs.loss
         epoch_loss += loss.item()
@@ -251,16 +250,17 @@ for epoch in range(num_epochs):
             model.eval()
             eval_loss = 0
             for j, batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
-                input_ids = batch.pop('input_ids').to(device)
-                pixel_values = batch.pop('pixel_values').to(device)
-                attention_masked = batch.pop('attention_mask').to(device)
-                labels = batch.pop('labels').to(device)
-
+                # input_ids = batch.pop('input_ids').to(device)
+                # pixel_values = batch.pop('pixel_values').to(device)
+                # attention_masked = batch.pop('attention_mask').to(device)
+                # labels = batch.pop('labels').to(device)
+                batch = batch.to(device)
                 with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
-                    outputs = model(input_ids=input_ids,
-                                pixel_values=pixel_values,
-                                attention_mask=attention_masked,
-                                labels=labels)
+                    # outputs = model(input_ids=input_ids,
+                    #             pixel_values=pixel_values,
+                    #             attention_mask=attention_masked,
+                    #             labels=labels)
+                    outputs = model(batch)
                 
                 loss = outputs.loss
                 eval_loss += loss.item()
