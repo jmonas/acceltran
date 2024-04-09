@@ -113,7 +113,7 @@ for annotation in tqdm(annotations):
     annotation['scores'] = scores
 
 
-config = json.load(open('config_small.json'))
+config = json.load(open('config_tiny.json'))
 size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
@@ -273,7 +273,11 @@ for epoch in range(num_epochs):
             print("Epoch: {} - Training loss: {} - Eval Loss: {} - LR: {}".format(epoch+1, epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]), flush=True)
             # scheduler.step()
             if eval_loss < min_eval_loss:
-                torch.save(model.state_dict(), f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-{epoch}-{idx//500}.pt")
+                save_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0"
+                model_filename = f"flava-saved-model-ft-{epoch}-{idx//500}.pt"
+                full_model_path = os.path.join(save_path, model_filename)
+                os.makedirs(save_path, exist_ok=True)
+                torch.save(model.state_dict(), full_model_path)
                 # model.save_pretrained(f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-{epoch}-{idx//500}", from_pt=True) 
                 print(f"Saved model to /scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-{epoch}-{idx//500}")
                 min_eval_loss = eval_loss
