@@ -113,7 +113,7 @@ for annotation in tqdm(annotations):
     annotation['scores'] = scores
 
 
-config = json.load(open('config_small.json'))
+config = json.load(open('config_medium.json'))
 size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
