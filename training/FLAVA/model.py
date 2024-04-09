@@ -28,6 +28,10 @@ class FlavaForVQA(nn.Module):
         self.vqa_classifier = VQAClassifierHead(flava_model.config.multimodal_config.hidden_size, flava_model.config.multimodal_config.hidden_size, num_labels)
         
     def forward(self, batch):
+        labels = None
+        if 'labels' in batch:
+            labels = batch.pop('labels')
+
         outputs = self.flava_model(**batch)
         multimodal_embeddings = outputs.multimodal_embeddings
         hCLS = multimodal_embeddings[:, 0, :]
@@ -36,8 +40,7 @@ class FlavaForVQA(nn.Module):
         logits = self.vqa_classifier(hCLS)
         
         loss = None
-        if "labels" in batch:
-            labels = batch["labels"]
+        if labels:
             loss = nn.functional.binary_cross_entropy_with_logits(logits, labels, reduction="mean") * labels.shape[1]
 
         return SequenceClassifierOutput(
