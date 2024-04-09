@@ -35,7 +35,6 @@ class FlavaForVQA(nn.Module):
         outputs = self.flava_model(**batch)
         multimodal_embeddings = outputs.multimodal_embeddings
         hCLS = multimodal_embeddings[:, 0, :]
-        print(f"Shape of multimodal_embeddings: {hCLS.shape}")
 
         logits = self.vqa_classifier(hCLS)
         
