@@ -10,7 +10,6 @@
 #SBATCH --mail-type=end          # send email when job ends
 #SBATCH --mail-type=fail         # send email if job fails
 #SBATCH --mail-user=jmonas@princeton.edu
-#SBATCH --partition=mig
 
 module purge
 module load cudatoolkit/11.1

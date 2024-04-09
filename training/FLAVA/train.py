@@ -206,7 +206,7 @@ def collate_fn(batch):
 
   return batch
 
-batch_size = 16
+batch_size = 32
 
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=True)
