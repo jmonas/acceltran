@@ -131,8 +131,11 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
         for idx, batch in enumerate(test_dataloader):
             print(idx, flush=True)
             # Adapt these lines based on how your DataLoader and model are set up
-            inputs = {'pixel_values': batch['pixel_values'].to(device), 'input_ids': batch['input_ids'].to(device)}
-            outputs = model(**inputs)
+            batch = batch.to(device)
+
+
+            with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
+                outputs = model(batch)
             preds = outputs.logits.argmax(-1).tolist()  # Convert logits to predicted indices
             
             for question, pred in zip(batch["question_ids"], preds):
