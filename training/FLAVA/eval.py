@@ -85,42 +85,31 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 	class VQADataset(torch.utils.data.Dataset):
 		"""VQA (v2) dataset."""
 
-		def __init__(self, questions, annotations, processor):
+		def __init__(self, questions, processor):
 			self.questions = questions
-			self.annotations = annotations
 			self.processor = processor
 			self.transform = transforms.Compose([
 				transforms.Lambda(lambda img: img.convert('RGB')),
 			])
 
 		def __len__(self):
-			return len(self.annotations)
+			return len(self.questions)
 
 		def __getitem__(self, idx):
 			# get image + text
-			annotation = self.annotations[idx]
-			questions = self.questions[idx]
-			image_path = id_to_filename[annotation['image_id']]
+			question = self.questions[idx]
+			image_path = id_to_filename[question['image_id']]
 			with Image.open(image_path) as img:
 				# Convert any image to RGB (3 channels)
 				image = self.transform(img)
 
-			text = questions['question']
+			text = question['question']
 
 			encoding = self.processor(image, text, padding="max_length", truncation=True, return_tensors="pt")
-			# remove batch dimension
-			for k,v in encoding.items():
-				encoding[k] = v.squeeze()
-			# add labels
-			labels = annotation['labels']
-			scores = annotation['scores']
-			# based on: https://github.com/dandelin/ViLT/blob/762fd3975c180db6fc88f577cf39549983fa373a/vilt/modules/objectives.py#L301
-			targets = torch.zeros(len(id2label))
-			for label, score in zip(labels, scores):
-				targets[label] = score
-			encoding["labels"] = targets
-
+			
+			encoding["question_id"] = question["question_id"]
 			return encoding
+
 
 
 
