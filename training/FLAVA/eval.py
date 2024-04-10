@@ -85,7 +85,7 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 	class VQADataset(torch.utils.data.Dataset):
 		"""VQA (v2) dataset."""
 
-		def __init__(self, questions, processor):
+		def __init__(self, questions, annotations, processor):
 			self.questions = questions
 			self.processor = processor
 			self.transform = transforms.Compose([
@@ -93,23 +93,25 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 			])
 
 		def __len__(self):
-			return len(self.questions)
+			return len(self.annotations)
 
 		def __getitem__(self, idx):
 			# get image + text
-			question = self.questions[idx]
-			image_path = id_to_filename[question['image_id']]
+			annotation = self.annotations[idx]
+			questions = self.questions[idx]
+			image_path = id_to_filename[annotation['image_id']]
 			with Image.open(image_path) as img:
 				# Convert any image to RGB (3 channels)
 				image = self.transform(img)
 
-			text = question['question']
+			text = questions['question']
 
 			encoding = self.processor(image, text, padding="max_length", truncation=True, return_tensors="pt")
-			
-			encoding["question_id"] = question["question_id"]
-			return encoding
+			# remove batch dimension
+			for k,v in encoding.items():
+				encoding[k] = v.squeeze()
 
+			return encoding
 
 
 
