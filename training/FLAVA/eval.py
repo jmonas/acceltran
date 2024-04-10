@@ -93,18 +93,17 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 			])
 
 		def __len__(self):
-			return len(self.annotations)
+			return len(self.questions)
 
 		def __getitem__(self, idx):
 			# get image + text
-			annotation = self.annotations[idx]
-			questions = self.questions[idx]
-			image_path = id_to_filename[annotation['image_id']]
+			question = self.questions[idx]
+			image_path = id_to_filename[question['image_id']]
 			with Image.open(image_path) as img:
 				# Convert any image to RGB (3 channels)
 				image = self.transform(img)
 
-			text = questions['question']
+			text = question['question']
 
 			encoding = self.processor(image, text, padding="max_length", truncation=True, return_tensors="pt")
 			# remove batch dimension
