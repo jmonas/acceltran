@@ -117,9 +117,8 @@ config = json.load(open('config_medium.json'))
 size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
-flava_model = FlavaModel(config=configuration)
-model = FlavaForVQA(flava_model, len(id2label))
-model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-4-8.pt"
+model = FlavaForVQA(configuration, len(id2label))
+model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-4-8.pt"
 model.load_state_dict(torch.load(model_path))
 
 flava_params = sum(p.numel() for p in model.parameters())
@@ -243,16 +242,16 @@ for epoch in range(num_epochs):
         scaler.update()
         print(f"{idx}, Loss: {loss}", flush=True)
 
-        if (idx+1) % 5000 ==0:
+        if (idx+1) % 5000 ==0 and  scheduler.get_last_lr() > 5e-6:
             scheduler.step()
 
         if (idx+1) % 500==0:
             model.eval()
             eval_loss = 0
-            for j, batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
-                batch = batch.to(device)
+            for j, val_batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
+                val_batch = val_batch.to(device)
                 with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
-                    outputs = model(batch)
+                    outputs = model(val_batch)
                 
                 loss = outputs.loss
                 eval_loss += loss.item()
@@ -261,13 +260,13 @@ for epoch in range(num_epochs):
             print("Epoch: {} - Training loss: {} - Eval Loss: {} - LR: {}".format(epoch+1, epoch_loss/len(train_dataloader), eval_loss/len(valid_dataloader), optimizer.param_groups[0]["lr"]), flush=True)
             # scheduler.step()
             if eval_loss < min_eval_loss:
-                save_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0"
+                save_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1"
                 model_filename = f"flava-saved-model-ft2-{epoch}-{idx//500}.pt"
                 full_model_path = os.path.join(save_path, model_filename)
                 os.makedirs(save_path, exist_ok=True)
                 torch.save(model.state_dict(), full_model_path)
-                # model.save_pretrained(f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft-{epoch}-{idx//500}", from_pt=True) 
-                print(f"Saved model to /scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft2-{epoch}-{idx//500}")
+                # model.save_pretrained(f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-{epoch}-{idx//500}", from_pt=True) 
+                print(f"Saved model to /scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-{epoch}-{idx//500}")
                 min_eval_loss = eval_loss
                 early_stopping_hook = 0
             else:
