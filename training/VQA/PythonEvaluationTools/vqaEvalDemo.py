@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import sys
-dataDir = '../../VQA'
+dataDir = '../VQA'
 sys.path.insert(0, '%s/PythonHelperTools/vqaTools' %(dataDir))
 from vqa import VQA
 from vqaEvaluation.vqaEval import VQAEval
