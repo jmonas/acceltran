@@ -169,7 +169,7 @@ if __name__ == '__main__':
 	ADROIT = args.adroit
 	VALIDATE = args.validate
 
-	config_file = 'config_medium.json'
+	config_file = 'config_small.json'
 	config = json.load(open(config_file))
 	size = f"l{config['uni_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 
@@ -178,7 +178,7 @@ if __name__ == '__main__':
 	images_type =   "val2014" if VALIDATE else "test2015"
 	# model_location = f"jmonas/ViLT-11M-vqa" if ADROIT else f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
 	# model_location = f"{cache_dir}/FLAVA/Models/{size}/flava-saved-model-ft-4-8.pt"
-	model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft2-93-0.pt"
+	model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft2-30-3.pt"
 
 	questions_file= f'{cache_dir}/VQA/{questions_type}'
 	images_dir = f'{cache_dir}/VQA/{images_type}'
@@ -186,6 +186,6 @@ if __name__ == '__main__':
 	if VALIDATE:
 		# get validation proxy accuracy
 		annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-		eval(size, model_path, questions_file, images_dir, 12, True, annFile, .05)        
+		eval(size, model_path, questions_file, images_dir, 32, True, annFile, .05)        
 	else:
-		eval(size, model_path, questions_file, images_dir, 12,)
+		eval(size, model_path, questions_file, images_dir, 32,)
