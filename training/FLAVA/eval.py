@@ -109,6 +109,7 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 			# remove batch dimension
 			for k,v in encoding.items():
 				encoding[k] = v.squeeze()
+			encoding["question_id"] = question["question_id"]
 
 			return encoding
 
@@ -132,13 +133,14 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 			print(idx, flush=True)
 			# Adapt these lines based on how your DataLoader and model are set up
 			batch = batch.to(device)
+			question_ids = batch.pop("question_ids")
 
 
 			with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
 				outputs = model(batch)
 			preds = outputs.logits.argmax(-1).tolist()  # Convert logits to predicted indices
 			
-			for question, pred in zip(batch["question_ids"], preds):
+			for question, pred in zip(question_ids, preds):
 				# Convert `pred` to the corresponding answer string. This may involve a mapping similar to `id2label`.
 				answer = config["id2label"][str(pred)]  # This is a placeholder; adapt it to your model's specifics
 				predictions.append({'question_id': question.item(), 'answer': answer})
