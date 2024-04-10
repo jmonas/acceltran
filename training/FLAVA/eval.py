@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
     config_file = 'config_medium_plus.json'
     config = json.load(open(config_file))
-    size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
+    size = f"l{config['uni_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 
     cache_dir = "/scratch/network/jmonas" if ADROIT else "/scratch/gpfs/jmonas"  
     questions_type = "v2_OpenEnded_mscoco_val2014_questions.json" if VALIDATE else  "v2_OpenEnded_mscoco_test2015_questions.json" 
