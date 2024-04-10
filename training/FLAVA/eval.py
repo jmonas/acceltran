@@ -106,10 +106,11 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 			text = question['question']
 
 			encoding = self.processor(image, text, padding="max_length", truncation=True, return_tensors="pt")
-			# remove batch dimension
-			# for k,v in encoding.items():
-			# 	encoding[k] = v.squeeze()
 			encoding["question_id"] = question["question_id"]
+
+			# remove batch dimension
+			for k,v in encoding.items():
+				encoding[k] = v.squeeze()
 
 			return encoding
 
@@ -133,7 +134,6 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 			print(idx, flush=True)
 			# Adapt these lines based on how your DataLoader and model are set up
 			batch = batch.to(device)
-			print(batch)
 			question_ids = [item['question_id'] for item in batch]
 
 
