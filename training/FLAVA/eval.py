@@ -85,7 +85,7 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 	class VQADataset(torch.utils.data.Dataset):
 		"""VQA (v2) dataset."""
 
-		def __init__(self, questions, annotations, processor):
+		def __init__(self, questions, processor):
 			self.questions = questions
 			self.processor = processor
 			self.transform = transforms.Compose([
