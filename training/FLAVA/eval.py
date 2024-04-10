@@ -163,7 +163,7 @@ if __name__ == '__main__':
     ADROIT = args.adroit
     VALIDATE = args.validate
 
-    config_file = 'config_medium_plus.json'
+    config_file = 'config_medium.json'
     config = json.load(open(config_file))
     size = f"l{config['uni_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 
