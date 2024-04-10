@@ -186,6 +186,6 @@ if __name__ == '__main__':
 	if VALIDATE:
 		# get validation proxy accuracy
 		annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-		eval(size, model_path, questions_file, images_dir, 32, True, annFile, .05)        
+		eval(size, model_path, questions_file, images_dir, 12, True, annFile, .05)        
 	else:
-		eval(size, model_path, questions_file, images_dir, 32,)
+		eval(size, model_path, questions_file, images_dir, 12,)
