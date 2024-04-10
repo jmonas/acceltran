@@ -144,7 +144,7 @@ def eval (size, questions_file, images_dir, batch_size = 32, VALIDATE=False, ann
 			
 			for question, pred in zip(question_ids, preds):
 				# Convert `pred` to the corresponding answer string. This may involve a mapping similar to `id2label`.
-				answer = config["id2label"][str(pred)]  # This is a placeholder; adapt it to your model's specifics
+				answer = id2label[str(pred)]  # This is a placeholder; adapt it to your model's specifics
 				predictions.append({'question_id': question.item(), 'answer': answer})
 
 	current_date = datetime.datetime.now().strftime("%Y%m%d")
