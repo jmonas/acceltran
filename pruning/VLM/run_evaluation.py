@@ -16,7 +16,14 @@ from modeling_dtvilt import DTViltModel, DTViltForQuestionAnswering
 
 USE_NON_PRUNED = False
 
-def main (model_name, model, processor, max_pruning_threshold, min_k, method = "dynatran"):
+def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
+	config = model_info['config']
+	model_name = model_info['model_name']
+	model_class = model_info['model_class']
+	model_location = model_info['model_location']
+	processor = model_info['processor']
+	cache_dir = model_info['cache_dir']
+
 	output_dir = os.path.join('./results/' if USE_NON_PRUNED else './results/nn_pruning/', f'{model_name}_VQA_{"dp" if max_pruning_threshold > 0 else "top-k"}')
 	print(f'Output directory: {output_dir}')
 	os.makedirs(output_dir, exist_ok=True)
@@ -39,13 +46,14 @@ def main (model_name, model, processor, max_pruning_threshold, min_k, method = "
 		result = {'pruning_threshold': p, 'k': k} 
 		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{None}')
 
-		config = model.config
 		config.pruning_threshold = p
 		config.k = k
 		config.sparsity_file = os.path.join(temp_dir, 'sparsity.json')
 		config.save_pretrained(temp_dir)
 
 		if os.path.exists(config.sparsity_file): os.remove(config.sparsity_file)
+
+		model = model_class.from_pretrained(model_location, config=config, use_safetensors=True, cache_dir=cache_dir)
 
 		# run evalutation
 		ann_file = "/scratch/gpfs/jmonas/VQA/v2_mscoco_val2014_annotations.json"
@@ -83,5 +91,13 @@ if __name__ == '__main__':
 		device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		configuration = ViltConfig(**config)
 		processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir=cache_dir)
-		model = DTViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True, cache_dir=cache_dir)
-		main("ViLT_medium", model, processor, 0.1, None)
+		# model = DTViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True, cache_dir=cache_dir)
+		model_info = {
+			"config": config,
+			"model_name": DTViltForQuestionAnswering._get_name(),
+			"model_class" : DTViltForQuestionAnswering,
+			"model_location": model_location,
+			"processor": processor,
+			"cache_dir": cache_dir
+		}
+		main(model_info, 0.1, None)
