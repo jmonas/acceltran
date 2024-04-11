@@ -94,7 +94,7 @@ if __name__ == '__main__':
 		# model = DTViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True, cache_dir=cache_dir)
 		model_info = {
 			"config": config,
-			"model_name": DTViltForQuestionAnswering._get_name(),
+			"model_name": DTViltForQuestionAnswering.__name__,
 			"model_class" : DTViltForQuestionAnswering,
 			"model_location": model_location,
 			"processor": processor,
