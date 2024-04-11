@@ -13,6 +13,7 @@ sys.path.append("/home/jmonas/acceltran/transformers/src/transformers/models/vil
 print(sys.path)
 
 from modeling_dtvilt import DTViltModel, DTViltForQuestionAnswering
+from datetime import datetime
 
 USE_NON_PRUNED = False
 
@@ -25,7 +26,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	cache_dir = model_info['cache_dir']
 	size = model_info["size"]
 
-	output_dir = os.path.join('./results/' if USE_NON_PRUNED else './results/nn_pruning/', f'{model_name}_VQA_{"dp" if max_pruning_threshold > 0 else "top-k"}')
+	output_dir = os.path.join('./results/' if USE_NON_PRUNED else './results/nn_pruning/', f'{model_name}_{size}_VQA_{f"dp_{max_pruning_threshold}_{datetime.now()}" if max_pruning_threshold > 0 else "top-k"}')
 	print(f'Output directory: {output_dir}')
 	os.makedirs(output_dir, exist_ok=True)
 
@@ -50,7 +51,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		config.pruning_threshold = p
 		config.k = k
 		config.sparsity_file = os.path.join(temp_dir, 'sparsity.json')
-		config.save_pretrained(temp_dir)
+		# config.save_pretrained(temp_dir)
 
 		if os.path.exists(config.sparsity_file): os.remove(config.sparsity_file)
 
@@ -102,4 +103,4 @@ if __name__ == '__main__':
 			"cache_dir": cache_dir,
 			"size":size
 		}
-		main(model_info, 0.1, None)
+		main(model_info, 0.02, None)
