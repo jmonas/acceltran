@@ -247,7 +247,7 @@ for epoch in range(num_epochs):
         scaler.update()
         print(f"{idx}, Loss: {loss}", flush=True)
 
-        if (idx+1) % 5000 ==0 and  scheduler.get_last_lr() > 5e-6:
+        if (idx+1) % 5000 ==0 and  scheduler.get_last_lr()[0] > 5e-6:
             scheduler.step()
 
         if (idx+1) % 500==0:
@@ -266,11 +266,11 @@ for epoch in range(num_epochs):
             # scheduler.step()
             if eval_loss < min_eval_loss:
                 save_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1"
-                model_filename = f"flava-saved-model-ft3-{epoch}-{idx//500}.pt"
+                model_filename = f"flava-saved-model-ft_v2-{epoch}-{idx//500}.pt"
                 full_model_path = os.path.join(save_path, model_filename)
                 os.makedirs(save_path, exist_ok=True)
                 torch.save(model.state_dict(), full_model_path)
-                print(f"Saved model to /scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft3-{epoch}-{idx//500}")
+                print(f"Saved model to /scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft_v2-{epoch}-{idx//500}")
                 min_eval_loss = eval_loss
                 early_stopping_hook = 0
             else:
