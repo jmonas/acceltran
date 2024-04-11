@@ -18,7 +18,7 @@ import datetime
 import sys 
 sys.path.insert(0, '../VQA/PythonEvaluationTools')
 sys.path.append('/home/jmonas/acceltran/training/VQA/PythonEvaluationTools/')
-
+print(sys.path)
 from vqaEvalDemo import get_accuracy
 
 def evaluate(model, processor, config, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
