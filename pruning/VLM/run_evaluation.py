@@ -23,6 +23,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	model_location = model_info['model_location']
 	processor = model_info['processor']
 	cache_dir = model_info['cache_dir']
+	size = model_info["size"]
 
 	output_dir = os.path.join('./results/' if USE_NON_PRUNED else './results/nn_pruning/', f'{model_name}_VQA_{"dp" if max_pruning_threshold > 0 else "top-k"}')
 	print(f'Output directory: {output_dir}')
@@ -59,7 +60,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		ann_file = "/scratch/gpfs/jmonas/VQA/v2_mscoco_val2014_annotations.json"
 		images_dir = "/scratch/gpfs/jmonas/VQA/val2014"
 		questions_file  =  "/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
-		metrics = evaluate(model, processor, config, questions_file, images_dir, 32, True, ann_file, .001)
+		metrics = evaluate(model, processor, size, questions_file, images_dir, 32, True, ann_file, .001)
 		if p > 0 or k is not None:
 			sparsity = json.load(open(config.sparsity_file))
 			print("sparsity: ", sparsity)
@@ -98,6 +99,7 @@ if __name__ == '__main__':
 			"model_class" : DTViltForQuestionAnswering,
 			"model_location": model_location,
 			"processor": processor,
-			"cache_dir": cache_dir
+			"cache_dir": cache_dir,
+			"size":size
 		}
 		main(model_info, 0.1, None)
