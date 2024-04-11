@@ -66,13 +66,15 @@ class FlavaForVQA(FlavaPreTrainedModel):
         self.post_init()
 
     def forward(self, batch):
+        labels = None
+        if 'labels' in batch:
+            labels = batch.pop('labels')
         outputs = self.flava(**batch)
         pooler_output = outputs.multimodal_output.pooler_output
         logits = self.classifier(pooler_output)
 
         loss = None
-        if 'labels' in batch:
-            labels = batch.pop('labels')
+        if labels is not None:
             loss = nn.functional.binary_cross_entropy_with_logits(logits, labels, reduction="mean") * labels.shape[1]
 
         return SequenceClassifierOutput(
