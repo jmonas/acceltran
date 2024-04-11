@@ -51,7 +51,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		config.pruning_threshold = p
 		config.k = k
 		config.sparsity_file = os.path.join(temp_dir, 'sparsity.json')
-		# config.save_pretrained(temp_dir)
+		config.save_pretrained(temp_dir)
 
 		if os.path.exists(config.sparsity_file): os.remove(config.sparsity_file)
 
