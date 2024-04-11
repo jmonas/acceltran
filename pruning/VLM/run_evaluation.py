@@ -32,7 +32,7 @@ def main (model_name, model, processor, max_pruning_threshold, min_k, method = "
 	for p, k in zip(pruning_thresholds, ks):
 		print(f'Running inference with pruning threshold: {p}, and \'k\': {k}')
 		result = {'pruning_threshold': p, 'k': k} 
-		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{int(k)}')
+		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{None}')
 
 		config = model.config
 		config.pruning_threshold = p
