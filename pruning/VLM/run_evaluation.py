@@ -10,6 +10,8 @@ from transformers import ViltProcessor, ViltForQuestionAnswering, ViltConfig
 import torch
 sys.path.append('../../txf_design-space/transformers_new/src/transformers')
 sys.path.append("/home/jmonas/acceltran/txf_design-space/transformers_new/transformers/src/transformers/models/vilt/")
+print(sys.path)
+
 from modeling_dtvilt import DTViltModel, DTViltForMaskedLM, DTViltForSequenceClassification, DTViltForQuestionAnswering
 
 USE_NON_PRUNED = False
