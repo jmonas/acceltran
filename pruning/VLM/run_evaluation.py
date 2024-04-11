@@ -75,8 +75,8 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		else:
 			result['activation_sparsity'] = 0
 
-		result['overall'] = metrics['overall'] 
-		result['perAnswerType'] = metrics['perAnswerType']
+		result['overall'] = metrics[0] 
+		result['perAnswerType'] = metrics[1]
 
 		results.append(result)
 		json.dump(results, open(os.path.join(output_dir, 'results.json'), 'w+'))
