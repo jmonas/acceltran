@@ -26,7 +26,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	cache_dir = model_info['cache_dir']
 	size = model_info["size"]
 
-	output_dir = os.path.join('./results/' if USE_NON_PRUNED else './results/nn_pruning/', f'{model_name}_{size}_VQA_{f"dp_{max_pruning_threshold}_{datetime.now()}" if max_pruning_threshold > 0 else "top-k"}')
+	output_dir = os.path.join('./results/' if USE_NON_PRUNED else './results/nn_pruning/', f'{model_name}_{size}_VQA_{f"dp" if max_pruning_threshold > 0 else "top-k"}_{max_pruning_threshold}_{datetime.now()}')
 	print(f'Output directory: {output_dir}')
 	os.makedirs(output_dir, exist_ok=True)
 
@@ -36,12 +36,13 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		pruning_thresholds = list(np.arange(0, max_pruning_threshold, 0.005))
 		ks = [None] * len(pruning_thresholds)
 
-	else:
+	elif method == "top-k":
 		assert(max_pruning_threshold == 0 and min_k,'Either min_k has to be None or max_pruning_threshold has to be zero')
 		logk = math.log(min_k, 2)
-		ks = list(np.logspace(logk, 9, num=10, base=2))
+		ks = list(np.logspace(logk, 3, num=4, base=2))
 		pruning_thresholds = [0] * len(ks)
-
+	else:
+		ValueError("Pruning method not supported. Method must be either dynatran or top-k.")
 	results = []
 	for p, k in zip(pruning_thresholds, ks):
 		print(f'Running inference with pruning threshold: {p}, and \'k\': {k}')
@@ -103,4 +104,4 @@ if __name__ == '__main__':
 			"cache_dir": cache_dir,
 			"size":size
 		}
-		main(model_info, 0.02, None)
+		main(model_info, 0, 1, None)
