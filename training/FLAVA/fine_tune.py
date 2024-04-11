@@ -270,8 +270,7 @@ for epoch in range(num_epochs):
                 full_model_path = os.path.join(save_path, model_filename)
                 os.makedirs(save_path, exist_ok=True)
                 torch.save(model.state_dict(), full_model_path)
-                # model.save_pretrained(f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-{epoch}-{idx//500}", from_pt=True) 
-                print(f"Saved model to /scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-{epoch}-{idx//500}")
+                print(f"Saved model to /scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft2-{epoch}-{idx//500}")
                 min_eval_loss = eval_loss
                 early_stopping_hook = 0
             else:
