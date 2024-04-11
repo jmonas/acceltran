@@ -12,7 +12,7 @@ sys.path.append('../../transformers_new/src/transformers')
 sys.path.append("/home/jmonas/acceltran/transformers/src/transformers/models/vilt/")
 print(sys.path)
 
-from modeling_dtvilt import DTViltModel, DTViltForMaskedLM, DTViltForSequenceClassification, DTViltForQuestionAnswering
+from modeling_dtvilt import DTViltModel, DTViltForQuestionAnswering
 
 USE_NON_PRUNED = False
 
