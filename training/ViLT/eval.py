@@ -22,9 +22,9 @@ from vqaEvalDemo import get_accuracy
 sys.path.append('/home/jmonas/acceltran/transformers/src/transformers/models/vilt/')
 from modeling_vilt import ViltForQuestionAnswering, ViltConfig
 from processing_vilt import ViltProcessor
-f = open("id2label.json")
+f = open("/home/jmonas/acceltran/training/ViLT/id2label.json")
 id2label = json.load(f)
-f = open("label2id.json")
+f = open("/home/jmonas/acceltran/training/ViLT/label2id.json")
 label2id = json.load(f)
 
 
