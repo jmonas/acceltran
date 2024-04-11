@@ -19,7 +19,7 @@ sys.path.insert(0, '../VQA/PythonEvaluationTools')
 sys.path.append('/home/jmonas/acceltran/training/VQA/PythonEvaluationTools/')
 print(sys.path)
 from vqaEvalDemo import get_accuracy
-sys.path.append('/home/jmonas/acceltran/transformers/src/transformers/models/vilt')
+sys.path.append('/home/jmonas/acceltran/transformers/src/transformers/models/vilt/')
 from modeling_vilt import ViltProcessor, ViltForQuestionAnswering, ViltConfig
 
 
