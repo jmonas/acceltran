@@ -113,7 +113,7 @@ for annotation in tqdm(annotations):
     annotation['scores'] = scores
 
 
-config = json.load(open('config_medium.json'))
+config = json.load(open('config_tiny.json'))
 size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
@@ -246,7 +246,8 @@ for epoch in range(num_epochs):
         scaler.update()
         print(f"{idx}, Loss: {loss}", flush=True)
         scheduler.get_lr()
-        if (idx+1) % 5000 ==0 and  scheduler.get_last_lr() > 1e-5:
+        if (idx+1) % 5000 ==0 and  scheduler.get_last_lr()[0] > 1e-5:
+            print("make sure: ", scheduler.get_last_lr())
             scheduler.step()
 
         if (idx+1) % 500==0:
