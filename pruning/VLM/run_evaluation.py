@@ -104,4 +104,4 @@ if __name__ == '__main__':
 			"cache_dir": cache_dir,
 			"size":size
 		}
-		main(model_info, 0, 1, None)
+		main(model_info, 0, 1, "top-k")
