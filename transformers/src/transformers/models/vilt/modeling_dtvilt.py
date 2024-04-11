@@ -29,7 +29,7 @@ from transformers.file_utils import add_start_docstrings, add_start_docstrings_t
 from transformers.modeling_outputs import BaseModelOutput, BaseModelOutputWithPooling, SequenceClassifierOutput
 from transformers.modeling_utils import PreTrainedModel, find_pruneable_heads_and_indices, prune_linear_layer
 from transformers.utils import logging
-from .configuration_vilt import ViltConfig
+from configuration_vilt import ViltConfig
 
 
 logger = logging.get_logger(__name__)
