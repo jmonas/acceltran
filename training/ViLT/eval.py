@@ -28,7 +28,7 @@ f = open("/home/jmonas/acceltran/training/ViLT/label2id.json")
 label2id = json.load(f)
 
 
-def evaluate(model, processor, config, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
+def evaluate(model, processor, size, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
     # Opening JSON file
     f = open(questions_file)
 
@@ -165,6 +165,6 @@ if __name__ == '__main__':
     if VALIDATE:
         # get validation proxy accuracy
         annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-        evaluate(model, processor, config, questions_file, images_dir, 32, True, annFile, .1)        
+        evaluate(model, processor, size, questions_file, images_dir, 32, True, annFile, .1)        
     else:
-        evaluate(model, processor, config, questions_file, images_dir, 32,)
+        evaluate(model, processor, size, questions_file, images_dir, 32,)
