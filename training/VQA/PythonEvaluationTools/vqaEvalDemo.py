@@ -6,7 +6,6 @@ sys.path.insert(0, '%s/PythonHelperTools/vqaTools' %(dataDir))
 sys.path.insert(0, '../PythonHelperTools/vqaTools')
 import sys
 sys.path.insert(0, '/home/jmonas/acceltran/training/VQA/PythonHelperTools/vqaTools')
-print(sys.path) 
 from vqa import VQA
 from vqaEvaluation.vqaEval import VQAEval
 import matplotlib.pyplot as plt
