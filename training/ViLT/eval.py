@@ -1,5 +1,4 @@
 import json
-from transformers.src.transformers.models.vilt.modeling_vilt import ViltProcessor, ViltForQuestionAnswering, ViltConfig
 import requests
 import json
 import requests
@@ -20,6 +19,9 @@ sys.path.insert(0, '../VQA/PythonEvaluationTools')
 sys.path.append('/home/jmonas/acceltran/training/VQA/PythonEvaluationTools/')
 print(sys.path)
 from vqaEvalDemo import get_accuracy
+sys.path.append('/home/jmonas/acceltran/transformers/src/transformers/models/vilt')
+from modeling_vilt import ViltProcessor, ViltForQuestionAnswering, ViltConfig
+
 
 def evaluate(model, processor, config, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
     # Opening JSON file
