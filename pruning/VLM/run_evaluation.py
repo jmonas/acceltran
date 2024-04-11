@@ -39,7 +39,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	elif method == "top-k":
 		assert(max_pruning_threshold == 0 and min_k,'Either min_k has to be None or max_pruning_threshold has to be zero')
 		logk = math.log(min_k, 2)
-		ks = list(np.logspace(logk, 3, num=4, base=2))
+		ks = list(np.logspace(logk, 9, num=10, base=2))
 		pruning_thresholds = [0] * len(ks)
 	else:
 		ValueError("Pruning method not supported. Method must be either dynatran or top-k.")
@@ -47,7 +47,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	for p, k in zip(pruning_thresholds, ks):
 		print(f'Running inference with pruning threshold: {p}, and \'k\': {k}')
 		result = {'pruning_threshold': p, 'k': k} 
-		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{None}')
+		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{k}')
 
 		config.pruning_threshold = p
 		config.k = k
@@ -62,7 +62,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		ann_file = "/scratch/gpfs/jmonas/VQA/v2_mscoco_val2014_annotations.json"
 		images_dir = "/scratch/gpfs/jmonas/VQA/val2014"
 		questions_file  =  "/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
-		metrics = evaluate(model, processor, size, questions_file, images_dir, 32, True, ann_file, .001)
+		metrics = evaluate(model, processor, size, questions_file, images_dir, 32, True, ann_file, .01)
 		if p > 0 or k is not None:
 			sparsity = json.load(open(config.sparsity_file))
 			print("sparsity: ", sparsity)
