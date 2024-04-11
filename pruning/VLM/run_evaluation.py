@@ -86,7 +86,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 
 
 if __name__ == '__main__':
-		config_file = '/home/jmonas/acceltran/training/ViLT/config_medium.json'
+		config_file = '/home/jmonas/acceltran/training/ViLT/config_medium_plus.json'
 		config = json.load(open(config_file))
 		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		cache_dir= "/scratch/gpfs/jmonas"
