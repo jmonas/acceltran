@@ -22,6 +22,11 @@ from vqaEvalDemo import get_accuracy
 sys.path.append('/home/jmonas/acceltran/transformers/src/transformers/models/vilt/')
 from modeling_vilt import ViltForQuestionAnswering, ViltConfig
 from processing_vilt import ViltProcessor
+f = open("id2label.json")
+id2label = json.load(f)
+f = open("label2id.json")
+label2id = json.load(f)
+
 
 def evaluate(model, processor, config, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
     # Opening JSON file
@@ -117,7 +122,7 @@ def evaluate(model, processor, config, questions_file, images_dir, batch_size = 
             
             for question, pred in zip(batch["question_ids"], preds):
                 # Convert `pred` to the corresponding answer string. This may involve a mapping similar to `id2label`.
-                answer = config.id2label[str(pred)]  # This is a placeholder; adapt it to your model's specifics
+                answer = id2label[str(pred)]  # This is a placeholder; adapt it to your model's specifics
                 predictions.append({'question_id': question.item(), 'answer': answer})
 
     current_date = datetime.datetime.now().strftime("%Y%m%d")
