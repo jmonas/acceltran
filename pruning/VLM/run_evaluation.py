@@ -61,9 +61,9 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		model = model_class.from_pretrained(model_location, config=config, use_safetensors=True, cache_dir=cache_dir)
 
 		# run evalutation
-		ann_file = "/scratch/gpfs/jmonas/VQA/v2_mscoco_val2014_annotations.json"
-		images_dir = "/scratch/gpfs/jmonas/VQA/val2014"
-		questions_file  =  "/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
+		ann_file = "/scratch/network/jmonas/VQA/v2_mscoco_val2014_annotations.json"
+		images_dir = "/scratch/network/jmonas/VQA/val2014"
+		questions_file  =  "/scratch/network/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
 		metrics = evaluate(model, processor, size, questions_file, images_dir, 32, True, ann_file, .01)
 		if p > 0 or k is not None:
 			sparsity = json.load(open(config.sparsity_file))
@@ -88,7 +88,8 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 
 
 if __name__ == '__main__':
-		config_file = '/home/jmonas/acceltran/training/ViLT/small.json'
+		# config_file = '/home/jmonas/acceltran/training/ViLT/small.json'
+		config_file = '/home/Desktop/jmonas/acceltran/training/ViLT/small.json'
 		config = json.load(open(config_file))
 		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		cache_dir= "/scratch/network/jmonas"
