@@ -1,5 +1,5 @@
 import json
-from transformers import ViltProcessor, ViltForQuestionAnswering, ViltConfig
+from transformers.models.vilt.modeling_vilt import ViltProcessor, ViltForQuestionAnswering, ViltConfig
 import requests
 import json
 import requests
