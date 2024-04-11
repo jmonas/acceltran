@@ -11,7 +11,7 @@ import torch
 
 USE_NON_PRUNED = False
 
-def main (model_name, model, processor, weights_pruned = False, max_pruning_threshold = 0, min_k = None, method = "dynatran"):
+def main (model_name, model, processor, max_pruning_threshold, min_k, method = "dynatran"):
 	output_dir = os.path.join('./results/' if USE_NON_PRUNED else './results/nn_pruning/', f'{model_name}_VQA_{"dp" if max_pruning_threshold > 0 else "top-k"}')
 	print(f'Output directory: {output_dir}')
 	os.makedirs(output_dir, exist_ok=True)
@@ -70,7 +70,7 @@ def main (model_name, model, processor, weights_pruned = False, max_pruning_thre
 
 
 if __name__ == '__main__':
-		config_file = 'config_medium_plus.json'
+		config_file = 'config_medium.json'
 		config = json.load(open(config_file))
 		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		cache_dir= "/scratch/gpfs/jmonas"
@@ -79,4 +79,4 @@ if __name__ == '__main__':
 		configuration = ViltConfig(**config)
 		processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir=cache_dir)
 		model =ViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True, cache_dir=cache_dir)
-		main(model, processor, False, 0.1, None)
+		main("ViLT_medium", model, processor, 0.1, None)
