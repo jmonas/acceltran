@@ -51,7 +51,7 @@ _CONFIG_FOR_DOC = "ViltConfig"
 _CHECKPOINT_FOR_DOC = "dandelin/vilt-b32-mlm"
 
 
-from ..deprecated._archive_maps import VILT_PRETRAINED_MODEL_ARCHIVE_LIST  # noqa: F401, E402
+from transformers.models.deprecated._archive_maps import VILT_PRETRAINED_MODEL_ARCHIVE_LIST  # noqa: F401, E402
 
 def dynatran_prune(weight_matrix, pruning_threshold, json_file, parameter=False):
     if pruning_threshold > 0:
