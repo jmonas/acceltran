@@ -5,6 +5,7 @@ dataDir = '../VQA'
 sys.path.insert(0, '%s/PythonHelperTools/vqaTools' %(dataDir))
 sys.path.insert(0, '../PythonHelperTools/vqaTools')
 import sys
+sys.path.insert(0, '/home/Desktop/jmonas/acceltran/training/VQA/PythonHelperTools/vqaTools')
 sys.path.insert(0, '/home/jmonas/acceltran/training/VQA/PythonHelperTools/vqaTools')
 from vqa import VQA
 from vqaEvaluation.vqaEval import VQAEval
