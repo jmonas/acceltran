@@ -1161,12 +1161,12 @@ class ViltMLMHead(nn.Module):
     """,
     VILT_START_DOCSTRING,
 )
-class ViltForQuestionAnswering(ViltPreTrainedModel):
+class DTViltForQuestionAnswering(ViltPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
 
         self.num_labels = config.num_labels
-        self.vilt = ViltModel(config)
+        self.vilt = DTViltModel(config)
 
         # Classifier head
         self.classifier = nn.Sequential(
