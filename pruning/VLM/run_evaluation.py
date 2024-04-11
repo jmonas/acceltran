@@ -89,7 +89,7 @@ if __name__ == '__main__':
 		cache_dir= "/scratch/gpfs/jmonas"
 		model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-97-5"
 		device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-		configuration = ViltConfig(**config)
+		config = ViltConfig(**config)
 		processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir=cache_dir)
 		# model = DTViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True, cache_dir=cache_dir)
 		model_info = {
