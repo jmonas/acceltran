@@ -118,7 +118,7 @@ size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate
 configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 model = FlavaForVQA(configuration, len(id2label))
-model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-4-8.pt"
+model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-3-25.pt"
 model.load_state_dict(torch.load(model_path))
 
 flava_params = sum(p.numel() for p in model.parameters())
@@ -217,16 +217,21 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=4e-5)
 scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9, last_epoch=-1, verbose=False)
 
 num_epochs = 100
-patience = 3
+patience = 4
 min_eval_loss = float("inf")
 early_stopping_hook = 0
 tracking_information = []
 scaler = torch.cuda.amp.GradScaler()
+stop_training = False
 
 for epoch in range(num_epochs):
+    if stop_training:
+        break
     epoch_loss = 0
     model.train()
     for idx, batch in enumerate(train_dataloader):
+        if stop_training:
+            break
         batch = batch.to(device)
 
 
@@ -271,8 +276,9 @@ for epoch in range(num_epochs):
                 early_stopping_hook = 0
             else:
                 early_stopping_hook += 1
+                print(f"Patience: {early_stopping_hook}")
                 if early_stopping_hook > patience:
-                    break
+                    stop_training = True
             model.train()
     
             # pickle.dump(tracking_information, open(f"Models/{size}/tracking_information-{idx//500}.pkl", "wb"))
