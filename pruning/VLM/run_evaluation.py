@@ -8,6 +8,9 @@ sys.path.insert(0, '../../training/ViLT')
 from eval import evaluate
 from transformers import ViltProcessor, ViltForQuestionAnswering, ViltConfig
 import torch
+sys.path.append('../../txf_design-space/transformers_new/src/transformers')
+
+from transformers.models.vilt.modeling_dtvilt import DTViltModel, DTViltForMaskedLM, DTViltForSequenceClassification, DTViltForQuestionAnswering
 
 USE_NON_PRUNED = False
 
@@ -43,9 +46,9 @@ def main (model_name, model, processor, max_pruning_threshold, min_k, method = "
 		if os.path.exists(config.sparsity_file): os.remove(config.sparsity_file)
 
 		# run evalutation
-		ann_file = "/scratch/network/jmonas/VQA/v2_mscoco_val2014_annotations.json"
-		images_dir = "/scratch/network/jmonas/VQA/val2014"
-		questions_file  =  "/scratch/network/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
+		ann_file = "/scratch/gpfs/jmonas/VQA/v2_mscoco_val2014_annotations.json"
+		images_dir = "/scratch/gpfs/jmonas/VQA/val2014"
+		questions_file  =  "/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
 		metrics = evaluate(model, processor, config, questions_file, images_dir, 32, True, ann_file, .01)
 		if p > 0 or k is not None:
 			sparsity = json.load(open(config.sparsity_file))
@@ -78,5 +81,5 @@ if __name__ == '__main__':
 		device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		configuration = ViltConfig(**config)
 		processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir=cache_dir)
-		model =ViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True, cache_dir=cache_dir)
+		model = DTViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True, cache_dir=cache_dir)
 		main("ViLT_medium", model, processor, 0.1, None)
