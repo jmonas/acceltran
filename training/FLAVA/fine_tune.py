@@ -113,12 +113,12 @@ for annotation in tqdm(annotations):
     annotation['scores'] = scores
 
 
-config = json.load(open('config_tiny.json'))
+config = json.load(open('config_medium.json'))
 size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 model = FlavaForVQA(configuration, len(id2label))
-model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-7-23.pt"
+model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-3-25.pt"
 model.load_state_dict(torch.load(model_path))
 
 flava_params = sum(p.numel() for p in model.parameters())
@@ -217,7 +217,7 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=4e-5)
 scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9, last_epoch=-1, verbose=False)
 
 num_epochs = 100
-patience = 4
+patience = 40000
 min_eval_loss = float("inf")
 early_stopping_hook = 0
 tracking_information = []
