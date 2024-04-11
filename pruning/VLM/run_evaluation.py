@@ -59,7 +59,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		ann_file = "/scratch/gpfs/jmonas/VQA/v2_mscoco_val2014_annotations.json"
 		images_dir = "/scratch/gpfs/jmonas/VQA/val2014"
 		questions_file  =  "/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
-		metrics = evaluate(model, processor, config, questions_file, images_dir, 32, True, ann_file, .01)
+		metrics = evaluate(model, processor, config, questions_file, images_dir, 32, True, ann_file, .001)
 		if p > 0 or k is not None:
 			sparsity = json.load(open(config.sparsity_file))
 			print("sparsity: ", sparsity)
