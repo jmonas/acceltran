@@ -3,6 +3,10 @@
 import sys
 dataDir = '../VQA'
 sys.path.insert(0, '%s/PythonHelperTools/vqaTools' %(dataDir))
+sys.path.insert(0, '../PythonHelperTools/vqaTools')
+import sys
+sys.path.insert(0, '/home/jmonas/acceltran/training/VQA/PythonHelperTools/vqaTool')
+
 from vqa import VQA
 from vqaEvaluation.vqaEval import VQAEval
 import matplotlib.pyplot as plt
@@ -72,7 +76,7 @@ def get_accuracy(annFile, resFile, quesFile, percentage=1):
 	# 		plt.axis('off')
 	# 		plt.show()
 
-	# # plot accuracy for various question types
+	# # plot accuracy for various question typesPythonHelperTools
 	# plt.bar(range(len(vqaEval.accuracy['perQuestionType'])), vqaEval.accuracy['perQuestionType'].values(), align='center')
 	# plt.xticks(range(len(vqaEval.accuracy['perQuestionType'])), vqaEval.accuracy['perQuestionType'].keys(), rotation='0',fontsize=10)
 	# plt.title('Per Question Type Accuracy', fontsize=10)
