@@ -49,7 +49,7 @@ _CONFIG_FOR_DOC = "ViltConfig"
 _CHECKPOINT_FOR_DOC = "dandelin/vilt-b32-mlm"
 
 
-from transformers.models.deprecated._archive_maps import VILT_PRETRAINED_MODEL_ARCHIVE_LIST  # noqa: F401, E402
+# from transformers.models.deprecated._archive_maps import VILT_PRETRAINED_MODEL_ARCHIVE_LIST  # noqa: F401, E402
 
 
 @dataclass
