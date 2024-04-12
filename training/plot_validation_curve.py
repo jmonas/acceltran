@@ -22,7 +22,7 @@ def plot_eval_losses(eval_losses):
     plt.title('Evaluation Loss vs. Steps')
     plt.grid(True)
     os.makedirs("validation", exist_ok=True)
-    plt.savefig(os.path.join('validation', 'eval_losses_plot_FLAVA/slurm-55590092.png'))
+    plt.savefig(os.path.join('validation', 'eval_losses_plot_FLAVA_slurm-55590092.png'))
 
 
 # Assuming your file is named 'your_file.txt'
