@@ -175,7 +175,7 @@ if __name__ == '__main__':
 	images_type =   "val2014" if VALIDATE else "test2015"
 	# model_location = f"jmonas/ViLT-11M-vqa" if ADROIT else f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
 	# model_location = f"{cache_dir}/FLAVA/Models/{size}/flava-saved-model-ft-4-8.pt"
-	model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_B/flava-saved-model-ft_v3-2-26"
+	model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_B/flava-saved-model-ft_v3-2-26.pt"
 	questions_file= f'{cache_dir}/VQA/{questions_type}'
 	images_dir = f'{cache_dir}/VQA/{images_type}'
 
