@@ -147,7 +147,7 @@ def main (model_info, max_pruning_threshold):
 
 
 if __name__ == '__main__':
-		config_file = '/home/jmonas/acceltran/training/FLAVA/config_tiny.json'
+		config_file = '/home/jmonas/acceltran/training/FLAVA/config_small.json'
 		config = json.load(open(config_file))
 		size = f"l{config['uni_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		config = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
@@ -155,7 +155,7 @@ if __name__ == '__main__':
 		cache_dir= "/scratch/gpfs/jmonas"
 		processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 		model_class = DTFlavaForVQA
-		model_location = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_B/flava-saved-model-ft_v3-7-9.pt"
+		model_location = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_B/flava-saved-model-ft_v3-4-22.pt"
 
 		model_info = {
 			"config": config,
