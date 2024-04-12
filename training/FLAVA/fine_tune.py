@@ -113,12 +113,12 @@ for annotation in tqdm(annotations):
     annotation['scores'] = scores
 
 
-config = json.load(open('config_medium.json'))
+config = json.load(open('config_small.json'))
 size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate_size"]}"
 configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 model = FlavaForVQA(configuration, len(id2label))
-model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-3-25.pt"
+model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-5-21.pt"
 model.load_state_dict(torch.load(model_path))
 
 flava_params = sum(p.numel() for p in model.parameters())
@@ -238,19 +238,19 @@ for epoch in range(num_epochs):
         with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
             outputs = model(batch)
             
-        loss = outputs.loss
-        epoch_loss += loss.item()
-        optimizer.zero_grad()
+        # loss = outputs.loss
+        # epoch_loss += loss.item()
+        # optimizer.zero_grad()
         
-        scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
-        print(f"{idx}, Loss: {loss}", flush=True)
+        # scaler.scale(loss).backward()
+        # scaler.step(optimizer)
+        # scaler.update()
+        # print(f"{idx}, Loss: {loss}", flush=True)
 
-        if (idx+1) % 5000 ==0 and  scheduler.get_last_lr()[0] > 5e-6:
-            scheduler.step()
+        # if (idx+1) % 5000 ==0 and  scheduler.get_last_lr()[0] > 5e-6:
+        #     scheduler.step()
 
-        if (idx+1) % 500==0:
+        if (idx+1) % 2==0:
             model.eval()
             eval_loss = 0
             for j, val_batch in zip(tqdm(range(len(valid_dataloader)), desc='Validating batch: ...'), valid_dataloader):
