@@ -90,7 +90,7 @@ if __name__ == '__main__':
 		config_file = '/home/jmonas/acceltran/training/ViLT/config_tiny.json'
 		config = json.load(open(config_file))
 		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
-		cache_dir= "/scratch/gpfs/jmonas"
+		cache_dir= "/scratch/gpfs/jmonas" 
 		# model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
 		model_location = "jmonas/ViLT-5M-vqa"
 		device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
