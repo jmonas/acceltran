@@ -141,7 +141,7 @@ def main (model_info, max_pruning_threshold):
 					"multimodal_sparsity": c
 				}
 				
-				total_matrix_sizes, total_zeros = 0
+				total_matrix_sizes, total_zeros = 0, 0
 				for encoder, spars in sparsity.items():
 					matrix_sizes, num_zeros = get_sparsity(spars)
 					total_matrix_sizes+= matrix_sizes
