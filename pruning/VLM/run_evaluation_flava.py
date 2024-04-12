@@ -120,11 +120,27 @@ def main (model_info, max_pruning_threshold):
 				images_dir = "/scratch/gpfs/jmonas/VQA/val2014"
 				questions_file  =  "/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
 				metrics = evaluate(model, processor, size, questions_file, images_dir, 32, True, ann_file, .01)
+				try:
+					a = json.load(open(config.text_config.sparsity_file))
+
+				except:
+					a= {}
+
+				try:
+					b = json.load(open(config.image_config.sparsity_file))
+				except:
+					b = {}
+				try:
+					c = json.load(open(config.multimodal_config.sparsity_file))
+				except:
+					c = {}
+
 				sparsity = {
-					"text_sparsity" :json.load(open(config.text_config.sparsity_file)),
-					"image_sparsity" :json.load(open(config.image_config.sparsity_file)),
-					"multimodal_sparsity": json.load(open(config.multimodal_config.sparsity_file))
+					"text_sparsity" :a,
+					"image_sparsity" :b,
+					"multimodal_sparsity": c
 				}
+				
 				total_matrix_sizes, total_zeros = 0
 				for encoder, spars in sparsity.items():
 					matrix_sizes, num_zeros = get_sparsity(spars)
