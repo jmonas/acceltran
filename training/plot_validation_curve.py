@@ -66,7 +66,7 @@ def plot_step_prefixed_training_losses(steps, losses, save_path):
 
 # Specify the path to your file and the folder where you want to save the plot
 file_path = "/home/jmonas/acceltran/training/FLAVA/slurm-55590092.out"
-save_path = 'training'  # Folder where the plot will be saved
+save_path = 'training_plots'  # Folder where the plot will be saved
 
 steps, step_prefixed_losses = parse_step_prefixed_training_losses(file_path)
 plot_step_prefixed_training_losses(steps, step_prefixed_losses, save_path)
