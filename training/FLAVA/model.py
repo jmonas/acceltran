@@ -30,8 +30,12 @@ class FlavaForVQA(FlavaPreTrainedModel):
         if 'labels' in batch:
             labels = batch.pop('labels')
         outputs = self.flava(**batch)
-        pooler_output = outputs.multimodal_output.pooler_output
-        logits = self.classifier(pooler_output)
+        # pooler_output = outputs.multimodal_output.pooler_output
+        # logits = self.classifier(pooler_output)
+
+        multimodal_embeddings = outputs.multimodal_embeddings
+        hCLS = multimodal_embeddings[:, 0, :]
+        logits = self.classifier(hCLS)
 
         loss = None
         if labels is not None:
@@ -40,8 +44,8 @@ class FlavaForVQA(FlavaPreTrainedModel):
         return SequenceClassifierOutput(
             loss=loss,
             logits=logits,
-            hidden_states=outputs.multimodal_output.hidden_states,
-            attentions=outputs.multimodal_output.attentions,
+            # hidden_states=outputs.multimodal_output.hidden_states,
+            # attentions=outputs.multimodal_output.attentions,
         )
 
 
