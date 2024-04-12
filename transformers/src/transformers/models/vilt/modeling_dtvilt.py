@@ -71,17 +71,20 @@ def dynatran_prune(weight_matrix, pruning_threshold, json_file, parameter=False)
 
 
 def top_k(weight_matrix, k, parameter=False):
-    if k is None or k == weight_matrix.shape[3]: return weight_matrix
+    try:
+        if k is None or k == weight_matrix.shape[3]: return weight_matrix
 
-    for batch in range(weight_matrix.shape[0]):
-        for head in range(weight_matrix.shape[1]):
-            for row in range(weight_matrix.shape[2]):
-                weight_row = weight_matrix[batch, head, row, :]
-                top_k = torch.topk(weight_row, int(k))
-                weight_matrix[batch, head, row, :] = torch.where(weight_row > top_k.values[-1], weight_row, torch.zeros_like(weight_row, device=weight_matrix.device))
+        for batch in range(weight_matrix.shape[0]):
+            for head in range(weight_matrix.shape[1]):
+                for row in range(weight_matrix.shape[2]):
+                    weight_row = weight_matrix[batch, head, row, :]
+                    top_k = torch.topk(weight_row, int(k))
+                    weight_matrix[batch, head, row, :] = torch.where(weight_row > top_k.values[-1], weight_row, torch.zeros_like(weight_row, device=weight_matrix.device))
 
-    if parameter: return nn.Parameter(weight_matrix, requires_grad=True)
-    return weight_matrix
+        if parameter: return nn.Parameter(weight_matrix, requires_grad=True)
+        return weight_matrix
+    except:
+        return weight_matrix
 
 
 @dataclass
