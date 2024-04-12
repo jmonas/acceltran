@@ -4,7 +4,7 @@ import numpy as np
 import math 
 import json 
 import sys 
-sys.path.insert(0, '../../training/ViLT')
+sys.path.insert(0, '../../training/FLAVA')
 from eval import evaluate
 from transformers import ViltProcessor, ViltForQuestionAnswering, ViltConfig
 import torch
