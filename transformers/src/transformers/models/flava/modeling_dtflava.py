@@ -44,6 +44,7 @@ from transformers.models.flava.configuration_flava import (
     FlavaTextConfig,
 )
 def dynatran_prune(weight_matrix, pruning_threshold, json_file, parameter=False):
+    print("pruning: ", json_file)
     if pruning_threshold > 0:
         condition = torch.logical_or(weight_matrix < -1.0 * pruning_threshold, weight_matrix > pruning_threshold)
         weight_matrix = torch.where(condition, weight_matrix, torch.zeros_like(weight_matrix, device=weight_matrix.device))
@@ -53,6 +54,7 @@ def dynatran_prune(weight_matrix, pruning_threshold, json_file, parameter=False)
             sparsity = json.load(open(json_file))
         else:
             sparsity = []
+        print("writing: ", json_file)
         sparsity.append([int(weight_matrix.numel() - torch.count_nonzero(weight_matrix)), int(weight_matrix.numel())])
         json.dump(sparsity, open(json_file, 'w+'))
 
