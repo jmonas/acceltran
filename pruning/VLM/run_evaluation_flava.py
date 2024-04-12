@@ -14,7 +14,7 @@ sys.path.append("/home/jmonas/acceltran/training/FLAVA/")
 
 from model import DTFlavaForVQA
 
-from modeling_dtflava import DTViltModel
+from modeling_dtflava import DTFlavaModel
 from datetime import datetime
 import time
 from transformers import FlavaMultimodalConfig, FlavaImageConfig, FlavaTextConfig, FlavaConfig, FlavaProcessor
