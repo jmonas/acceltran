@@ -54,13 +54,14 @@ def config_maker(unilayers, hidden_size, number_heads, intermediate_size):
 		)
 	return configuration
 
-def evaluate(size, model_path, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
+# def evaluate(size, model_path, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
+def evaluate(model, processor, size, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
 
-	configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
-	processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
-	flava_model = FlavaModel(config=configuration)
-	model = FlavaForVQA(flava_model, len(id2label))
-	model.load_state_dict(torch.load(model_path))
+	# configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
+	# processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
+	# flava_model = FlavaModel(config=configuration)
+	# model = FlavaForVQA(flava_model, len(id2label))
+	# model.load_state_dict(torch.load(model_path))
 
 	# Opening JSON file
 	f = open(questions_file)
