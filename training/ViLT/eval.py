@@ -148,13 +148,13 @@ if __name__ == '__main__':
     ADROIT = args.adroit
     VALIDATE = args.validate
 
-    config_file = 'config_medium_plus.json'
+    config_file = 'config_small.json'
     config = json.load(open(config_file))
     size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
     cache_dir = "/scratch/network/jmonas" if ADROIT else "/scratch/gpfs/jmonas"  
     questions_type = "v2_OpenEnded_mscoco_val2014_questions.json" if VALIDATE else  "v2_OpenEnded_mscoco_test2015_questions.json" 
     images_type =   "val2014" if VALIDATE else "test2015"
-    model_location = f"jmonas/ViLT-11M-vqa" if ADROIT else f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
+    model_location = f"jmonas/ViLT-11M-vqa" if ADROIT else f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-97-5"
     questions_file= f'{cache_dir}/VQA/{questions_type}'
     images_dir = f'{cache_dir}/VQA/{images_type}'
 
@@ -165,6 +165,6 @@ if __name__ == '__main__':
     if VALIDATE:
         # get validation proxy accuracy
         annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-        evaluate(model, processor, size, questions_file, images_dir, 32, True, annFile, .1)        
+        evaluate(model, processor, size, questions_file, images_dir, 32, True, annFile, .01)        
     else:
         evaluate(model, processor, size, questions_file, images_dir, 32,)
