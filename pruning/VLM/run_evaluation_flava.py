@@ -82,13 +82,15 @@ def main (model_info, max_pruning_threshold):
 
 
 
-	pruning_thresholds = list(np.arange(0, max_pruning_threshold, 0.02))
+	pruning_thresholds_text = list(np.arange(0, .17, 0.04))
+	pruning_thresholds_image = list(np.arange(0, .1, 0.01))
+	pruning_thresholds_multi = list(np.arange(0, .1, 0.02))
 	ks = [None] * len(pruning_thresholds)
 
 	results = []
-	for p1 in pruning_thresholds:
-		for p2 in pruning_thresholds:
-			for p3 in pruning_thresholds:
+	for p1 in pruning_thresholds_text:
+		for p2 in pruning_thresholds_image:
+			for p3 in pruning_thresholds_multi:
 						
 				print(f'Running inference with pruning threshold: {p1}, {p2}, {p3}')
 				result = {'text_pruning_threshold': p1, 'image_pruning_threshold': p2, 'multimodal_pruning_threshold': p3} 
@@ -131,7 +133,7 @@ def main (model_info, max_pruning_threshold):
 				for encoder, spars in sparsity.items():
 					matrix_sizes, num_zeros = get_sparsity(spars)
 					total_matrix_sizes+= matrix_sizes
-					total_zeros += total_zeros
+					total_zeros += num_zeros
 					print(f'Resultant {encoder} activation sparsity: {num_zeros / matrix_sizes}')
 					result[f'{encoder}_activation_sparsity'] = num_zeros / matrix_sizes
 				print(f'Resultant total activation sparsity: {total_zeros / total_matrix_sizes}')
@@ -146,7 +148,7 @@ def main (model_info, max_pruning_threshold):
 
 
 if __name__ == '__main__':
-		config_file = '/home/jmonas/acceltran/training/FLAVA/config_medium.json'
+		config_file = '/home/jmonas/acceltran/training/FLAVA/config_tiny.json'
 		config = json.load(open(config_file))
 		size = f"l{config['uni_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		config = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
@@ -154,7 +156,7 @@ if __name__ == '__main__':
 		cache_dir= "/scratch/gpfs/jmonas"
 		processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 		model_class = DTFlavaForVQA
-		model_location = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_B/flava-saved-model-ft_v3-2-26.pt"
+		model_location = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_B/flava-saved-model-ft_v3-7-9.pt"
 
 		model_info = {
 			"config": config,
