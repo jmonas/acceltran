@@ -371,7 +371,6 @@ class PatchEmbeddings(nn.Module):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -467,7 +466,6 @@ class FlavaSelfAttention(nn.Module):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -543,7 +541,6 @@ class FlavaSelfOutput(nn.Module):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -608,7 +605,6 @@ class FlavaIntermediate(nn.Module):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -629,7 +625,6 @@ class FlavaOutput(nn.Module):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -661,7 +656,6 @@ class FlavaLayer(nn.Module):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -706,7 +700,6 @@ class FlavaEncoder(nn.Module):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -966,7 +959,6 @@ class FlavaImageModel(FlavaPreTrainedModel):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -1069,7 +1061,6 @@ class FlavaTextModel(FlavaPreTrainedModel):
         self.post_init()
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
             pass
@@ -1184,9 +1175,9 @@ class FlavaMultimodalModel(FlavaPreTrainedModel):
 
         try:
             self.pruning_threshold = config.pruning_threshold
-            self.k = config.k
             self.sparsity_file = config.sparsity_file
         except:
+            print("failed init sparsity")
             pass
 
     def _prune_heads(self, heads_to_prune: Dict[int, List[int]]) -> None:
