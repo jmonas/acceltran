@@ -120,25 +120,11 @@ def main (model_info, max_pruning_threshold):
 				images_dir = "/scratch/gpfs/jmonas/VQA/val2014"
 				questions_file  =  "/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
 				metrics = evaluate(model, processor, size, questions_file, images_dir, 32, True, ann_file, .01)
-				try:
-					a = json.load(open(config.text_config.sparsity_file))
-
-				except:
-					a= {}
-
-				try:
-					b = json.load(open(config.image_config.sparsity_file))
-				except:
-					b = {}
-				try:
-					c = json.load(open(config.multimodal_config.sparsity_file))
-				except:
-					c = {}
 
 				sparsity = {
-					"text_sparsity" :a,
-					"image_sparsity" :b,
-					"multimodal_sparsity": c
+					"text_sparsity" : json.load(open(config.text_config.sparsity_file)),
+					"image_sparsity" : json.load(open(config.image_config.sparsity_file)),
+					"multimodal_sparsity": json.load(open(config.multimodal_config.sparsity_file))
 				}
 				
 				total_matrix_sizes, total_zeros = 0, 0
@@ -146,9 +132,9 @@ def main (model_info, max_pruning_threshold):
 					matrix_sizes, num_zeros = get_sparsity(spars)
 					total_matrix_sizes+= matrix_sizes
 					total_zeros += total_zeros
-					print(f'Resultant {encoder} activation sparsity: {num_zeros / matrix_sizes : 0.03f}')
+					print(f'Resultant {encoder} activation sparsity: {num_zeros / matrix_sizes}')
 					result[f'{encoder}_activation_sparsity'] = num_zeros / matrix_sizes
-				print(f'Resultant total activation sparsity: {total_zeros / total_matrix_sizes : 0.03f}')
+				print(f'Resultant total activation sparsity: {total_zeros / total_matrix_sizes}')
 				result[f'total_activation_sparsity'] = total_zeros / total_matrix_sizes
 
 				result['overall'] = metrics[0] 

@@ -151,7 +151,7 @@ def evaluate(model, processor, size, questions_file, images_dir, batch_size = 32
 	if annFile:
 		pwd = os.getcwd()
 		predictions_with_path = os.path.join(pwd, predictions_file)
-		get_accuracy(annFile, predictions_with_path, questions_file, percentage)
+		return get_accuracy(annFile, predictions_with_path, questions_file, percentage)
 	
 	
 
