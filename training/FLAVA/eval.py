@@ -57,12 +57,6 @@ def config_maker(unilayers, hidden_size, number_heads, intermediate_size):
 # def evaluate(size, model_path, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
 def evaluate(model, processor, size, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
 
-	# configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
-	# processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
-	# flava_model = FlavaModel(config=configuration)
-	# model = FlavaForVQA(flava_model, len(id2label))
-	# model.load_state_dict(torch.load(model_path))
-
 	# Opening JSON file
 	f = open(questions_file)
 
@@ -181,14 +175,19 @@ if __name__ == '__main__':
 	images_type =   "val2014" if VALIDATE else "test2015"
 	# model_location = f"jmonas/ViLT-11M-vqa" if ADROIT else f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
 	# model_location = f"{cache_dir}/FLAVA/Models/{size}/flava-saved-model-ft-4-8.pt"
-	model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_0/flava-saved-model-ft2-27-22.pt"
+	model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-7-23.pt"
 
 	questions_file= f'{cache_dir}/VQA/{questions_type}'
 	images_dir = f'{cache_dir}/VQA/{images_type}'
 
+	configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
+	processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
+	flava_model = FlavaModel(config=configuration)
+	model = FlavaForVQA(flava_model, len(id2label))
+	model.load_state_dict(torch.load(model_path))
 	if VALIDATE:
 		# get validation proxy accuracy
 		annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-		evaluate(size, model_path, questions_file, images_dir, 32, True, annFile, .05)        
+		evaluate(model, processor, size, questions_file, images_dir, 32, True, annFile, .1)     
 	else:
-		evaluate(size, model_path, questions_file, images_dir, 32,)
+		evaluate(model, processor, size, questions_file, images_dir, 32,)
