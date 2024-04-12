@@ -110,9 +110,9 @@ def main (model_info, max_pruning_threshold):
 				model.load_state_dict(torch.load(model_location))
 
 				# run evalutation
-				ann_file = "/scratch/network/jmonas/VQA/v2_mscoco_val2014_annotations.json"
-				images_dir = "/scratch/network/jmonas/VQA/val2014"
-				questions_file  =  "/scratch/network/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
+				ann_file = "/scratch/gpfs/jmonas/VQA/v2_mscoco_val2014_annotations.json"
+				images_dir = "/scratch/gpfs/jmonas/VQA/val2014"
+				questions_file  =  "/scratch/gpfs/jmonas/VQA/v2_OpenEnded_mscoco_val2014_questions.json"
 				metrics = evaluate(model, processor, size, questions_file, images_dir, 32, True, ann_file, .01)
 				sparsity = {
 					"text_sparsity" :json.load(open(config.text_config.sparsity_file)),
