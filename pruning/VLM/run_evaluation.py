@@ -91,8 +91,8 @@ if __name__ == '__main__':
 		config = json.load(open(config_file))
 		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		cache_dir= "/scratch/network/jmonas"
-		# model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
-		model_location = "jmonas/ViLT-33M-vqa"
+		model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
+		# model_location = "jmonas/ViLT-33M-vqa"
 		device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		config = ViltConfig(**config)
 		processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir=cache_dir)
