@@ -13,6 +13,8 @@ import argparse
 import datetime
 import sys 
 sys.path.insert(0, '../VQA/PythonEvaluationTools')
+sys.path.append('/home/jmonas/acceltran/training/VQA/PythonEvaluationTools/')
+print(sys.path)
 from vqaEvalDemo import get_accuracy
 from tqdm import tqdm
 from transformers import FlavaMultimodalConfig, FlavaImageConfig, FlavaTextConfig, FlavaConfig, FlavaProcessor
