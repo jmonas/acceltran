@@ -18,4 +18,4 @@ module load cudnn/cuda-11.x/8.2.0
 module load anaconda3/2023.9
 conda activate torch-env
 
-python eval.py
+python eval.py --validate
