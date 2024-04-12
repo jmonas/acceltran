@@ -19,7 +19,6 @@ synthesis/work_sg/
 **_cell.txt
 **_net.txt
 pruning/models/
-pruning/results/
 pruning/utils/squad_v2/cached*
 pruning/utils/huggingface_datasets/
 tests/
