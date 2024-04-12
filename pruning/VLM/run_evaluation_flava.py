@@ -112,7 +112,7 @@ def main (model_info, max_pruning_threshold):
 				config.save_pretrained(temp_dir)
 
 
-				model = FlavaForVQA(config, len(id2label))
+				model = model_class(config, len(id2label))
 				model.load_state_dict(torch.load(model_location))
 
 				# run evalutation
