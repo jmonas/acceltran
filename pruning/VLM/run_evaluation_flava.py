@@ -24,9 +24,9 @@ from training.FLAVA.model import FlavaForVQA
 
 USE_NON_PRUNED = False
 
-f = open("id2label.json")
+f = open("/id2label.json")
 id2label = json.load(f)
-f = open("label2id.json")
+f = open("/label2id.json")
 label2id = json.load(f)
 
 def config_maker(unilayers, hidden_size, number_heads, intermediate_size):
