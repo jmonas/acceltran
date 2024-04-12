@@ -146,7 +146,7 @@ if __name__ == '__main__':
 		cache_dir= "/scratch/gpfs/jmonas"
 		processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 		model_class = DTFlavaForVQA
-		model_location = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-7-23.pt"
+		model_location = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}__B/flava-saved-model-ft_v3-0-22.pt"
 
 
 		model_info = {
