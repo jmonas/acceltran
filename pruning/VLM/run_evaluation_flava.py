@@ -12,7 +12,6 @@ sys.path.append('../../transformers_new/src/transformers')
 sys.path.append("/home/jmonas/acceltran/transformers/src/transformers/models/flava/")
 sys.path.append("/home/jmonas/acceltran/training/FLAVA/")
 sys.path.append("/home/jmonas/acceltran/")
-sys.path.append("/home/jmonas/acceltran/pruning/VLM/")
 
 
 from model import DTFlavaForVQA
@@ -142,9 +141,9 @@ def main (model_info, max_pruning_threshold):
 if __name__ == '__main__':
 		config_file = '/home/jmonas/acceltran/training/FLAVA/config_tiny.json'
 		config = json.load(open(config_file))
+		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		config = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 
-		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		cache_dir= "/scratch/gpfs/jmonas"
 		processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 		model_class = DTFlavaForVQA
