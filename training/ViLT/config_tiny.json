@@ -3,7 +3,7 @@
       "ViltForQuestionAnswering"
     ],
     "hidden_act": "gelu",
-    "hidden_size": 512,
+    "hidden_size": 128,
     "id2label": {
       "0": "net",
       "1": "pitcher",
@@ -6268,12 +6268,12 @@
       "zucchini": 1831
     },
     "image_size": 384,
-    "intermediate_size": 1024,
+    "intermediate_size": 512,
     "max_position_embeddings": 40,
     "model_type": "vilt",
-    "num_attention_heads": 8,
+    "num_attention_heads": 2,
     "num_channels": 3,
-    "num_hidden_layers": 6,
+    "num_hidden_layers": 2,
     "patch_size": 32,
     "qkv_bias": true,
     "vocab_size": 30522
