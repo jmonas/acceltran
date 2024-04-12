@@ -11,18 +11,18 @@ def parse_eval_losses(file_path):
             if match:
                 eval_loss = float(match.group(1))
                 eval_losses.append(eval_loss)
-    return eval_losses
+    return eval_losses[:10]
 
 # Function to plot eval losses
 def plot_eval_losses(eval_losses):
     steps = [i * 500 for i in range(len(eval_losses))]  # Assuming each eval loss indicates 500 batches processed
-    plt.plot(steps, eval_losses, marker='o', linestyle='-', color='b')
+    plt.plot(steps, eval_losses, linestyle='-', color='b')
     plt.xlabel('Steps')
     plt.ylabel('Eval Loss')
     plt.title('Evaluation Loss vs. Steps')
     plt.grid(True)
     os.makedirs("validation", exist_ok=True)
-    plt.savefig(os.path.join('validation', 'eval_losses_plot.png'))
+    plt.savefig(os.path.join('validation', 'eval_losses_plot_FLAVA/slurm-55590092.png'))
 
 
 # Assuming your file is named 'your_file.txt'
