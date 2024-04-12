@@ -92,7 +92,7 @@ def main (model_info, max_pruning_threshold):
 						
 				print(f'Running inference with pruning threshold: {p1}, {p2}, {p3}')
 				result = {'text_pruning_threshold': p1, 'image_pruning_threshold': p2, 'multimodal_pruning_threshold': p3} 
-				temp_dir = os.path.join(output_dir, f'p1{str(p1)[2:]}_p2{str(p2)[2:]}_p3{str(p3)[2:]}')
+				temp_dir = os.path.join(output_dir, f'p1={str(p1)[2:]}_p2={str(p2)[2:]}_p3={str(p3)[2:]}')
 
 				config.text_config.pruning_threshold = p1
 				config.image_config.pruning_threshold = p2
@@ -100,6 +100,9 @@ def main (model_info, max_pruning_threshold):
 				config.text_config.sparsity_file = os.path.join(temp_dir, 'text_sparsity.json')
 				config.image_config.sparsity_file = os.path.join(temp_dir, 'image_sparsity.json')
 				config.multimodal_config.sparsity_file = os.path.join(temp_dir, 'multimodal_sparsity.json')
+				config.text_config.save_pretrained(temp_dir)
+				config.image_config.save_pretrained(temp_dir)
+				config.multimodal_config.save_pretrained(temp_dir)
 				config.save_pretrained(temp_dir)
 
 				if os.path.exists(config.text_config.sparsity_file): os.remove(config.text_config.sparsity_file)
@@ -121,7 +124,7 @@ def main (model_info, max_pruning_threshold):
 				}
 				total_matrix_sizes, total_zeros = 0
 				for encoder, spars in sparsity.items():
-					matrix_sizes, num_zeros = get_sparsity(sparsity)
+					matrix_sizes, num_zeros = get_sparsity(spars)
 					total_matrix_sizes+= matrix_sizes
 					total_zeros += total_zeros
 					print(f'Resultant {encoder} activation sparsity: {num_zeros / matrix_sizes : 0.03f}')
