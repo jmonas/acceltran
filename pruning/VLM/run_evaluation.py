@@ -10,7 +10,6 @@ from transformers import ViltProcessor, ViltForQuestionAnswering, ViltConfig
 import torch
 sys.path.append('../../transformers_new/src/transformers')
 sys.path.append("/home/jmonas/acceltran/transformers/src/transformers/models/vilt/")
-sys.path.append("/home/jmonas/Desktop/acceltran/transformers/src/transformers/models/vilt/")
 print(sys.path)
 
 from modeling_dtvilt import DTViltModel, DTViltForQuestionAnswering
@@ -88,8 +87,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 
 
 if __name__ == '__main__':
-		# config_file = '/home/jmonas/acceltran/training/ViLT/small.json'
-		config_file = '/home/Desktop/jmonas/acceltran/training/ViLT/small.json'
+		config_file = '/home/jmonas/acceltran/training/ViLT/small.json'
 		config = json.load(open(config_file))
 		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		cache_dir= "/scratch/network/jmonas"
