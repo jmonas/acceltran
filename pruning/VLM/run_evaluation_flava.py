@@ -82,7 +82,7 @@ def main (model_info, max_pruning_threshold):
 
 
 
-	pruning_thresholds = list(np.arange(0, max_pruning_threshold, 0.005))
+	pruning_thresholds = list(np.arange(0, max_pruning_threshold, 0.02))
 	ks = [None] * len(pruning_thresholds)
 
 	results = []
@@ -142,7 +142,7 @@ def main (model_info, max_pruning_threshold):
 
 				results.append(result)
 				json.dump(results, open(os.path.join(output_dir, 'results.json'), 'w+'))
-				print(f"p1{str(p1)[2:]}_p2{str(p2)[2:]}_p3{str(p3)[2:]}, overall_accuracy = {result['overall']}")
+				print(f"p1={str(p1)[2:]}_p2={str(p2)[2:]}_p3={str(p3)[2:]}, overall_accuracy = {result['overall']}")
 
 
 if __name__ == '__main__':
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 			"cache_dir": cache_dir,
 			"size":size
 		}
-		main(model_info, .01)
+		main(model_info, .1)
 
 # main(model_info, .15, None)
 # main(model_info, 0, 1, "top-k")
