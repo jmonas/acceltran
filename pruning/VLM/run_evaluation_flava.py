@@ -11,6 +11,7 @@ import torch
 sys.path.append('../../transformers_new/src/transformers')
 sys.path.append("/home/jmonas/acceltran/transformers/src/transformers/models/flava/")
 sys.path.append("/home/jmonas/acceltran/training/FLAVA/")
+sys.path.append("/home/jmonas/acceltran/")
 
 from model import DTFlavaForVQA
 
