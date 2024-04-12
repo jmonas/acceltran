@@ -182,7 +182,8 @@ if __name__ == '__main__':
 
 	config = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 	processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
-	model = FlavaForVQA(config, len(id2label))
+	flav_model = FlavaModel(config)
+	model = FlavaForVQA(flav_model, len(id2label))
 	model.load_state_dict(torch.load(model_path))
 	
 	if VALIDATE:
