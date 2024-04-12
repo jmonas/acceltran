@@ -54,7 +54,7 @@ def config_maker(unilayers, hidden_size, number_heads, intermediate_size):
 		)
 	return configuration
 
-def eval (size, model_path, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
+def evaluate(size, model_path, questions_file, images_dir, batch_size = 32, VALIDATE=False, annFile = None, percentage = 1):
 
 	configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 	processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
@@ -188,6 +188,6 @@ if __name__ == '__main__':
 	if VALIDATE:
 		# get validation proxy accuracy
 		annFile =f'{cache_dir}/VQA/v2_mscoco_val2014_annotations.json'
-		eval(size, model_path, questions_file, images_dir, 32, True, annFile, .05)        
+		evaluate(size, model_path, questions_file, images_dir, 32, True, annFile, .05)        
 	else:
-		eval(size, model_path, questions_file, images_dir, 32,)
+		evaluate(size, model_path, questions_file, images_dir, 32,)
