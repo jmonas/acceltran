@@ -166,7 +166,7 @@ if __name__ == '__main__':
 	ADROIT = args.adroit
 	VALIDATE = args.validate
 
-	config_file = 'config_tiny.json'
+	config_file = 'config_small.json'
 	config = json.load(open(config_file))
 	size = f"l{config['uni_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 
@@ -182,8 +182,7 @@ if __name__ == '__main__':
 
 	configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 	processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
-	flava_model = FlavaModel(config=configuration)
-	model = FlavaForVQA(flava_model, len(id2label))
+	model = FlavaForVQA(config, len(id2label))
 	model.load_state_dict(torch.load(model_path))
 	
 	if VALIDATE:
