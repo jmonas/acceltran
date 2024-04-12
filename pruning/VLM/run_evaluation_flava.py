@@ -137,11 +137,10 @@ def main (model_info, max_pruning_threshold):
 				print(f"p1{str(p1)[2:]}_p2{str(p2)[2:]}_p3{str(p3)[2:]}, overall_accuracy = {result['overall']}")
 
 
-
 if __name__ == '__main__':
 		config_file = '/home/jmonas/acceltran/training/FLAVA/config_tiny.json'
 		config = json.load(open(config_file))
-		size = f"l{config['num_hidden_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
+		size = f"l{config['uni_layers']}_h{config['hidden_size']}_i{config['intermediate_size']}"
 		config = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 
 		cache_dir= "/scratch/gpfs/jmonas"
