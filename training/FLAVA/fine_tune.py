@@ -118,7 +118,7 @@ size = f"l{config["uni_layers"]}_h{config["hidden_size"]}_i{config["intermediate
 configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 model = FlavaForVQA(configuration, len(id2label))
-model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-7-22.pt"
+model_path = f"/scratch/gpfs/jmonas/FLAVA/Models/{size}_1/flava-saved-model-ft-7-23.pt"
 model.load_state_dict(torch.load(model_path))
 
 flava_params = sum(p.numel() for p in model.parameters())
