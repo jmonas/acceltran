@@ -180,7 +180,7 @@ if __name__ == '__main__':
 	questions_file= f'{cache_dir}/VQA/{questions_type}'
 	images_dir = f'{cache_dir}/VQA/{images_type}'
 
-	configuration = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
+	config = config_maker(config["uni_layers"], config["hidden_size"], config["number_heads"], config["intermediate_size"])
 	processor = FlavaProcessor.from_pretrained("facebook/flava-full", cache_dir="/scratch/gpfs/jmonas")
 	model = FlavaForVQA(config, len(id2label))
 	model.load_state_dict(torch.load(model_path))
