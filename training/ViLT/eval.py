@@ -35,6 +35,7 @@ def evaluate(model, processor, size, questions_file, images_dir, batch_size = 32
     # Return JSON object as dictionary
     questions = json.load(f)['questions']
     questions  = questions[:round(len(questions)*percentage)]
+    print("len of questions for throughput: ", len(questions))
 
     filename_re = re.compile(r".*(\d{12})\.((jpg)|(png))")
 
