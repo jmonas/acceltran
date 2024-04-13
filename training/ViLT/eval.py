@@ -105,7 +105,7 @@ def evaluate(model, processor, size, questions_file, images_dir, batch_size = 32
                             processor=processor)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True,collate_fn=collate_fn)
     
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu" if torch.cuda.is_available() else "cpu")
 
     model.eval()  # Set the model to evaluation mode
     model.to(device)
