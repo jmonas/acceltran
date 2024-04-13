@@ -28,7 +28,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	size = model_info["size"]
 
 
-	output_dir = f'./results/throughput/ViLT/{size}/'
+	output_dir = f'./results/throughput/ViLT/{size}/cpu/'
 	os.makedirs(output_dir, exist_ok=True)
 
 	# Set p 0.28840788773547676, and k for 0.286% activation sparsity
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 		cache_dir= "/scratch/gpfs/jmonas" 
 		# model_location = f"{cache_dir}/ViLT/Models/{size}/vilt-saved-model-ft-93-0"
 		model_location = "jmonas/ViLT-33M-vqa"
-		device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		device = torch.device("cpu" if torch.cuda.is_available() else "cpu")
 		config = ViltConfig(**config)
 		processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir=cache_dir)
 		# model = DTViltForQuestionAnswering.from_pretrained(model_location, config=configuration, use_safetensors=True, cache_dir=cache_dir)
