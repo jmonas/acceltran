@@ -66,12 +66,12 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 
 		# Run evaluation on the SST-2 task or the SQuAD task
 		start_time = time.time()
-		metrics = evaluate(model, processor, size, questions_file, images_dir, 64, True, ann_file, .0011942861)
+		metrics = evaluate(model, processor, size, questions_file, images_dir, 64, True, ann_file, 3*.0011942861)
 		end_time = time.time()
 		print(metrics)
 
-		result['throughput'] = 256 / (end_time - start_time)
-		print(f'Throughput: {256 / (end_time - start_time)} seq/sec')
+		result['throughput'] = 768 / (end_time - start_time)
+		print(f'Throughput: {768 / (end_time - start_time)} seq/sec')
 
 		results.append(result)
 		json.dump(results, open(os.path.join(output_dir, f'results_{datetime.now()}.json'), 'w+'))
