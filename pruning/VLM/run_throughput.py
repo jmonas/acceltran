@@ -32,11 +32,11 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	os.makedirs(output_dir, exist_ok=True)
 
 	# Set p 0.28840788773547676, and k for 0.286% activation sparsity
-	cases = [(0.005, None), (0, 16)]
+	cases = [(0.01, None), (0, 16)]
 
 	results = []
-	if os.path.exists(os.path.join(output_dir, 'results.json')):
-		results = json.load(open(os.path.join(output_dir, 'results.json')))
+	if os.path.exists(os.path.join(output_dir, f'results_{datetime.now()}.json')):
+		results = json.load(open(os.path.join(output_dir, f'results_{datetime.now()}.json')))
 		
 	for p, k in cases:
 		config.pruning_threshold = p
@@ -74,7 +74,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		print(f'Throughput: {256 / (end_time - start_time)} seq/sec')
 
 		results.append(result)
-		json.dump(results, open(os.path.join(output_dir, 'results.json'), 'w+'))
+		json.dump(results, open(os.path.join(output_dir, f'results_{datetime.now()}.json'), 'w+'))
 
 	return
 
