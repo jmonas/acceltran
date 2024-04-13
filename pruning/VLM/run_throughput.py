@@ -41,7 +41,7 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	for p, k in cases:
 		config.pruning_threshold = p
 		config.k = k
-		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{int(k)}')
+		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{k}')
 		config.sparsity_file = os.path.join(temp_dir, 'sparsity.json')
 		config.save_pretrained(temp_dir)
 
@@ -55,7 +55,6 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 		result = {'pruning_threshold': p, 'k': k}
 
 		# Make new output directory
-		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{int(k)}')
 		if p in [result['pruning_threshold'] for result in results] and k in [result['k'] for result in results]:
 			print(f'Results already stored')
 			continue
