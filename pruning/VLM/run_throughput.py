@@ -37,12 +37,14 @@ def main (model_info, max_pruning_threshold, min_k, method = "dynatran"):
 	results = []
 	if os.path.exists(os.path.join(output_dir, 'results.json')):
 		results = json.load(open(os.path.join(output_dir, 'results.json')))
-
+		
 	for p, k in cases:
 		config.pruning_threshold = p
 		config.k = k
+		temp_dir = os.path.join(output_dir, f'threshold_p{str(p)[2:]}_k{int(k)}')
 		config.sparsity_file = os.path.join(temp_dir, 'sparsity.json')
 		config.save_pretrained(temp_dir)
+
 
 		if os.path.exists(config.sparsity_file): os.remove(config.sparsity_file)
 
