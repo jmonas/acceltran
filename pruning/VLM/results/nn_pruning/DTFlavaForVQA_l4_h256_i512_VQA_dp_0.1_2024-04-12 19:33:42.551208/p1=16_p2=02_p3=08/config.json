@@ -1,0 +1,51 @@
+{
+  "ce_ignore_index": -100,
+  "global_backprop_contrastive": true,
+  "global_contrastive_weight": 1.0,
+  "hidden_size": 256,
+  "image_codebook_config": {
+    "model_type": "flava_image_codebook"
+  },
+  "image_config": {
+    "hidden_size": 256,
+    "intermediate_size": 512,
+    "model_type": "flava_image_model",
+    "num_attention_heads": 4,
+    "num_hidden_layers": 4,
+    "pruning_threshold": 0.02,
+    "sparsity_file": "./results/nn_pruning/DTFlavaForVQA_l4_h256_i512_VQA_dp_0.1_2024-04-12 19:33:42.551208/p1=16_p2=02_p3=08/image_sparsity.json"
+  },
+  "init_codebook": true,
+  "initializer_factor": 1.0,
+  "initializer_range": 0.02,
+  "itm_weight": 1.0,
+  "layer_norm_eps": 1e-12,
+  "logit_scale_init_value": 2.6592,
+  "mim_weight": 1.0,
+  "mlm_weight": 1.0,
+  "mmm_image_weight": 1.0,
+  "mmm_text_weight": 1.0,
+  "model_type": "flava",
+  "multimodal_config": {
+    "hidden_size": 256,
+    "intermediate_size": 512,
+    "model_type": "flava_multimodal_model",
+    "num_attention_heads": 4,
+    "num_hidden_layers": 2,
+    "pruning_threshold": 0.08,
+    "sparsity_file": "./results/nn_pruning/DTFlavaForVQA_l4_h256_i512_VQA_dp_0.1_2024-04-12 19:33:42.551208/p1=16_p2=02_p3=08/multimodal_sparsity.json"
+  },
+  "projection_dim": 768,
+  "return_loss": true,
+  "skip_unmasked_multimodal_encoder": true,
+  "text_config": {
+    "hidden_size": 256,
+    "intermediate_size": 512,
+    "model_type": "flava_text_model",
+    "num_attention_heads": 4,
+    "num_hidden_layers": 4,
+    "pruning_threshold": 0.16,
+    "sparsity_file": "./results/nn_pruning/DTFlavaForVQA_l4_h256_i512_VQA_dp_0.1_2024-04-12 19:33:42.551208/p1=16_p2=02_p3=08/text_sparsity.json"
+  },
+  "transformers_version": "4.40.0.dev0"
+}
